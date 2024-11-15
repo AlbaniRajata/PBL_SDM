@@ -1,0 +1,106 @@
+@extends('layouts.template')
+@section('content')
+<div class="card card-outline card-primary">
+    <div class="card-header">
+        <h3 class="card-title">Daftar Pengguna</h3>
+        <div class="card-tools">
+            <button onclick="modalAction('{{ url('/user/import') }}')" class="btn btn-sm btn-info mt-1">Import Pengguna</button>
+            <a href="{{ url('/user/export_excel') }}" class="btn btn-sm btn-primary mt-1"><i class="fa fa-file-excel"></i> Export Pengguna (Excel)</a>
+            <a href="{{ url('/admin/user/export_pdf') }}" class="btn btn-sm btn-warning mt-1"><i class="fa fa-file-pdf"></i> Export Pengguna (PDF)</a>
+            <button onclick="modalAction('{{ url('user/create_ajax') }}')" class="btn btn-sm btn-success mt-1">Tambah Ajax</button>
+        </div>
+    </div>
+    <div class="card-body">
+        @if (session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+        @endif
+        @if (session('error'))
+            <div class="alert alert-danger">
+                {{ session('error') }}
+            </div>
+        @endif
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group row">
+                    <label class="col-1 control-label col-form-label">Filter:</label>
+                    <div class="col-3">
+                        <select class="form-control" id="level" name="level">
+                            <option value="">- Semua -</option>
+                            <option value="admin">Admin</option>
+                            <option value="user">User</option>
+                            <option value="pimpinan">Pimpinan</option>
+                        </select>
+                    </div>
+                    <small class="form-text text-muted">Jenis Pengguna</small>
+                </div>
+            </div>
+        </div>
+        <table class="table table-bordered table-striped table-hover table-sm" id="user-table">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Username</th>
+                    <th>Nama</th>
+                    <th>Email</th>
+                    <th>NIP</th>
+                    <th>Level</th>
+                    <th>Poin</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+<div id="myModal" class="modal fade animate shake" tabindex="-1" role="dialog" databackdrop="static" data-keyboard="false" data-width="75%" aria-hidden="true"></div>
+@endsection
+
+@push(`css`)
+@endpush
+
+@push('js')
+<script>
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+    function modalAction(url = '') {
+            $('#myModal').load(url, function() {
+                $('#myModal').modal('show');
+            });
+        }
+        
+    var dataUser;
+    $(document).ready(function() {
+       var dataUser = $('#user-table').DataTable({
+            serverSide: true,
+            ajax: {
+                "url": "{{ route('admin.user.list') }}",
+                "dataType": "json",
+                "type": "POST",
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                data: function (d) {
+                    d.level = $('#level').val();
+                }
+            },
+            columns: [
+                { data: 'DT_RowIndex', name: 'DT_RowIndex', className: "text-center", orderable: false, searchable: false },
+                { data: 'username', name: 'username', orderable: true, searchable: true },
+                { data: 'nama', name: 'nama', orderable: true, searchable: true },
+                { data: 'email', name: 'email', orderable: true, searchable: true },
+                { data: 'NIP', name: 'NIP', orderable: true, searchable: true },
+                { data: 'level', name: 'level', orderable: true, searchable: true },
+                { data: 'poin', name: 'poin', orderable: true, searchable: true },
+                { data: 'aksi', name: 'aksi', orderable: false, searchable: false, className: "text-center" }
+            ],
+        });
+        $('#level').on('change', function() {
+            dataUser.ajax.reload();
+        });
+    });
+</script>
+@endpush
