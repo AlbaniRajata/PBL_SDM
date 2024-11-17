@@ -5,35 +5,30 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
-class AnggotaSeeder extends Seeder
+class AgendaSeeder extends Seeder
 {
     public function run()
     {
-        DB::table('t_anggota')->insert([
+        DB::table('t_agenda')->insert([
             [
                 'id_kegiatan' => 1,
-                'id_user' => 1,
-                'id_jabatan' => 1,
+                'id_dokumen' => 1,
             ],
             [
                 'id_kegiatan' => 2,
-                'id_user' => 2,
-                'id_jabatan' => 2,
+                'id_dokumen' => 2,
             ],
             [
                 'id_kegiatan' => 3,
-                'id_user' => 3,
-                'id_jabatan' => 3,
+                'id_dokumen' => 3,
             ],
             [
                 'id_kegiatan' => 4,
-                'id_user' => 4,
-                'id_jabatan' => 4,
+                'id_dokumen' => 4,
             ],
             [
                 'id_kegiatan' => 5,
-                'id_user' => 5,
-                'id_jabatan' => 5,
+                'id_dokumen' => 5,
             ],
         ]);
     }

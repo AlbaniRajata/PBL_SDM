@@ -13,12 +13,8 @@ return new class extends Migration
     {
         Schema::create('t_dokumen', function (Blueprint $table) {
             $table->id('id_dokumen');
-            $table->string('surat_tugas');
-            $table->string('proposal');
-            $table->string('bukti_pencairan');
-            $table->string('dokumentasi');
-            $table->string('dokumen_lpj');
-            $table->string('riwayat');
+            $table->string('nama_dokumen');
+            $table->integer('progress')->default(0);
             
         });
     }

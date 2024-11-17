@@ -16,16 +16,13 @@ return new class extends Migration
             $table->id('id_user');
             $table->string('username')->index();
             $table->string('nama');
+            $table->date('tanggal_lahir')->nullable();
             $table->string('email')->index();
             $table->string('password');
             $table->string('NIP')->nullable();
-            $table->enum('level', ['admin', 'pimpinan', 'dosen', 'dosenAnggota', 'dosenPIC']);
-            $table->decimal('poin', 3, 1)->nullable();
+            $table->enum('level', ['admin', 'pimpinan', 'dosen']);
             $table->timestamps();
         });
-
-        DB::table('t_user')->where('level', 'dosenAnggota')->update(['poin' => 0.5]);
-        DB::table('t_user')->where('level', 'dosenPIC')->update(['poin' => 2.0]);
     }
 
     /**
