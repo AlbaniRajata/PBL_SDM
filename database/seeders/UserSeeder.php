@@ -62,7 +62,7 @@ class UserSeeder extends Seeder
                 'email' => 'fitri@gmail.com',
                 'password' => Hash::make('123456'),
                 'NIP' => '6789012345',
-                'level' => 'admim',
+                'level' => 'admin',
             ]
         ]);
     }
