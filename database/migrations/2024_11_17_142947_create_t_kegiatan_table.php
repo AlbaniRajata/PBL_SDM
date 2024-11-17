@@ -3,6 +3,8 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
+
 
 return new class extends Migration
 {
@@ -20,13 +22,7 @@ return new class extends Migration
             $table->date('tanggal_acara')->nullable();
             $table->string('tempat_kegiatan')->nullable();
             $table->enum('jenis_kegiatan', ['Kegiatan JTI', 'Kegiatan Non-JTI']);
-            $table->unsignedBigInteger('id_user');
-
-            // Add foreign key constraint
-            $table->foreign('id_user')
-                ->references('id_user')
-                ->on('t_user')
-                ->onDelete('cascade');
+            $table->integer('progress')->default(0);
         });
     }
 

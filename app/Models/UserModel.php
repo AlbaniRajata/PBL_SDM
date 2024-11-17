@@ -11,13 +11,22 @@ class UserModel extends Model
 
     protected $table = 't_user';
     protected $primaryKey = 'id_user';
-    protected $fillable = ['id_user', 'username', 'nama', 'email', 'password', 'NIP', 'level', 'poin'];
 
-    protected $hidden = ['password'];
-    protected $casts = ['password' => 'hashed'];
+    protected $fillable = [
+        'username',
+        'nama',
+        'tanggal_lahir',
+        'email',
+        'password',
+        'NIP',
+        'level',
+    ];
 
-    public function sdm()
-    {
-        return $this->hasMany(SdmModel::class, 'id_user', 'id_user');
-    }
+    protected $hidden = [
+        'password',
+    ];
+
+    protected $casts = [
+        'tanggal_lahir' => 'date',
+    ];
 }
