@@ -7,60 +7,37 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
-## About Laravel
+## Tentang Sistem SDM
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Sistem SDM adalah aplikasi berbasis web yang dirancang untuk membantu organisasi dalam mengelola sumber daya manusia dengan lebih efisien dan terstruktur. Aplikasi ini dibangun dengan framework **Laravel** yang dikenal dengan sintaks yang ekspresif dan elegan, sehingga mempermudah pengembangan dan pemeliharaan.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### Fitur Utama
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **Manajemen Data Pegawai**: Memungkinkan pengelolaan data pegawai secara terpusat, termasuk data pribadi, jabatan, dan riwayat pekerjaan.
+- **Pengelolaan Tugas dan Kegiatan**: Mendistribusikan tugas kepada karyawan serta memonitor progress melalui laporan otomatis.
+- **Notifikasi Real-Time**: Memberikan notifikasi kepada pengguna tentang aktivitas penting seperti penugasan baru atau deadline kegiatan.
+- **Manajemen Dokumen**: Penyimpanan dan pengelolaan dokumen penting seperti surat tugas, laporan kegiatan, dan bukti pendanaan.
+- **Laporan Kinerja**: Menyediakan laporan akumulasi poin dan kinerja karyawan berdasarkan aktivitas yang telah selesai.
 
-## Learning Laravel
+## Panduan Penggunaan
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+Aplikasi ini dirancang untuk berbagai peran dalam sistem SDM, seperti:
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+- **Admin**: Mengelola data karyawan, jenis kegiatan, dan peraturan sistem.
+- **PIC (Person In Charge)**: Menugaskan kegiatan kepada anggota tim dan memantau progresnya.
+- **Anggota Tim**: Melaksanakan tugas yang diberikan dan melaporkan progres.
+- **Pimpinan**: Memantau laporan kinerja tim dan mengelola pengambilan keputusan.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Dokumentasi lengkap untuk penggunaan aplikasi dapat ditemukan [di sini](https://laravel.com/docs).
 
-## Laravel Sponsors
+## Pembelajaran Laravel
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Jika Anda baru mengenal Laravel, cobalah [Laravel Bootcamp](https://bootcamp.laravel.com) atau [Laracasts](https://laracasts.com) untuk tutorial mendalam yang mencakup semua aspek framework ini.
 
-### Premium Partners
+## Kontribusi
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+Kami menyambut kontribusi dari komunitas untuk mengembangkan fitur baru atau memperbaiki bug pada sistem ini. Silakan ikuti panduan kontribusi yang terdapat dalam [dokumentasi Laravel](https://laravel.com/docs/contributions).
 
-## Contributing
+## Lisensi
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Sistem ini merupakan perangkat lunak sumber terbuka yang dilisensikan di bawah [MIT license](https://opensource.org/licenses/MIT).
