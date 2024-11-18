@@ -15,6 +15,9 @@ class AgendaModel extends Model
     protected $fillable = [
         'id_kegiatan',
         'id_dokumen',
+        'id_anggota',
+        'nama_agenda',
+        'poin',
     ];
 
     public function kegiatan()
@@ -25,5 +28,10 @@ class AgendaModel extends Model
     public function dokumen()
     {
         return $this->belongsTo(DokumenModel::class, 'id_dokumen', 'id_dokumen');
+    }
+
+    public function anggota()
+    {
+        return $this->belongsTo(AnggotaModel::class, 'id_anggota', 'id_anggota');
     }
 }

@@ -15,7 +15,7 @@ class AnggotaModel extends Model
     protected $fillable = [
         'id_kegiatan',
         'id_user',
-        'id_jabatan',
+        'id_jabatan_kegiatan',
     ];
 
     public function kegiatan()
@@ -28,8 +28,12 @@ class AnggotaModel extends Model
         return $this->belongsTo(UserModel::class, 'id_user', 'id_user');
     }
 
+    public function agenda(){
+        return $this->hasMany(AgendaModel::class, 'id_anggota', 'id_anggota');
+    }
+
     public function jabatan()
     {
-        return $this->belongsTo(JabatanKegiatanModel::class, 'id_jabatan', 'id_jabatan');
+        return $this->belongsTo(JabatanKegiatanModel::class, 'id_jabatan_kegiatan', 'id_jabatan_kegiatan');
     }
 }
