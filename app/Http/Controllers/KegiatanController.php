@@ -8,6 +8,7 @@ use App\Models\UserModel;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Models\AnggotaModel;
 
 class KegiatanController extends Controller
 {
@@ -59,7 +60,7 @@ class KegiatanController extends Controller
         return DataTables::of($kegiatan)
             ->addIndexColumn()
             ->addColumn('aksi', function ($kegiatan) {
-                $btn = '<button onclick="modalAction(\'' . url('/kegiatan/' . $kegiatan->id_kegiatan . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
+                $btn = '<button onclick="modalAction(\'' . url('/admin/kegiatan/' . $kegiatan->id_kegiatan . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/kegiatan/' . $kegiatan->id_kegiatan . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/kegiatan/' . $kegiatan->id_kegiatan . '/delete_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button> ';
                 return $btn;
@@ -77,5 +78,13 @@ class KegiatanController extends Controller
         $pdf->setOption("isRemoteEnabled", true);
         $pdf->render();
         return $pdf->stream('Data Kegiatan ' . date('Y-m-d H:i:s') . '.pdf');
+    }
+
+    // function show (admin)
+    public function show_ajaxAdmin(string $id)
+    {
+        $kegiatan = KegiatanModel::find($id);
+
+        return view('admin.kegiatan.show_ajax',['kegiatan' => $kegiatan]);
     }
 }

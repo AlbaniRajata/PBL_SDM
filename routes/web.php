@@ -19,6 +19,13 @@ use App\Http\Controllers\StatistikController;
 
 Route::get('/welcome', [DashboardController::class, 'index']);
 
+Route::prefix('admin')->group(function () {
+    Route::post('user/create_ajax', [UserController::class, 'create_ajaxAdmin'])->name('admin.user.create_ajax');
+    Route::post('user/ajax', [UserController::class, 'store_ajaxAdmin'])->name('admin.user.store_ajax');
+    Route::get('user/{id}/show_ajax', [UserController::class, 'show_ajaxAdmin'])->name('admin.user.show_ajax');
+    Route::get('user/{id}/edit_ajax', [UserController::class, 'edit_ajaxAdmin'])->name('admin.user.edit_ajax');
+    Route::get('user/{id}/delete_ajax', [UserController::class, 'delete_ajaxAdmin'])->name('admin.user.delete_ajax');
+});
 
 // Route admin
 // Index
@@ -38,7 +45,7 @@ Route::prefix('user')->group(function () {
     Route::post('/pimpinan', [UserController::class, 'pimpinan'])->name('user.pimpinan');
     // Route::get('admin/user', [UserController::class, 'list'])->name('admin.user.list');
     Route::get('/export_pdf', [UserController::class, 'exportPdf'])->name('user.export_pdf');
-    Route::get('/{id}/show_ajax', [UserController::class, 'showAjax'])->name('user.show_ajax');
+    // Route::get('/admin/user/{id}/show_ajax', [UserController::class, 'show_ajaxAdmin'])->name('admin.user.show_ajax');
     Route::get('/{id}/edit_ajax', [UserController::class, 'editAjax'])->name('user.edit_ajax');
     Route::get('/{id}/delete_ajax', [UserController::class, 'deleteAjax'])->name('user.delete_ajax'); 
 });
@@ -47,11 +54,19 @@ Route::prefix('kegiatan')->group(function () {
     Route::post('/pimpinan/kegiatan/list', [KegiatanController::class, 'list'])->name('pimpinan.kegiatan.list');
     Route::post('/dosenPIC/kegiatan/list', [KegiatanController::class, 'list'])->name('pimpinan.kegiatan.list');
     Route::get('/admin/kegiatan/export_pdf', [KegiatanController::class, 'exportPdf'])->name('admin.kegiatan.export_pdf');
+    // Route::get('/admin/kegiatan/{id}/show_ajax', [KegiatanController::class, 'show_ajaxAdmin'])->name('admin.kegiatan.show_ajax');
+    Route::get('/admin/kegiatan/{id}/edit_ajax', [KegiatanController::class, 'editAjaxAdmin'])->name('admin.kegiatan.edit_ajax');
+    Route::get('/admin/kegiatan/{id}/delete_ajax', [KegiatanController::class, 'deleteAjaxAdmin'])->name('admin.kegiatan.delete_ajax');
+});
+
+Route::prefix('admin')->group(function () {
+    Route::prefix('kegiatan')->group(function () {
+        Route::get('/{id}/show_ajax', [KegiatanController::class, 'show_ajaxAdmin'])->name('admin.kegiatan.show_ajax');
+    });
 });
 
 //Route pimpinan
 // Index
-Route::get('/pimpinan/kegiatan',[KegiatanController::class, 'pimpinan']);
 Route::get('/pimpinan/statistik',[StatistikController::class, 'pimpinan']);
 Route::get('pimpinan/user', [UserController::class, 'pimpinan']);
 

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 class KegiatanModel extends Model
 {
@@ -28,4 +29,20 @@ class KegiatanModel extends Model
         'tanggal_selesai' => 'date',
         'tanggal_acara' => 'date',
     ];
+
+    // Accessors to format the dates
+    public function getTanggalMulaiAttribute($value)
+    {
+        return Carbon::parse($value)->format('d-m-Y');
+    }
+
+    public function getTanggalSelesaiAttribute($value)
+    {
+        return Carbon::parse($value)->format('d-m-Y');
+    }
+
+    public function getTanggalAcaraAttribute($value)
+    {
+        return Carbon::parse($value)->format('d-m-Y');
+    }
 }

@@ -34,6 +34,12 @@
               <p>Kegiatan</p>
             </a>
           </li>
+          <li class="nav-item">
+            <a href="{{ url('admin/kegiatan')}}" class="nav-link {{($activeMenu == 'jabatan kegiatan admin')? 'active' : ''}}">
+              <i class="nav-icon fa-regular fa-calendar-check"></i>
+              <p>jabatan Kegiatan</p>
+            </a>
+          </li>
           <li class="nav-header">Statistik</li>
           <li class="nav-item">
             <a href="{{ url('admin/statistik')}}" class="nav-link {{($activeMenu == 'statistik admin')? 'active' : ''}}">
@@ -80,7 +86,7 @@
           <li class="nav-item">
             <a href="{{ url('/agenda')}}" class="nav-link {{($activeMenu == 'agenda')? 'active' : ''}}">
               <i class="nav-icon fas fa-list-ol"></i>
-              <p>Agenda Kegiatan </p>
+              <p>Agenda Anggota </p>
             </a>
           </li>
           <li class="nav-header">Statistik</li>
