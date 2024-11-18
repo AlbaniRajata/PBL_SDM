@@ -45,4 +45,9 @@ class KegiatanModel extends Model
     {
         return Carbon::parse($value)->format('d-m-Y');
     }
+
+    public function anggota()
+    {
+        return $this->hasMany(AnggotaModel::class, 'id_kegiatan', 'id_kegiatan');
+    }
 }

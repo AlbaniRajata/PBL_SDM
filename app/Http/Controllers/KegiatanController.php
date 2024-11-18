@@ -81,10 +81,14 @@ class KegiatanController extends Controller
     }
 
     // function show (admin)
-    public function show_ajaxAdmin(string $id)
+    public function show_ajaxAdmin($id)
     {
-        $kegiatan = KegiatanModel::find($id);
-
-        return view('admin.kegiatan.show_ajax',['kegiatan' => $kegiatan]);
+        $kegiatan = KegiatanModel::with(['anggota.user', 'anggota.agenda', 'anggota.jabatan'])->find($id);
+    
+        if (!$kegiatan) {
+            return response()->json(['message' => 'Data not found'], 404);
+        }
+    
+        return view('admin.kegiatan.show_ajax', compact('kegiatan'));
     }
 }
