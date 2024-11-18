@@ -13,27 +13,27 @@ class AnggotaSeeder extends Seeder
             [
                 'id_kegiatan' => 1,
                 'id_user' => 1,
-                'id_jabatan' => 1,
+                'id_jabatan_kegiatan' => 1,
             ],
             [
-                'id_kegiatan' => 2,
+                'id_kegiatan' => 1,
                 'id_user' => 2,
-                'id_jabatan' => 2,
+                'id_jabatan_kegiatan' => 2,
             ],
             [
-                'id_kegiatan' => 3,
+                'id_kegiatan' => 1,
                 'id_user' => 3,
-                'id_jabatan' => 3,
+                'id_jabatan_kegiatan' => 3,
             ],
             [
-                'id_kegiatan' => 4,
+                'id_kegiatan' => 1,
                 'id_user' => 4,
-                'id_jabatan' => 4,
+                'id_jabatan_kegiatan' => 4,
             ],
             [
-                'id_kegiatan' => 5,
+                'id_kegiatan' => 1,
                 'id_user' => 5,
-                'id_jabatan' => 5,
+                'id_jabatan_kegiatan' => 5,
             ],
         ]);
     }

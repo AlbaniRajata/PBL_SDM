@@ -15,13 +15,13 @@ return new class extends Migration
             $table->id('id_anggota');
             $table->unsignedBigInteger('id_kegiatan')->nullable();
             $table->unsignedBigInteger('id_user')->nullable();
-            $table->unsignedBigInteger('id_jabatan')->nullable();
+            $table->unsignedBigInteger('id_jabatan_kegiatan')->nullable();
             $table->timestamps();
 
             // Add foreign key constraint
             $table->foreign('id_kegiatan', 'fk_kegiatan')->references('id_kegiatan')->on('t_kegiatan');
             $table->foreign('id_user', 'fk_user')->references('id_user')->on('t_user');
-            $table->foreign('id_jabatan', 'fk_jabatan')->references('id_jabatan')->on('t_jabatan');
+            $table->foreign('id_jabatan_kegiatan', 'fk_jabatan')->references('id_jabatan_kegiatan')->on('t_jabatan_kegiatan');
         });
     }
 
