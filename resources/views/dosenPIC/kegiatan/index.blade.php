@@ -23,101 +23,69 @@
             </div>
         @endif
         <table class="table table-bordered table-striped table-hover table-sm" id="table_kegiatan">
-            <thead>
+            <thead class="thead-dark">
                 <tr>
-                    <th>Nama Kegiatan</th>
-                    <th>Tanggal Mulai</th>
-                    <th>Tanggal Selesai</th>
-                    <th>PIC</th>
-                    <th>Status</th>
-                    <th>Poin Kegiatan</th>
-                    <th>Surat Tugas</th>
-                    <th>Aksi</th>
+                    <th class="text-center">Nama Kegiatan</th>
+                    <th class="text-center">Tanggal Mulai</th>
+                    <th class="text-center">Tanggal Selesai</th>
+                    <th class="text-center">PIC</th>
+                    <th class="text-center">Status</th>
+                    <th class="text-center">Poin Kegiatan</th>
+                    <th class="text-center">Surat Tugas</th>
+                    <th class="text-center">Aksi</th>
                 </tr>
             </thead>
+            <tbody>
+                <!-- Table rows will go here -->
+            </tbody>
         </table>
     </div>
 </div>
-<div id="myModal" class="modal fade animate shake" tabindex="-1" role="dialog" databackdrop="static" data-keyboard="false" data-width="75%" aria-hidden="true"></div>
+<div id="myModal" class="modal fade animate shake" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false" data-width="75%" aria-hidden="true"></div>
 @endsection
 
 @push('css')
 @endpush
 
 @push('js')
-    {{-- <script>
-        function modalAction(url = '') {
-            $('#myModal').load(url, function() {
-                $('#myModal').modal('show');
-            });
+<script>
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
+    });
 
-        var dataKegiatan;
-        $(document).ready(function() {
-            dataKegiatan = $('#table_kegiatan').DataTable({
-                serverSide: true,
-                ajax: {
-                    "url": "{{ route('kegiatan.list') }}",
-                    "dataType": "json",
-                    "type": "POST",
-                    headers: {
-                        'X-CSRF-TOKEN': "{{ csrf_token() }}"
-                    }
-                },
-                columns: [
-                    {
-                        data: "judul_kegiatan",
-                        className: "",
-                        orderable: true,
-                        searchable: true
-                    },
-                    {
-                        data: "tanggal_mulai",
-                        className: "text-center",
-                        orderable: true,
-                        searchable: false
-                    },
-                    {
-                        data: "tanggal_selesai",
-                        className: "text-center",
-                        orderable: true,
-                        searchable: false
-                    },
-                    {
-                        data: "pic.nama",
-                        className: "",
-                        orderable: false,
-                        searchable: true
-                    },
-                    {
-                        data: "status",
-                        className: "",
-                        orderable: true,
-                        searchable: true
-                    },
-                    {
-                        data: "poin_kegiatan",
-                        className: "text-center",
-                        orderable: true,
-                        searchable: true
-                    },
-                    {
-                        data: "surat_tugas",
-                        className: "text-center",
-                        orderable: false,
-                        searchable: false,
-                        render: function(data, type, row) {
-                            return data ? `<a href="${data}" class="btn btn-sm btn-info" target="_blank">Download</a>` : '-';
-                        }
-                    },
-                    {
-                        data: "aksi",
-                        className: "",
-                        orderable: false,
-                        searchable: false
-                    }
-                ]
-            });
+    function modalAction(url = '') {
+        $('#myModal').load(url, function() {
+            $('#myModal').modal('show');
         });
-    </script> --}}
+    }
+
+    $(document).ready(function() {
+        var dataKegiatan = $('#table_kegiatan').DataTable({
+            serverSide: true,
+            processing: true,
+            ajax: {
+                url: "{{ route('admin.kegiatan.list') }}",
+                type: "POST",
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                data: function (d) {
+                    // Add any additional parameters here if needed
+                }
+            },
+            columns: [
+                { data: 'nama_kegiatan', name: 'nama_kegiatan', className: "text-center", orderable: true, searchable: true },
+                { data: 'tanggal_mulai', name: 'tanggal_mulai', className: "text-center", orderable: true, searchable: true },
+                { data: 'tanggal_selesai', name: 'tanggal_selesai', className: "text-center", orderable: true, searchable: true },
+                { data: 'pic', name: 'pic', className: "text-center", orderable: true, searchable: true },
+                { data: 'status', name: 'status', className: "text-center", orderable: true, searchable: true },
+                { data: 'poin_kegiatan', name: 'poin_kegiatan', className: "text-center", orderable: true, searchable: true },
+                { data: 'surat_tugas', name: 'surat_tugas', className: "text-center", orderable: true, searchable: true },
+                { data: 'aksi', name: 'aksi', className: "text-center", orderable: false, searchable: false }
+            ],
+        });
+    });
+</script>
 @endpush

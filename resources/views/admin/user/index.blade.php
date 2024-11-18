@@ -29,7 +29,7 @@
                         <select class="form-control" id="level" name="level">
                             <option value="">- Semua -</option>
                             <option value="admin">Admin</option>
-                            <option value="user">User</option>
+                            <option value="user">dosen</option>
                             <option value="pimpinan">Pimpinan</option>
                         </select>
                     </div>
@@ -40,14 +40,13 @@
         <table class="table table-bordered table-striped table-hover table-sm" id="user-table">
             <thead>
                 <tr>
-                    <th>No</th>
-                    <th>Username</th>
-                    <th>Nama</th>
-                    <th>Email</th>
-                    <th>NIP</th>
-                    <th>Level</th>
-                    <th>Poin</th>
-                    <th>Aksi</th>
+                    <th style="width: 5%;" class="text-center">No</th>
+                    <th style="width: 15%;"class="text-center">Username</th>
+                    <th style="width: 25%;"class="text-center">Nama</th>
+                    <th style="width: 20%;"class="text-center">Email</th>
+                    <th style="width: 10%;"class="text-center">NIP</th>
+                    <th style="width: 10%;"class="text-center">Level</th>
+                    <th style="width: 15%;"class="text-center">Aksi</th>
                 </tr>
             </thead>
         </table>
@@ -89,13 +88,12 @@
             },
             columns: [
                 { data: 'DT_RowIndex', name: 'DT_RowIndex', className: "text-center", orderable: false, searchable: false },
-                { data: 'username', name: 'username', orderable: true, searchable: true },
-                { data: 'nama', name: 'nama', orderable: true, searchable: true },
-                { data: 'email', name: 'email', orderable: true, searchable: true },
-                { data: 'NIP', name: 'NIP', orderable: true, searchable: true },
-                { data: 'level', name: 'level', orderable: true, searchable: true },
-                { data: 'poin', name: 'poin', orderable: true, searchable: true },
-                { data: 'aksi', name: 'aksi', orderable: false, searchable: false, className: "text-center" }
+                { data: 'username', name: 'username', className: "text-center", orderable: true, searchable: true },
+                { data: 'nama', name: 'nama', className: "text-center", orderable: true, searchable: true },
+                { data: 'email', name: 'email', className: "text-center", orderable: true, searchable: true },
+                { data: 'NIP', name: 'NIP', className: "text-center", orderable: true, searchable: true },
+                { data: 'level', name: 'level', className: "text-center", orderable: true, searchable: true },
+                { data: 'aksi', name: 'aksi', className: "text-center", orderable: false, searchable: false, className: "text-center" }
             ],
         });
         $('#level').on('change', function() {

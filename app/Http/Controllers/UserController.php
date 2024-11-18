@@ -9,29 +9,30 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 class UserController extends Controller
 {
-    // function index
-    public function admin(){
+    public function admin()
+    {
         $breadcrumb = (object) [
             'title' => 'Pengguna',
-            'list' => ['Home','Daftar Pengguna'],
+            'list' => ['Home', 'Data Pengguna'],
         ];
         $activeMenu = 'user admin';
-        return view('admin.user.index',['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu]);
+        return view('admin.user.index', ['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu]);
     }
 
-    public function pimpinan(){
+    public function pimpinan()
+    {
         $breadcrumb = (object) [
             'title' => 'Pengguna',
-            'list' => ['Home','Data Pengguna'],
+            'list' => ['Home', 'Data Pengguna'],
         ];
         $activeMenu = 'user pimpinan';
-        return view('pimpinan.user.index',['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu]);
+        return view('pimpinan.user.index', ['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu]);
     }
 
     // function list (admin)
     public function list(Request $request)
     {
-        $user = UserModel::select('id_user', 'username', 'nama', 'email', 'NIP', 'level', 'poin');
+        $user = UserModel::select('id_user', 'username', 'nama', 'email', 'NIP', 'level');
 
         if ($request->level) {
             $user->where('level', $request->level);
@@ -51,7 +52,7 @@ class UserController extends Controller
     // function export (admin)
     public function exportPdf()
     {
-        $user = UserModel::select('id_user', 'username', 'nama', 'email', 'NIP', 'level', 'poin')->get();
+        $user = UserModel::select('id_user', 'username', 'nama', 'email', 'NIP', 'level')->get();
         $pdf = Pdf::loadView('admin.user.export_pdf', ['user' => $user]);
         $pdf->setPaper('a4', 'portrait');
         $pdf->setOption("isRemoteEnabled", true);

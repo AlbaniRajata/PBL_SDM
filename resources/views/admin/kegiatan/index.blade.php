@@ -17,7 +17,7 @@
                 {{ session('success') }}
             </div>
         @endif
-        @if (session('error'))
+                @if (session('error'))
             <div class="alert alert-danger">
                 {{ session('error') }}
             </div>
@@ -40,68 +40,67 @@
         <table class="table table-bordered table-striped table-hover table-sm" id="kegiatan-table">
             <thead>
                 <tr>
-                    <th>No</th>
-                    <th>Nama Kegiatan</th>
-                    <th>Deskripsi Kegiatan</th>
-                    <th>Tanggal Mulai</th>
-                    <th>Tanggal Selesai</th>
-                    <th>Tanggal Acara</th>
-                    <th>Tempat Kegiatan</th>
-                    <th>Jenis Kegiatan</th>
-                    <th>Aksi</th>
+                    <th style="width: 5%;" class="text-center">No</th>
+                    <th style="width: 15%;" class="text-center">Nama Kegiatan</th>
+                    <th style="width: 20%;" class="text-center">Deskripsi Kegiatan</th>
+                    <th style="width: 10%;" class="text-center">Tanggal Mulai</th>
+                    <th style="width: 10%;" class="text-center">Tanggal Selesai</th>
+                    <th style="width: 10%;" class="text-center">Tanggal Acara</th>
+                    <th style="width: 10%;" class="text-center">Tempat Kegiatan</th>
+                    <th style="width: 10%;" class="text-center">Jenis Kegiatan</th>
+                    <th style="width: 10%;" class="text-center">Aksi</th>
                 </tr>
             </thead>
         </table>
-    </div>
-</div>
-<div id="myModal" class="modal fade animate shake" tabindex="-1" role="dialog" databackdrop="static" data-keyboard="false" data-width="75%" aria-hidden="true"></div>
-
-
-@push('css')
-@endpush
-
-@push('js')
-<script>
-    function modalAction(url = '') {
-        $('#myModal').load(url, function() {
-            $('#myModal').modal('show');
-        });
-    }
-
-    $(document).ready(function() {
-        var dataKegiatan = $('#kegiatan-table').DataTable({
-            processing: true,
-            serverSide: true,
-            ajax: {
-                url: '{{ route("admin.kegiatan.list") }}',
-                type: 'GET',
+        <div id="myModal" class="modal fade animate shake" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false" data-width="75%" aria-hidden="true"></div>
+        
+        @push('css')
+        @endpush
+        
+        @push('js')
+        <script>
+            $.ajaxSetup({
                 headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                data: function (d) {
-                    d.jenis_kegiatan = $('#jenis_kegiatan').val();
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 }
-            },
-            columns: [
-                { data: 'DT_RowIndex', name: 'DT_RowIndex', className: "text-center", orderable: false, searchable: false },
-                { data: 'nama_kegiatan', name: 'nama_kegiatan', orderable: true, searchable: true },
-                { data: 'deskripsi_kegiatan', name: 'deskripsi_kegiatan', orderable: true, searchable: true },
-                { data: 'tanggal_mulai', name: 'tanggal_mulai', orderable: true, searchable: true },
-                { data: 'tanggal_selesai', name: 'tanggal_selesai', orderable: true, searchable: true },
-                { data: 'tanggal_acara', name: 'tanggal_acara', orderable: true, searchable: true },
-                { data: 'tempat_kegiatan', name: 'tempat_kegiatan', orderable: true, searchable: true },
-                { data: 'jenis_kegiatan', name: 'jenis_kegiatan', orderable: true, searchable: true },
-                { data: 'aksi', name: 'aksi', orderable: false, searchable: false, className: "text-center" }
-            ],
-            order: [[1, 'asc']],
-            responsive: true,
-            autoWidth: false,
-        });
-
-        $('#jenis_kegiatan').on('change', function() {
-            dataKegiatan.ajax.reload();
-        });
-    });
-</script>
-@endpush
+            });
+            function modalAction(url = '') {
+                $('#myModal').load(url, function() {
+                    $('#myModal').modal('show');
+                });
+            }
+            var dataKegiatan;
+            $(document).ready(function() {
+                var dataKegiatan = $('#kegiatan-table').DataTable({
+                    serverSide: true,
+                    ajax: {
+                        "url": "{{ route('admin.kegiatan.list') }}",
+                        "dataType": "json",
+                        "type": "POST",
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        data: function (d) {
+                            d.jenis_kegiatan = $('#jenis_kegiatan').val();
+                        }
+                    },
+                    columns: [
+                        { data: 'DT_RowIndex', name: 'DT_RowIndex', className: "text-center", orderable: false, searchable: false },
+                        { data: 'nama_kegiatan', name: 'nama_kegiatan', className: "text-center", orderable: true, searchable: true },
+                        { data: 'deskripsi_kegiatan', name: 'deskripsi_kegiatan', className: "text-center", orderable: true, searchable: true },
+                        { data: 'tanggal_mulai', name: 'tanggal_mulai', className: "text-center", orderable: true, searchable: true },
+                        { data: 'tanggal_selesai', name: 'tanggal_selesai', className: "text-center", orderable: true, searchable: true },
+                        { data: 'tanggal_acara', name: 'tanggal_acara', className: "text-center", orderable: true, searchable: true },
+                        { data: 'tempat_kegiatan', name: 'tempat_kegiatan', className: "text-center", orderable: true, searchable: true },
+                        { data: 'jenis_kegiatan', name: 'jenis_kegiatan', className: "text-center", orderable: true, searchable: true },
+                        { data: 'aksi', name: 'aksi', className: "text-center", orderable: false, searchable: false }
+                    ],
+                });
+        
+                $('#jenis_kegiatan').on('change', function() {
+                    dataKegiatan.ajax.reload();
+                });
+            });
+        </script>
+        @endpush
 @endsection

@@ -48,32 +48,14 @@ class KegiatanController extends Controller
         return view('dosenAnggota.kegiatan.index',['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu]);
     }
 
-    // function create (admin)
-    public function create_ajax()
-    {
-        $jenis_kegiatan = ['Kegiatan JTI', 'Kegiatan Non-JTI'];
-        $pengguna = UserModel::select('id_user', 'nama')->get();
-        return view('admin.kegiatan.create_ajax', ['jenis_kegiatan' => $jenis_kegiatan, 'pengguna' => $pengguna]);
-    }
-
+    // function list (admin)
     public function list(Request $request)
     {
-        $kegiatan = KegiatanModel::select(
-            'id_kegiatan', 
-            'nama_kegiatan', 
-            'deskripsi_kegiatan', 
-            'tanggal_mulai', 
-            'tanggal_selesai', 
-            'tanggal_acara', 
-            'tempat_kegiatan', 
-            'jenis_kegiatan', 
-            'id_user'
-        );
+        $kegiatan = KegiatanModel::select('id_kegiatan', 'nama_kegiatan', 'deskripsi_kegiatan', 'tanggal_mulai', 'tanggal_selesai', 'tanggal_acara', 'tempat_kegiatan', 'jenis_kegiatan');
 
         if ($request->jenis_kegiatan) {
             $kegiatan->where('jenis_kegiatan', $request->jenis_kegiatan);
         }
-
         return DataTables::of($kegiatan)
             ->addIndexColumn()
             ->addColumn('aksi', function ($kegiatan) {
@@ -86,91 +68,14 @@ class KegiatanController extends Controller
             ->make(true);
     }
 
-    // function store (admin)
-    public function store_ajax(Request $request)
+    // function export (admin)
+    public function exportPdf()
     {
-        if ($request->ajax() || $request->wantsJson()) {
-            $rules = [
-                'nama_kegiatan' => 'required|string|max:100',
-                'deskripsi_kegiatan' => 'required|string',
-                'tanggal_mulai' => 'required|date',
-                'tanggal_selesai' => 'required|date|after_or_equal:tanggal_mulai',
-                'jenis_kegiatan' => 'required|string',
-                'tempat_kegiatan' => 'required|string',
-                'id_user' => 'required|integer|exists:t_user,id_user',
-            ];
-
-            $validator = Validator::make($request->all(), $rules);
-
-            if ($validator->fails()) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Validasi Gagal',
-                    'msgField' => $validator->errors()
-                ]);
-            }
-
-            $kegiatan = KegiatanModel::create([
-                'nama_kegiatan' => $request->nama_kegiatan,
-                'deskripsi_kegiatan' => $request->deskripsi_kegiatan,
-                'tanggal_mulai' => $request->tanggal_mulai,
-                'tanggal_selesai' => $request->tanggal_selesai,
-                'jenis_kegiatan' => $request->jenis_kegiatan,
-                'tempat_kegiatan' => $request->tempat_kegiatan,
-                'id_user' => $request->id_user,
-            ]);
-
-            return response()->json([
-                'status' => true,
-                'message' => 'Data kegiatan berhasil disimpan'
-            ]);
-        }
-
-        return response()->json([
-            'status' => false,
-            'message' => 'Invalid request'
-        ]);
-    }
-    
-    // ini perlu dihapus tidak
-    public function storeAdmin(Request $request){
-        $request->validate([
-            'nama_kegiatan' => 'required',
-            'jenis_kegiatan' => 'required',
-            'deskripsi_kegiatan' => 'required',
-            'tanggal_acara' => 'required',
-            'tempat_kegiatan' => 'required',
-            'status' => 'required',
-        ]);
-
-        $kegiatan = new KegiatanModel;
-        $kegiatan->nama = $request->nama;
-        $kegiatan->jenis_kegiatan = $request->jenis_kegiatan;
-        $kegiatan->deskripsi = $request->deskripsi;
-        $kegiatan->tanggal_acara = $request->tanggal_acara;
-        $kegiatan->tempat = $request->tempat;
-        $kegiatan->status = $request->status;
-        $kegiatan->save();
-
-        return redirect()->back()->with('success','Kegiatan berhasil ditambahkan');
-    }
-
-    public function export_pdf()
-    {
-        $kegiatan = kegiatanModel::select('id_kegiatan', 
-            'nama_kegiatan', 
-            'deskripsi_kegiatan', 
-            'tanggal_mulai', 
-            'tanggal_selesai', 
-            'tanggal_acara', 
-            'tempat_kegiatan', 
-            'jenis_kegiatan', 
-            'id_user')
-            ->get();
+        $kegiatan = KegiatanModel::select('id_kegiatan', 'nama_kegiatan', 'deskripsi_kegiatan', 'tanggal_mulai', 'tanggal_selesai', 'tanggal_acara', 'tempat_kegiatan', 'jenis_kegiatan')->get();
         $pdf = Pdf::loadView('admin.kegiatan.export_pdf', ['kegiatan' => $kegiatan]);
-        $pdf->setPaper('a4', 'potrait');
+        $pdf->setPaper('a4', 'portrait');
         $pdf->setOption("isRemoteEnabled", true);
         $pdf->render();
-        return $pdf->stream('Data Pengguna ' . date('Y-m-d H:i:s') . '.pdf');
+        return $pdf->stream('Data Kegiatan ' . date('Y-m-d H:i:s') . '.pdf');
     }
 }
