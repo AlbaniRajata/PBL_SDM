@@ -40,7 +40,7 @@ Route::prefix('user')->group(function () {
     Route::get('/export_pdf', [UserController::class, 'exportPdf'])->name('user.export_pdf');
     Route::get('/{id}/show_ajax', [UserController::class, 'showAjax'])->name('user.show_ajax');
     Route::get('/{id}/edit_ajax', [UserController::class, 'editAjax'])->name('user.edit_ajax');
-    Route::get('/{id}/delete_ajax', [UserController::class, 'deleteAjax'])->name('user.delete_ajax');
+    Route::get('/{id}/delete_ajax', [UserController::class, 'deleteAjax'])->name('user.delete_ajax'); 
 });
 Route::prefix('kegiatan')->group(function () {
     Route::post('/admin/kegiatan/list', [KegiatanController::class, 'list'])->name('admin.kegiatan.list');
