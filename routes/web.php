@@ -26,6 +26,7 @@ Route::get('/admin/kegiatan',[KegiatanController::class, 'admin']);
 Route::get('/admin/statistik',[StatistikController::class, 'admin']);
 Route::get('/admin/user', [UserController::class, 'admin']);
 Route::post('/admin/user/list', [UserController::class, 'list'])->name('admin.user.list');
+Route::post('/pimpinan/user/list', [UserController::class, 'list'])->name('pimpinan.user.list');
 Route::get('/admin/user/export_pdf', [UserController::class, 'exportPdf'])->name('admin.user.export_pdf');
 //create
 Route::post('/', [KegiatanController::class, 'storeAdmin']);              // Store new kegiatan data
@@ -42,7 +43,9 @@ Route::prefix('user')->group(function () {
     Route::get('/{id}/delete_ajax', [UserController::class, 'deleteAjax'])->name('user.delete_ajax');
 });
 Route::prefix('kegiatan')->group(function () {
-    Route::get('/admin/kegiatan/list', [KegiatanController::class, 'list'])->name('admin.kegiatan.list');
+    Route::post('/admin/kegiatan/list', [KegiatanController::class, 'list'])->name('admin.kegiatan.list');
+    Route::post('/pimpinan/kegiatan/list', [KegiatanController::class, 'list'])->name('pimpinan.kegiatan.list');
+    Route::post('/dosenPIC/kegiatan/list', [KegiatanController::class, 'list'])->name('pimpinan.kegiatan.list');
     Route::get('/admin/kegiatan/export_pdf', [KegiatanController::class, 'exportPdf'])->name('admin.kegiatan.export_pdf');
 });
 
