@@ -47,6 +47,14 @@
                         <th class="text-right col-3">Tanggal Selesai : </th>
                         <td class="col-9">{{ $kegiatan->tanggal_selesai }}</td>
                     </tr>
+                    <tr>
+                        <th class="text-right col-3">Tempat Acara : </th>
+                        <td class="col-9">{{ $kegiatan->tempat_kegiatan }}</td>
+                    </tr>
+                    <tr>
+                        <th class="text-right col-3">Jenis Kegiatan : </th>
+                        <td class="col-9">{{ $kegiatan->jenis_kegiatan }}</td>
+                    </tr>
                 </table>
                 <div class="alert alert-info mt-3">
                     <h5><i class="icon fas fa-info"></i> Data Anggota</h5>
@@ -56,23 +64,25 @@
                     <thead>
                         <tr>
                             <th class="text-center">Nama</th>
-                            <th class="text-center">Agenda</th>
+                            <th class="text-center">Jabatan</th>
                             <th class="text-center">Poin</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($kegiatan->anggota as $anggota)
-                            @foreach ($anggota->agenda as $agenda)
-                                <tr>
-                                    <td class="text-center">{{ $anggota->user->nama }}</td>
-                                    <td class="text-center">{{ $agenda->nama_agenda }}</td>
-                                    <td class="text-center">{{ $agenda->poin }}</td>
-                                </tr>
-                            @endforeach
+                        @foreach ($anggota as $a)
+                            <tr>
+                                <td class="text-center">{{ $a->user->nama }}</td>
+                                <td class="text-center">{{ $a->jabatan->jabatan_nama }}</td>
+                                <td class="text-center">{{ $a->jabatan->poin }}</td>
+                            </tr>
                         @endforeach
                     </tbody>
                 </table>
             </div>
+            <div class="modal-footer">
+                <button type="button" data-dismiss="modal" class="btn btn-warning">Kembali</button>
+            </div>
+        </div>
         </div>
     </div>
 @endempty

@@ -20,9 +20,10 @@ return new class extends Migration
             $table->date('tanggal_mulai')->nullable();
             $table->date('tanggal_selesai')->nullable();
             $table->date('tanggal_acara')->nullable();
-            $table->string('tempat_kegiatan')->nullable();
+            $table->string('tempat_kegiatan')->default('-');
             $table->enum('jenis_kegiatan', ['Kegiatan JTI', 'Kegiatan Non-JTI']);
             $table->integer('progress')->default(0);
+            $table->timestamps();
         });
     }
 

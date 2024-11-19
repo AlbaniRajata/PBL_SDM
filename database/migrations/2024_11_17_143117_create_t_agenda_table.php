@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id('id_agenda');
             $table->unsignedBigInteger('id_kegiatan')->nullable();
             $table->unsignedBigInteger('id_dokumen')->nullable();
+            $table->timestamps();
 
             $table->foreign('id_kegiatan', 'fk_agenda_kegiatan')->references('id_kegiatan')->on('t_kegiatan');
             $table->foreign('id_dokumen', 'fk_dokumen')->references('id_dokumen')->on('t_dokumen');

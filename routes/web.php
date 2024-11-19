@@ -50,19 +50,24 @@ Route::prefix('user')->group(function () {
     Route::get('/{id}/delete_ajax', [UserController::class, 'deleteAjax'])->name('user.delete_ajax'); 
 });
 Route::prefix('kegiatan')->group(function () {
-    Route::post('/admin/kegiatan/list', [KegiatanController::class, 'list'])->name('admin.kegiatan.list');
+
     Route::post('/pimpinan/kegiatan/list', [KegiatanController::class, 'list'])->name('pimpinan.kegiatan.list');
     Route::post('/dosenPIC/kegiatan/list', [KegiatanController::class, 'list'])->name('pimpinan.kegiatan.list');
-    Route::get('/admin/kegiatan/export_pdf', [KegiatanController::class, 'exportPdf'])->name('admin.kegiatan.export_pdf');
-    // Route::get('/admin/kegiatan/{id}/show_ajax', [KegiatanController::class, 'show_ajaxAdmin'])->name('admin.kegiatan.show_ajax');
+
     Route::get('/admin/kegiatan/{id}/edit_ajax', [KegiatanController::class, 'editAjaxAdmin'])->name('admin.kegiatan.edit_ajax');
     Route::get('/admin/kegiatan/{id}/delete_ajax', [KegiatanController::class, 'deleteAjaxAdmin'])->name('admin.kegiatan.delete_ajax');
 });
 
 Route::prefix('admin')->group(function () {
     Route::prefix('kegiatan')->group(function () {
+        Route::post('/admin/kegiatan/list', [KegiatanController::class, 'list'])->name('admin.kegiatan.list');
         Route::get('/{id}/show_ajax', [KegiatanController::class, 'show_ajaxAdmin'])->name('admin.kegiatan.show_ajax');
+        Route::get('/create_ajax', [KegiatanController::class, 'create_ajaxAdmin'])->name('admin.kegiatan.ajax');
+        Route::post('/ajax', [KegiatanController::class, 'storeAdmin'])->name('admin.storeAjax');
+        Route::get('/admin/kegiatan/export_pdf', [KegiatanController::class, 'exportPdf'])->name('admin.kegiatan.export_pdf');
     });
+
+
 });
 
 //Route pimpinan

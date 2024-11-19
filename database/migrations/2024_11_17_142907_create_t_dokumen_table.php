@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id('id_dokumen');
             $table->string('nama_dokumen');
             $table->integer('progress')->default(0);
-            
+            $table->timestamps();
         });
     }
 

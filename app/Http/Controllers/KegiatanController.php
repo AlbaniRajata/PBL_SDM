@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\AnggotaModel;
+use App\Models\JabatanKegiatanModel;
 
 class KegiatanController extends Controller
 {
@@ -61,8 +62,8 @@ class KegiatanController extends Controller
             ->addIndexColumn()
             ->addColumn('aksi', function ($kegiatan) {
                 $btn = '<button onclick="modalAction(\'' . url('/admin/kegiatan/' . $kegiatan->id_kegiatan . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/kegiatan/' . $kegiatan->id_kegiatan . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/kegiatan/' . $kegiatan->id_kegiatan . '/delete_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button> ';
+                $btn .= '<button onclick="modalAction(\'' . url('/admin/kegiatan/' . $kegiatan->id_kegiatan . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
+                $btn .= '<button onclick="modalAction(\'' . url('/admin/kegiatan/' . $kegiatan->id_kegiatan . '/delete_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button> ';
                 return $btn;
             })
             ->rawColumns(['aksi'])
@@ -83,12 +84,69 @@ class KegiatanController extends Controller
     // function show (admin)
     public function show_ajaxAdmin($id)
     {
-        $kegiatan = KegiatanModel::with(['anggota.user', 'anggota.agenda', 'anggota.jabatan'])->find($id);
+        $kegiatan = KegiatanModel::find($id);
+        $angggota = anggotaModel::select('id_kegiatan','id_anggota','id_user', 'id_jabatan_kegiatan')->where('id_kegiatan', $id)->with('user', 'jabatan')->get();
     
         if (!$kegiatan) {
             return response()->json(['message' => 'Data not found'], 404);
         }
     
-        return view('admin.kegiatan.show_ajax', compact('kegiatan'));
+        return view('admin.kegiatan.show_ajax', ['kegiatan' => $kegiatan, 'anggota' => $angggota]);
+    }
+
+    public function create_ajaxAdmin()
+    {
+        $jenis_kegiatan = KegiatanModel::all();
+        $jabatan = JabatanKegiatanModel::all();
+        $anggota = UserModel::select('id_user', 'username', 'nama', 'email', 'NIP', 'level')->where('level' , 'dosen')->get();
+        return view('admin.kegiatan.create_ajax', compact('jenis_kegiatan', 'jabatan', 'anggota'));
+    }
+
+    public function storeAdmin(Request $request)
+    {
+        if($request->ajax() || $request->wantsJson()){
+            $validator = Validator::make($request->all(), [
+                'nama_kegiatan' => 'required|string|max:255',
+                'jenis_kegiatan' => 'required|string',
+                'deskripsi' => 'required|string',
+                'tanggal_acara' => 'required|date',
+                'tanggal_mulai' => 'required|date',
+                'tanggal_selesai' => 'required|date',
+                'jabatan_id' => 'required|array',
+                'anggota_id' => 'required|array',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Validation error',
+                    'msgField' => $validator->errors()
+                ]);
+            }
+
+            $kegiatan = KegiatanModel::create([
+                'nama_kegiatan' => $request->nama_kegiatan,
+                'jenis_kegiatan' => $request->jenis_kegiatan,
+                'deskripsi_kegiatan' => $request->deskripsi,
+                'tanggal_acara' => $request->tanggal_acara,
+                'tanggal_mulai' => $request->tanggal_mulai,
+                'tanggal_selesai' => $request->tanggal_selesai,
+            ]);
+            $index = 0; 
+            foreach ($request->anggota_id as $a) { 
+                AnggotaModel::create([ 
+                    'id_kegiatan' => $kegiatan->id_kegiatan, 
+                    'id_user' => $request->anggota_id[$index], 
+                    'id_jabatan_kegiatan' => $request->jabatan_id[$index], 
+                ]); 
+                $index++; 
+            }
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Kegiatan berhasil ditambahkan'
+            ]);
+        }
+        return redirect('/admin/kegiatan');
     }
 }
