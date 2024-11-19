@@ -31,6 +31,16 @@ class UserController extends Controller
         return view('pimpinan.user.index', ['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu]);
     }
 
+    public function levelAdmin()
+    {
+        $breadcrumb = (object) [
+            'title' => 'Jenis Pengguna',
+            'list' => ['Home', 'Data Jenis Pengguna'],
+        ];
+        $activeMenu = 'user jenis';
+        return view('admin.jenispengguna.index', ['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu]);
+    }
+
     // function list (admin)
     public function list(Request $request)
     {
