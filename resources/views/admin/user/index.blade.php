@@ -29,7 +29,7 @@
                         <select class="form-control" id="level" name="level">
                             <option value="">- Semua -</option>
                             <option value="admin">Admin</option>
-                            <option value="user">dosen</option>
+                            <option value="dosen">Dosen</option>
                             <option value="pimpinan">Pimpinan</option>
                         </select>
                     </div>
@@ -41,9 +41,9 @@
             <thead>
                 <tr>
                     <th style="width: 5%;" class="text-center">No</th>
-                    <th style="width: 15%;"class="text-center">Username</th>
-                    <th style="width: 25%;"class="text-center">Nama</th>
-                    <th style="width: 20%;"class="text-center">Email</th>
+                    <th style="width: 10%;"class="text-center">Username</th>
+                    <th style="width: 20%;"class="text-center">Nama</th>
+                    <th style="width: 30%;"class="text-center">Email</th>
                     <th style="width: 10%;"class="text-center">NIP</th>
                     <th style="width: 10%;"class="text-center">Level</th>
                     <th style="width: 15%;"class="text-center">Aksi</th>

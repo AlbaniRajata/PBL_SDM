@@ -45,7 +45,7 @@
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
     <a href="{{url('/')}}" class="brand-link">
-      <img src="{{url('/dist/img/Logo.png')}}" alt="AdminLTE Logo" class="brand-image img-cube" height="100px" style="opacity: 100">
+      <img src="{{url('polinema.png')}}" alt="AdminLTE Logo" class="brand-image img-cube" height="100px" style="opacity: 100">
       <span class="brand-text font-weight-light">SISDM</span>
     </a>
 

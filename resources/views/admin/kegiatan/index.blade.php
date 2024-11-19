@@ -70,7 +70,7 @@
             }
             var dataKegiatan;
             $(document).ready(function() {
-                var dataKegiatan = $('#kegiatan-table').DataTable({
+                dataKegiatan = $('#kegiatan-table').DataTable({
                     serverSide: true,
                     ajax: {
                         "url": "{{ route('admin.kegiatan.list') }}",

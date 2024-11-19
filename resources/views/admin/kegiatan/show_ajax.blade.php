@@ -52,6 +52,10 @@
                         <td class="col-9">{{ $kegiatan->tempat_kegiatan }}</td>
                     </tr>
                     <tr>
+                        <th class="text-right col-3">Tanggal Acara : </th>
+                        <td class="col-9">{{ $kegiatan->tanggal_acara }}</td>
+                    </tr>
+                    <tr>
                         <th class="text-right col-3">Jenis Kegiatan : </th>
                         <td class="col-9">{{ $kegiatan->jenis_kegiatan }}</td>
                     </tr>
