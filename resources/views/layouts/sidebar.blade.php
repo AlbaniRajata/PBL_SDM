@@ -27,6 +27,12 @@
               <p>Daftar Pengguna</p>
             </a>
           </li>
+          <li class="nav-item">
+            <a href="{{ url('admin/jenispengguna')}}" class="nav-link {{($activeMenu == 'user jenis')? 'active' : ''}}">
+              <i class="nav-icon fa-solid fa-user-gear"></i>
+              <p>Jenis Pengguna</p>
+            </a>
+          </li>
           <li class="nav-header">Data Kegiatan</li>
           <li class="nav-item">
             <a href="{{ url('admin/kegiatan')}}" class="nav-link {{($activeMenu == 'kegiatan admin')? 'active' : ''}}">

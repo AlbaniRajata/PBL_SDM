@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id('id_jabatan_kegiatan');
             $table->string('jabatan_nama');
             $table->integer('poin')->default(0);
+            $table->timestamps();
         });
     }
 
