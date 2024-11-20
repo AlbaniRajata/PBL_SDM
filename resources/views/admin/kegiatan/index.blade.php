@@ -4,9 +4,9 @@
     <div class="card-header">
         <h3 class="card-title">Daftar Kegiatan</h3>
         <div class="card-tools">
-            <button onclick="modalAction('{{ url('/kegiatan/import') }}')" class="btn btn-sm btn-info mt-1">Import Kegiatan</button>
-            <a href="{{ url('/kegiatan/export_excel') }}" class="btn btn-sm btn-primary mt-1"><i class="fa fa-file-excel"></i> Export Kegiatan (Excel)</a>
-            <a href="{{ url('/kegiatan/export_pdf') }}" class="btn btn-sm btn-warning mt-1"><i class="fa fa-file-pdf"></i> Export Kegiatan (PDF)</a>
+            <button onclick="modalAction('{{ url('/admin/kegiatan/import') }}')" class="btn btn-sm btn-info mt-1">Import Kegiatan</button>
+            <a href="{{ url('/admin/kegiatan/export_excel') }}" class="btn btn-sm btn-primary mt-1"><i class="fa fa-file-excel"></i> Export Kegiatan (Excel)</a>
+            <a href="{{ url('/admin/kegiatan/export_pdf') }}" class="btn btn-sm btn-warning mt-1"><i class="fa fa-file-pdf"></i> Export Kegiatan (PDF)</a>
             <button onclick="modalAction('{{ url('/admin/kegiatan/create_ajax') }}')" class="btn btn-sm btn-success mt-1">Tambah Ajax</button>
         </div>
     </div>
@@ -41,13 +41,13 @@
                 <tr>
                     <th style="width: 5%;" class="text-center">No</th>
                     <th style="width: 15%;" class="text-center">Nama Kegiatan</th>
-                    <th style="width: 20%;" class="text-center">Deskripsi Kegiatan</th>
+                    <th style="width: 15%;" class="text-center">Deskripsi Kegiatan</th>
                     <th style="width: 10%;" class="text-center">Tanggal Mulai</th>
                     <th style="width: 10%;" class="text-center">Tanggal Selesai</th>
                     <th style="width: 10%;" class="text-center">Tanggal Acara</th>
                     <th style="width: 10%;" class="text-center">Tempat Kegiatan</th>
                     <th style="width: 10%;" class="text-center">Jenis Kegiatan</th>
-                    <th style="width: 10%;" class="text-center">Aksi</th>
+                    <th style="width: 15%;" class="text-center">Aksi</th>
                 </tr>
             </thead>
         </table>

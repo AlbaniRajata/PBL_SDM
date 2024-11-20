@@ -11,10 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('t_jabatan_kegiatan', function (Blueprint $table) {
-            $table->id('id_jabatan_kegiatan');
-            $table->string('jabatan_nama');
-            $table->decimal('poin', 2, 1)->default(0.5);
+        Schema::create('t_poin', function (Blueprint $table) {
+            $table->id('id_poin');
+            $table->foreignId('id_kegiatan')->constrained('t_kegiatan', 'id_kegiatan');
+            $table->foreignId('id_user')->constrained('t_user', 'id_user');
+            $table->decimal('poin', 2, 1);
             $table->timestamps();
         });
     }
@@ -24,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('t_jabatan_kegiatan');
+        Schema::dropIfExists('table_t_poin');
     }
 };

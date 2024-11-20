@@ -10,22 +10,23 @@
                 </div>
             </div>
             <div class="card-body">
+                <!-- Debugging: Display the data -->
                 <table class="table table-bordered table-striped table-hover table-sm" id="table_poin_dosen">
                     <thead>
                         <tr>
                             <th>Nama Kegiatan</th>
                             <th>Nama Dosen</th>
-                            <th>Poin</th>
+                            <th>Total Poin</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {{-- @foreach ($poinDosen as $poin)
+                        @foreach ($poinDosen as $poin)
                             <tr>
-                                <td>{{ $poin->judul_kegiatan }}</td>
+                                <td>{{ $poin->nama_kegiatan }}</td>
                                 <td>{{ $poin->nama }}</td>
-                                <td>{{ $poin->poin }}</td>
+                                <td>{{ $poin->total_poin }}</td>
                             </tr>
-                        @endforeach --}}
+                        @endforeach
                     </tbody>
                 </table>
             </div>

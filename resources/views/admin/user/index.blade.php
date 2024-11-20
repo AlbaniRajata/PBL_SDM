@@ -5,7 +5,7 @@
         <h3 class="card-title">Daftar Pengguna</h3>
         <div class="card-tools">
             <button onclick="modalAction('{{ url('/user/import') }}')" class="btn btn-sm btn-info mt-1">Import Pengguna</button>
-            <a href="{{ url('/user/export_excel') }}" class="btn btn-sm btn-primary mt-1"><i class="fa fa-file-excel"></i> Export Pengguna (Excel)</a>
+            <a href="{{ url('/admin/user/export_excel') }}" class="btn btn-sm btn-primary mt-1"><i class="fa fa-file-excel"></i> Export Pengguna (Excel)</a>
             <a href="{{ url('/admin/user/export_pdf') }}" class="btn btn-sm btn-warning mt-1"><i class="fa fa-file-pdf"></i> Export Pengguna (PDF)</a>
             <button onclick="modalAction('{{ url('/admin/user/create_ajax') }}')" class="btn btn-sm btn-success mt-1">Tambah Ajax</button>
         </div>
@@ -73,7 +73,7 @@
         
     var dataUser;
     $(document).ready(function() {
-       var dataUser = $('#user-table').DataTable({
+       dataUser = $('#user-table').DataTable({
             serverSide: true,
             ajax: {
                 "url": "{{ route('admin.user.list') }}",
@@ -96,8 +96,22 @@
                 { data: 'aksi', name: 'aksi', className: "text-center", orderable: false, searchable: false, className: "text-center" }
             ],
         });
-        $('#level').on('change', function() {
-            dataUser.ajax.reload();
+        // Load user details in modal
+        $('#table_user').on('click', '.view-user', function() {
+            var userId = $(this).data('id');
+            modalAction("{{ route('admin.user.show_ajax', '') }}/" + userId);
+        });
+
+        // Load edit user form in modal
+        $('#table_user').on('click', '.edit-user', function() {
+            var userId = $(this).data('id');
+            modalAction("{{ route('admin.user.edit_ajax', '') }}/" + userId);
+        });
+
+        // Load delete confirmation in modal
+        $('#table_user').on('click', '.delete-user', function() {
+            var userId = $(this).data('id');
+            modalAction("{{ route('admin.user.delete_ajax', '') }}/" + userId);
         });
     });
 </script>

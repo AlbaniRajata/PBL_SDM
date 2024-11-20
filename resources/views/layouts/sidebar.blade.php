@@ -14,7 +14,7 @@
     <nav class="mt-2">
       <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
           <li class="nav-item">
-          <a href="{{ url('/welcome')}}" class="nav-link {{($activeMenu == 'dashboard')? 'active' : ''}}">
+          <a href="{{ url('/')}}" class="nav-link {{($activeMenu == 'dashboard')? 'active' : ''}}">
             <i class="nav-icon fas fa-diagram-project"></i>
             <p>Dashboard</p>
           </a>
@@ -41,9 +41,9 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="{{ url('admin/kegiatan')}}" class="nav-link {{($activeMenu == 'jabatan kegiatan admin')? 'active' : ''}}">
+            <a href="{{ url('admin/jabatan')}}" class="nav-link {{($activeMenu == 'jabatan kegiatan')? 'active' : ''}}">
               <i class="nav-icon fa-regular fa-calendar-check"></i>
-              <p>jabatan Kegiatan</p>
+              <p>Jabatan Kegiatan</p>
             </a>
           </li>
           <li class="nav-header">Statistik</li>
