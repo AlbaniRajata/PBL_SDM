@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laporan Data Pengguna</title>
+    <title>Laporan Data Kegiatan</title>
     <style>
         .border-all, .border-all th, .border-all td {
             border: 1px solid;
@@ -46,29 +46,38 @@
                 <span class="text-center d-block font-11 font-bold mb-1">KEMENTERIAN PENDIDIKAN, KEBUDAYAAN, RISET, DAN TEKNOLOGI</span>
                 <span class="text-center d-block font-13 font-bold mb-1">POLITEKNIK NEGERI MALANG</span>
                 <span class="text-center d-block font-10">JL, Soekarno-Hatta No.9 Malang 65141</span>
+                <span class="text-center d-block font-10">Telepon (0341) 404424 Pes. 101-105 0341-404420, Fax. (0341) 404420</span>
+                <span class="text-center d-block font-10">Laman: www.polinema.ac.id</span>
             </td>
         </tr>
     </table>
-
+    <h3 class="text-center">LAPORAN DATA KEGIATAN</h3>
     <table class="border-all">
         <thead>
             <tr>
                 <th>No</th>
                 <th>Nama Kegiatan</th>
-                <th>Tanggal</th>
                 <th>Deskripsi</th>
+                <th>Tanggal Mulai</th>
+                <th>Tanggal Selesai</th>
+                <th>Tanggal Acara</th>
+                <th>Tempat Kegiatan</th>
+                <th>Jenis Kegiatan</th>
             </tr>
         </thead>
         <tbody>
             @foreach($kegiatan as $index => $item)
-                <tr>
-                    <td>{{ $index + 1 }}</td>
-                    <td>{{ $item->nama_kegiatan }}</td>
-                    <td>{{ $item->tanggal }}</td>
-                    <td>{{ $item->deskripsi }}</td>
-                </tr>
+            <tr>
+                <td>{{ $index + 1 }}</td>
+                <td>{{ $item->nama_kegiatan }}</td>
+                <td>{{ $item->deskripsi_kegiatan }}</td>
+                <td>{{ $item->tanggal_mulai }}</td>
+                <td>{{ $item->tanggal_selesai }}</td>
+                <td>{{ $item->tanggal_acara }}</td>
+                <td>{{ $item->tempat_kegiatan }}</td>
+                <td>{{ $item->jenis_kegiatan }}</td>
+            </tr>
             @endforeach
         </tbody>
     </table>
 </body>
-</html>

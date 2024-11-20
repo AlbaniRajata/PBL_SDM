@@ -59,6 +59,12 @@
                         <th class="text-right col-3">Jenis Kegiatan : </th>
                         <td class="col-9">{{ $kegiatan->jenis_kegiatan }}</td>
                     </tr>
+                    <tr>
+                        <th class="text-right col-3">Surat Tugas : </th>
+                        <td>
+                            <button type="button" class="btn btn-sm btn-primary"onclick="window.location.href='{{ route('admin.kegiatan.export_word', $kegiatan->id_kegiatan) }}'">Buat Draft Surat tugas</button>
+                        </td>
+                    </tr>
                 </table>
                 <div class="alert alert-info mt-3">
                     <h5><i class="icon fas fa-info"></i> Data Anggota</h5>
@@ -82,11 +88,10 @@
                         @endforeach
                     </tbody>
                 </table>
+                <div class="text-right">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
+                </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" data-dismiss="modal" class="btn btn-warning">Kembali</button>
-            </div>
-        </div>
         </div>
     </div>
 @endempty

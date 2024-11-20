@@ -71,14 +71,15 @@
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" data-dismiss="modal" class="btn btn-warning">Batal</button>
-                <button type="submit" class="btn btn-success">Simpan</button>
+                <div class="text-right">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
+                    <button type="submit" class="btn btn-success">Simpan</button>
+                </div>
             </div>
         </div>
     </div>
 </form>
+
 <script>
     $(document).ready(function() {
         function tambahInputJabatanAnggota() {
