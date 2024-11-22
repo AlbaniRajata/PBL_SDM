@@ -1,4 +1,4 @@
-<form action="{{ route('admin.user.store_ajax') }}" method="POST" id="createUserForm">
+<form action="{{ url('admin/user/ajax') }}" method="POST" id="createUserForm">
     @csrf
     <div id="modal-master" class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
@@ -58,13 +58,6 @@
 </form>
 
 <script>
-    function modalAction(url) {
-        $.get(url, function(data) {
-            $('#modal-master .modal-content').html(data);
-            $('#modal-master').modal('show');
-        });
-    }
-
     $(document).ready(function() {
         $('#createUserForm').validate({
             submitHandler: function(form) {
@@ -74,13 +67,13 @@
                     data: $(form).serialize(),
                     success: function(response) {
                         if (response.status) {
-                            $('#modal-master').modal('hide');
+                            $('#myModal').modal('hide');
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Berhasil',
                                 text: response.message
                             });
-                            $('#user-table').DataTable().ajax.reload();
+                            dataUser.ajax.reload();
                         } else {
                             $('.error-text').text('');
                             $.each(response.msgField, function(prefix, val) {

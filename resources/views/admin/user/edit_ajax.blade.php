@@ -92,13 +92,13 @@
                     data: $(form).serialize(),
                     success: function(response) {
                         if (response.status) {
-                            $('#modal-master').modal('hide');
+                            $('#myModal').modal('hide');
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Berhasil',
                                 text: response.message
                             });
-                            $('#table_user').DataTable().ajax.reload();
+                            dataUser.ajax.reload();
                         } else {
                             $('.error-text').text('');
                             $.each(response.msgField, function(prefix, val) {

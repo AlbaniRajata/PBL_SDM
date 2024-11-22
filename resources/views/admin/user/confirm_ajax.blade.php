@@ -84,13 +84,13 @@
                 data: form.serialize(),
                 success: function(response) {
                     if (response.success) {
-                        $('#modal-master').modal('hide');
+                        $('#myModal').modal('hide');
                         Swal.fire({
                             icon: 'success',
                             title: 'Berhasil',
                             text: response.success
                         });
-                        $('#table_user').DataTable().ajax.reload();
+                        dataUser.ajax.reload();
                     } else {
                         Swal.fire({
                             icon: 'error',
