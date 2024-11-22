@@ -4,10 +4,22 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" href="{{ url('polinema.png') }}" type="image/png">
-  <title>{{ $title ?? 'SISDM' }}</title>
+  <title>{{ $title ?? 'SI-SDM' }}</title>
 
   <meta name="csrf-token" content="{{ csrf_token() }}">
 
+  <style>
+      .brand-link {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+    .brand-image {
+        margin-bottom: 10px; /* Optional: add some spacing between the image and text */
+    }
+  </style>
   <!-- Google Font: Source Sans Pro -->
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -15,15 +27,22 @@
   <link rel="stylesheet" href="{{ url('plugins/fontawesome-free/css/all.min.css') }}">
   <script src="https://kit.fontawesome.com/f2110b96b9.js" crossorigin="anonymous"></script>
   <!-- DataTables -->
-  <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
-  <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.2/css/buttons.dataTables.min.css">
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-  <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
-  <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.flash.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-  <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
-  <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.print.min.js"></script>
+  <link rel="stylesheet" href="{{ url('plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
+  <link rel="stylesheet" href="{{ url('plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
+  <link rel="stylesheet" href="{{ url('plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
+  <script src="{{ url('plugins/jquery/jquery.min.js') }}"></script>
+  <script src="{{ url('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+  <script src="{{ url('plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
+  <script src="{{ url('plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
+  <script src="{{ url('plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
+  <script src="{{ url('plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
+  <script src="{{ url('plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
+  <script src="{{ url('plugins/jszip/jszip.min.js') }}"></script>
+  <script src="{{ url('plugins/pdfmake/pdfmake.min.js') }}"></script>
+  <script src="{{ url('plugins/pdfmake/vfs_fonts.js') }}"></script>
+  <script src="{{ url('plugins/datatables-buttons/js/buttons.html5.min.js') }}"></script>
+  <script src="{{ url('plugins/datatables-buttons/js/buttons.print.min.js') }}"></script>
+  <script src="{{ url('plugins/datatables-buttons/js/buttons.colVis.min.js') }}"></script>
   <!-- SweetAlert2 -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -46,7 +65,7 @@
     <!-- Brand Logo -->
     <a href="{{url('/')}}" class="brand-link">
       <img src="{{url('polinema.png')}}" alt="AdminLTE Logo" class="brand-image img-cube" height="100px" style="opacity: 100">
-      <span class="brand-text font-weight-light">SISDM</span>
+      <span class="brand-text font-weight-light" style="font-size: 20px;"><b>SI</b>-SDM</span>
     </a>
 
     <!-- Sidebar -->

@@ -1,4 +1,4 @@
-<form action="{{ url('/admin/kegiatan/'.$kegiatan->id_kegiatan.'/update_ajax') }}" method="POST" id="form-edit">
+<form action="{{ url('/dosen/kegiatan/'.$kegiatan->id_kegiatan.'/update_ajax', ) }}" method="POST" id="form-edit">
     @csrf
     @method('PUT')
     <div id="modal-master" class="modal-dialog modal-lg" role="document">
@@ -40,61 +40,50 @@
                     <input type="datetime-local" class="form-control" id="tanggal_acara" name="tanggal_acara" value="{{ $kegiatan->tanggal_acara }}" required>
                     <small id="error-tanggal_acara" class="error-text form-text text-danger"></small>
                 </div>
+                <div class="form-group">
+                    <label for="tempat_kegiatan">Tempat Kegiatan</label>
+                    <input type="text" class="form-control" id="tempat_kegiatan" name="tempat_kegiatan" value="{{ $kegiatan->tempat_kegiatan }}" required>
+                    <small id="error-tempat_kegiatan" class="error-text form-text text-danger"></small>
+                </div>
                 <div id="jabatan-anggota-container">
                     @foreach ($anggota_kegiatan as $ag)
-                        <div class="form-row jabatan-anggota-item">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label>Jabatan</label>
-                                    <select name="jabatan_id[]" class="form-control jabatan-select" required>
-                                        <option value="">- Pilih Jabatan -</option>
-                                        @foreach($jabatan as $j)
-                                            <option value="{{ $j->id_jabatan_kegiatan }}" {{ $ag->id_jabatan_kegiatan == $j->id_jabatan_kegiatan ? 'selected' : '' }}>{{ $j->jabatan_nama }}</option>
-                                        @endforeach
-                                    </select>
-                                    <small id="error-jabatan_id" class="error-text form-text text-danger"></small>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label>Anggota</label>
-                                    <select name="anggota_id[]" class="form-control anggota-select" required>
-                                        <option value="">- Pilih Anggota -</option>
-                                        @foreach($anggota as $a)
-                                            <option value="{{ $a->id_user }}" {{ $ag->id_user == $a->id_user ? 'selected' : '' }}>{{ $a->nama }}</option>
-                                        @endforeach
-                                    </select>
-                                    <small id="error-anggota_id" class="error-text form-text text-danger"></small>
-                                </div>
-                            </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Jabatan</label>
+                            <select name="jabatan_id[]" class="form-control jabatan-select" required>
+                                <option value="">- Pilih Jabatan -</option>
+                                @foreach($jabatan as $j)
+                                    <option value="{{ $j->id_jabatan_kegiatan }}" {{ $ag->id_jabatan_kegiatan == $j->id_jabatan_kegiatan ? 'selected' : '' }}>{{ $j->jabatan_nama }}</option>
+                                @endforeach
+                            </select>
+                            <small id="error-jabatan_id" class="error-text form-text text-danger"></small>
                         </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Anggota</label>
+                            <select name="anggota_id[]" class="form-control anggota-select" required>
+                                <option value="">- Pilih Anggota -</option>
+                                @foreach($anggota as $a)
+                                    <option value="{{ $a->id_user }}" {{ $ag->id_user == $a->id_user ? 'selected' : '' }}>{{ $a->nama }}</option>
+                                @endforeach
+                            </select>
+                            <small id="error-anggota_id" class="error-text form-text text-danger"></small>
+                        </div>
+                    </div>
                     @endforeach
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="submit" class="btn btn-primary">Save changes</button>
+                <div class="text-right">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
+                    <button type="submit" class="btn btn-success">Simpan</button>
+                </div>
             </div>
         </div>
     </div>
 </form>
+
 <script>
-    
     $(document).ready(function() {
-        function tambahInputJabatanAnggota() {
-            let newItem = $('.jabatan-anggota-item:first').clone();
-            newItem.find('select').val('');
-            newItem.find('.error-text').text('');
-            $('#jabatan-anggota-container').append(newItem);
-        }
-        $(document).on('change', '.anggota-select', function() {
-            if ($(this).val()) {
-                // Check if this is the last input
-                if ($(this).closest('.jabatan-anggota-item').is(':last-child')) {
-                    tambahInputJabatanAnggota();
-                }
-            }
-        });
         $('#form-edit').validate({
             rules: {
                 nama_kegiatan: {

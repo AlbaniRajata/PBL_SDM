@@ -10,7 +10,6 @@
                 </div>
             </div>
             <div class="card-body">
-                <!-- Debugging: Display the data -->
                 <table class="table table-bordered table-striped table-hover table-sm" id="table_poin_dosen">
                     <thead>
                         <tr>

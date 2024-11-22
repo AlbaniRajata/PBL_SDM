@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('password');
             $table->string('NIP')->nullable();
             $table->enum('level', ['admin', 'pimpinan', 'dosen']);
+            $table->string('profile_image')->nullable();
             $table->timestamps();
         });
     }

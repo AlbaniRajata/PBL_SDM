@@ -16,4 +16,8 @@ class JabatanKegiatanModel extends Model
         'jabatan_nama',
         'poin',
     ];
+
+    public function anggota(){
+        return $this->hasMany(AnggotaModel::class, 'id_jabatan_kegiatan', 'id_jabatan_kegiatan');
+    }
 }

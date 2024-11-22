@@ -62,7 +62,7 @@
                     <tr>
                         <th class="text-right col-3"> Draft Surat Tugas : </th>
                         <td>
-                            <button type="button" class="btn btn-sm btn-primary"onclick="window.location.href='{{ route('admin.kegiatan.export_word', $kegiatan->id_kegiatan) }}'">Buat Draft Surat tugas</button>
+                            <button type="button" class="btn btn-sm btn-primary">Buat Draft Surat tugas</button>
                         </td>
                     </tr>
                     <tr>
@@ -73,7 +73,7 @@
                                     <input type="file" name="dokumen" class="custom-file-input" id="draf_surat_tugas">
                                     <label class="custom-file-label" for="draf_surat_tugas">Draf Surat Tugas</label>
                                 </div>
-                                <button type="button" class="btn btn-sm btn-warning mt-2" onclick="uploadSuratTugas()">Upload Surat Tugas</button>
+                                <button type="button" class="btn btn-sm btn-warning mt-2">Upload Surat Tugas</button>
                             </form>
                         </td>
                     </tr>
@@ -136,7 +136,7 @@
             serverSide: true,
             processing: true,
             ajax: {
-                url: "{{ route('admin.kegiatan.list') }}",
+                url: "{{ route('dosenPIC.kegiatan.list') }}",
                 type: "POST",
                 headers: {
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -158,36 +158,36 @@
         });
     });
 
-    function uploadSuratTugas() {
-        var formData = new FormData(document.getElementById('uploadForm'));
-        var fileInput = document.getElementById('draf_surat_tugas');
-        var file = fileInput.files[0];
-        if (!file) {
-            alert('Please select a file to upload.');
-            return;
-        }
+    // function uploadSuratTugas() {
+    //     var formData = new FormData(document.getElementById('uploadForm'));
+    //     var fileInput = document.getElementById('draf_surat_tugas');
+    //     var file = fileInput.files[0];
+    //     if (!file) {
+    //         alert('Please select a file to upload.');
+    //         return;
+    //     }
 
-        formData.append('dokumen', file);
+    //     formData.append('dokumen', file);
 
-        fetch('{{ route("admin.kegiatan.upload_surat_tugas", $kegiatan->id_kegiatan) }}', {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            },
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('File uploaded successfully.');
-            } else {
-                alert('File upload failed.');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('An error occurred while uploading the file.');
-        });
-    }
+    //     fetch('{{ route("admin.kegiatan.upload_surat_tugas", $kegiatan->id_kegiatan) }}', {
+    //         method: 'POST',
+    //         headers: {
+    //             'X-CSRF-TOKEN': '{{ csrf_token() }}'
+    //         },
+    //         body: formData
+    //     })
+    //     .then(response => response.json())
+    //     .then(data => {
+    //         if (data.success) {
+    //             alert('File uploaded successfully.');
+    //         } else {
+    //             alert('File upload failed.');
+    //         }
+    //     })
+    //     .catch(error => {
+    //         console.error('Error:', error);
+    //         alert('An error occurred while uploading the file.');
+    //     });
+    // }
 </script>
 @endpush

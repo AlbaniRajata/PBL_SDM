@@ -5,10 +5,10 @@
         <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
       </li>
       <li class="nav-item d-none d-sm-inline-block">
-        <a href="../../index3.html" class="nav-link">Home</a>
+        <a href="" class="nav-link">Home</a>
       </li>
       <li class="nav-item d-none d-sm-inline-block">
-        <a href="#" class="nav-link">Contact</a>
+        <a href="" class="nav-link">Contact</a>
       </li>
     </ul>
 
@@ -69,16 +69,38 @@
         </a>
       </li>
 
+      @if(auth()->user()->level == "dosen")
+      <!-- Profile Menu -->
+      <li class="nav-item dropdown">
+          <a href="#" class="nav-link dropdown-toggle" id="profileDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Edit Profil">
+              <i class="fas fa-user"></i>
+          </a>
+          <div class="dropdown-menu dropdown-menu-right" aria-labelledby="profileDropdown">
+              <a href="{{ route('profil.index') }}" class="dropdown-item">Edit Profil</a>
+              <div class="dropdown-divider"></div>
+              <a href="{{ url('dosenPIC/kegiatan') }}" class="dropdown-item">Masuk sebagai PIC</a>
+              <a href="{{ url('dosenAnggota/kegiatan') }}" class="dropdown-item">Masuk sebagai Anggota</a>
+              @if($activeMenu == "kegiatan pic" || $activeMenu == "kegiatan anggota")
+              <div class="dropdown-divider"></div>
+              <a href="{{ url('dosen/kegiatan') }}" class="dropdown-item">Kembali ke Dosen</a>
+              @endif
+          </div>
+      </li>
+      @endif
+      @if(auth()->user()->level == "admin" || auth()->user()->level == "pimpinan")
       <!-- Profile Menu -->
       <li class="nav-item">
-        <a href="" class="nav-link" title="Edit Profil">
+        <a href="{{ route('profil.index') }}" class="nav-link" title="Edit Profil">
           <i class="fas fa-user"></i>
         </a>
       </li>
 
+
+      @endif
+
     <!-- Logout Menu -->
       <li class="nav-item">
-        <form action="{{ url('logout') }}" method="POST" role="button">
+        <form action="{{ url('logout') }}" method="GET" role="button">
           @csrf
           <button type="submit" class="btn btn-danger">
             <i class="fas fa-sign-out-alt"></i>
@@ -87,3 +109,6 @@
       </li>
     </ul>
   </nav>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>

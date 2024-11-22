@@ -44,7 +44,7 @@ class UserController extends Controller
     }
 
     // function list (admin)
-    public function list(Request $request)
+    public function listAdmin(Request $request)
     {
         $user = UserModel::select('id_user', 'username', 'nama', 'email', 'NIP', 'level');
 
@@ -58,6 +58,24 @@ class UserController extends Controller
                 $btn = '<button onclick="modalAction(\'' . url('/admin/user/' . $user->id_user . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/admin/user/' . $user->id_user . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/admin/user/' . $user->id_user . '/delete_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button> ';
+                return $btn;
+            })
+            ->rawColumns(['aksi'])
+            ->make(true);
+    }
+
+    public function listPimpinan(Request $request)
+    {
+        $user = UserModel::select('id_user', 'username', 'nama', 'email', 'NIP', 'level');
+
+        if ($request->level) {
+            $user->where('level', $request->level);
+        }
+
+        return DataTables::of($user)
+            ->addIndexColumn()
+            ->addColumn('aksi', function ($user) {
+                $btn = '<button onclick="modalAction(\'' . url('/pimpinan/user/' . $user->id_user . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
                 return $btn;
             })
             ->rawColumns(['aksi'])
@@ -118,6 +136,17 @@ class UserController extends Controller
         }
 
         return view('admin.user.show_ajax', compact('user'));
+    }
+
+    public function show_ajaxPimpinan(string $id)
+    {
+        $user = UserModel::find($id);
+
+        if (!$user) {
+            return response()->json(['error' => 'Data not found'], 404);
+        }
+
+        return view('pimpinan.user.show_ajax', compact('user'));
     }
 
     // Function to edit user details via AJAX (admin)
