@@ -12,7 +12,7 @@
                     <h5><i class="icon fas fa-ban"></i> Kesalahan!!!</h5>
                     Data yang anda cari tidak ditemukan
                 </div>
-                <a href="{{ url('/kegiatan') }}" class="btn btn-warning">Kembali</a>
+                <a href="{{ url('/admin/kegiatan') }}" class="btn btn-warning">Kembali</a>
             </div>
         </div>
     </div>
@@ -62,7 +62,7 @@
                     <tr>
                         <th class="text-right col-3"> Draft Surat Tugas : </th>
                         <td>
-                            <button type="button" class="btn btn-sm btn-primary"onclick="window.location.href='{{ route('admin.kegiatan.export_word', $kegiatan->id_kegiatan) }}'">Buat Draft Surat tugas</button>
+                            <button type="button" class="btn btn-sm btn-primary" onclick="window.location.href='{{ route('admin.kegiatan.export_word', $kegiatan->id_kegiatan) }}'">Buat Draft Surat tugas</button>
                         </td>
                     </tr>
                     <tr>
@@ -101,7 +101,8 @@
                     </tbody>
                 </table>
                 <div class="text-right">
-                    <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
+                    <button type="button" class="btn btn-primary" onclick="confirmKegiatan({{ $kegiatan->id_kegiatan }})">Konfirmasi</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
                 </div>
             </div>
         </div>
@@ -187,6 +188,40 @@
         .catch(error => {
             console.error('Error:', error);
             alert('An error occurred while uploading the file.');
+        });
+    }
+
+    function confirmKegiatan(id) {
+        $.ajax({
+            url: '{{ url("/admin/kegiatan") }}/' + id + '/confirm_ajax',
+            type: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            success: function(response) {
+                if (response.status) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil',
+                        text: response.message
+                    }).then(() => {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Terjadi Kesalahan',
+                        text: response.message
+                    });
+                }
+            },
+            error: function(response) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Terjadi Kesalahan',
+                    text: 'An error occurred. Please try again.'
+                });
+            }
         });
     }
 </script>

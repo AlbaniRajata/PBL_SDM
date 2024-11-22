@@ -13,7 +13,9 @@ return new class extends Migration
     {
         Schema::create('t_dokumen', function (Blueprint $table) {
             $table->id('id_dokumen');
+            $table->unsignedBigInteger('id_kegiatan')->nullable();
             $table->string('nama_dokumen');
+            $table->string('file_path')->nullable();
             $table->integer('progress')->default(0);
             $table->timestamps();
         });

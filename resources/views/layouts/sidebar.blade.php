@@ -13,13 +13,13 @@
     <!-- Sidebar Menu -->
     <nav class="mt-2">
       <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-          <li class="nav-item">
+        <li class="nav-item">
           <a href="{{ url('/')}}" class="nav-link {{($activeMenu == 'dashboard')? 'active' : ''}}">
             <i class="nav-icon fas fa-diagram-project"></i>
             <p>Dashboard</p>
           </a>
         </li>
-        <li class="nav header">admin</li>
+        @if(auth()->user()->level == "admin")
         <li class="nav-header">Manage Pengguna</li>
           <li class="nav-item">
             <a href="{{ url('admin/user')}}" class="nav-link {{($activeMenu == 'user admin')? 'active' : ''}}">
@@ -53,7 +53,24 @@
               <p>Statistik </p>
             </a>
           </li>
-<li class="nav header">Pimpinan</li>
+        @endif
+        @if(auth()->user()->level == "dosen" && $activeMenu != "kegiatan anggota" && $activeMenu != "statistik anggota" && $activeMenu != "agenda" && $activeMenu != "kegiatan pic" && $activeMenu != "statistik pic")
+        <li class="nav-header">Data Kegiatan</li>
+          <li class="nav-item">
+            <a href="{{ url('dosen/kegiatan')}}" class="nav-link {{($activeMenu == 'kegiatan dosen')? 'active' : ''}}">
+              <i class="nav-icon fa-regular fa-calendar-check"></i>
+              <p>Kegiatan</p>
+            </a>
+          </li>
+          <li class="nav-header">Statistik</li>
+          <li class="nav-item">
+            <a href="{{ url('dosen/statistik')}}" class="nav-link {{($activeMenu == 'statistik dosen')? 'active' : ''}}">
+              <i class="nav-icon fas fa-chart-simple"></i>
+              <p>Statistik </p>
+            </a>
+          </li>
+        @endif
+        @if(auth()->user()->level == "pimpinan")
         <li class="nav-header">Manage Pengguna</li>
           <li class="nav-item">
             <a href="{{ url('pimpinan/user')}}" class="nav-link {{($activeMenu == 'user pimpinan')? 'active' : ''}}">
@@ -75,7 +92,8 @@
               <p>Statistik </p>
             </a>
           </li>
-<li class="nav header">Dosen PIC</li>
+        @endif
+        @if($activeMenu  == "kegiatan pic" || $activeMenu == "statistik pic" || $activeMenu == "agenda")
         <li class="nav-header">Data Kegiatan</li>
           <li class="nav-item">
             <a href="{{ url('dosenPIC/kegiatan')}}" class="nav-link {{($activeMenu == 'kegiatan pic')? 'active' : ''}}">
@@ -102,7 +120,8 @@
               <p>Statistik </p>
             </a>
           </li>
-<li class="nav header">Dosen Anggota</li>
+          @endif
+          @if($activeMenu  == "kegiatan anggota" || $activeMenu == "statistik anggota" || $activeMenu == "agenda") 
         <li class="nav-header">Data Kegiatan</li>
           <li class="nav-item">
             <a href="{{ url('dosenAnggota/kegiatan')}}" class="nav-link {{($activeMenu == 'kegiatan anggota')? 'active' : ''}}">
@@ -111,7 +130,7 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="{{ url('/agenda')}}" class="nav-link {{($activeMenu == 'agenda')? 'active' : ''}}">
+            <a href="{{ url('dosenAnggota/agenda')}}" class="nav-link {{($activeMenu == 'agenda')? 'active' : ''}}">
               <i class="nav-icon fas fa-list-ol"></i>
               <p>Agenda Kegiatan </p>
             </a>
@@ -123,6 +142,7 @@
               <p>Statistik</p>
             </a>
           </li>
+          @endif
       </ul>
     </nav>
   </div>

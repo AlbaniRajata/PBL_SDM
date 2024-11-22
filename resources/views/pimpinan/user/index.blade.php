@@ -3,12 +3,6 @@
 <div class="card card-outline card-primary">
     <div class="card-header">
         <h3 class="card-title">Daftar user</h3>
-        <div class="card-tools">
-            <button onclick="modalAction('{{ url('/pengguna/import') }}')" class="btn btn-sm btn-info mt-1">Import Pengguna</button>
-            <a href="{{ url('/pengguna/export_excel') }}" class="btn btn-sm btn-primary mt-1"><i class="fa fa-file-excel"></i> Export Pengguna (Excel)</a>
-            <a href="{{ url('/pengguna/export_pdf') }}" class="btn btn-sm btn-warning mt-1"><i class="fa fa-file-pdf"></i> Export Pengguna (PDF)</a>
-            <button onclick="modalAction('{{ url('pengguna/create_ajax') }}')" class="btn btn-sm btn-success mt-1">Tambah Ajax</button>
-        </div>
     </div>
     <div class="card-body">
         @if (session('success'))

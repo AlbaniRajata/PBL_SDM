@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', function() {
     #calendar {
         max-width: 100%;
         margin: 0 auto;
-        height: 100vh; /* Membuat kalender memenuhi tinggi layar */
+        height: 10vh; /* Membuat kalender memenuhi tinggi layar */
     }
     .card-body {
         padding: 0; /* Menghilangkan padding pada card body untuk kalender penuh */

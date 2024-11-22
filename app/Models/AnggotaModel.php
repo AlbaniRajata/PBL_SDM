@@ -32,4 +32,9 @@ class AnggotaModel extends Model
     {
         return $this->belongsTo(JabatanKegiatanModel::class, 'id_jabatan_kegiatan', 'id_jabatan_kegiatan');
     }
+
+    public function poin()
+    {
+        return $this->hasMany(PoinModel::class, 'id_user', 'id_user');
+    }
 }

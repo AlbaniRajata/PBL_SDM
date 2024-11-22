@@ -8,7 +8,7 @@ class DashboardController extends Controller
 {
     public function index(){
         $breadcrumb = (object) [
-            'title' => 'Home',
+            'title' => 'Selamat datang',
             'list' => ['Home','Dashboard'],
         ];
         $activeMenu = 'dashboard';
