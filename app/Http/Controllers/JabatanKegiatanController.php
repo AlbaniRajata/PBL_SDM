@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\JabatanKegiatanModel;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 
 class JabatanKegiatanController extends Controller
 {
@@ -23,9 +24,6 @@ class JabatanKegiatanController extends Controller
     {
         $jabatan = JabatanKegiatanModel::all();
 
-        if ($request->jabatankegiatan) {
-            $jabatan = JabatanKegiatanModel::where('jabatankegiatan', $request->jabatankegiatan);
-        }
         return DataTables::of($jabatan)
             ->addIndexColumn()
             ->addColumn('aksi', function ($jabatan) {

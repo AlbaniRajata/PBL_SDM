@@ -31,13 +31,6 @@
 </form>
 
 <script>
-    function modalAction(url) {
-        $.get(url, function(data) {
-            $('#modal-master .modal-content').html(data);
-            $('#modal-master').modal('show');
-        });
-    }
-
     document.getElementById('poin').addEventListener('input', function (e) {
         this.value = this.value.replace(',', '.');
     });
@@ -54,13 +47,13 @@
                     data: $(form).serialize(),
                     success: function(response) {
                         if (response.status) {
-                            $('#modal-master').modal('hide');
+                            $('#myModal').modal('hide');
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Berhasil',
                                 text: response.message
                             });
-                            table.ajax.reload();
+                            $('#jabatan-kegiatan-table').DataTable().ajax.reload();
                         } else {
                             $('.error-text').text('');
                             $.each(response.msgField, function(prefix, val) {
