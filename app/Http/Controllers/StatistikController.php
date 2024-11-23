@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-
+use Barryvdh\DomPDF\Facade\Pdf;
+use App\Models\StatistikModel;
 
 class StatistikController extends Controller
 {
@@ -13,17 +13,22 @@ class StatistikController extends Controller
     {
         $breadcrumb = (object) [
             'title' => 'Home',
-            'list' => ['Home', 'Statistik Admin'],
+            'list' => ['Home', 'Statistik'],
         ];
         $activeMenu = 'statistik admin';
 
-        $poinDosen = DB::table('t_kegiatan')
-            ->join('t_anggota', 't_kegiatan.id_kegiatan', '=', 't_anggota.id_kegiatan')
-            ->join('t_user', 't_anggota.id_user', '=', 't_user.id_user')
-            ->join('t_poin', 't_kegiatan.id_kegiatan', '=', 't_poin.id_kegiatan')
-            ->select('t_kegiatan.nama_kegiatan', 't_user.nama', DB::raw('SUM(t_poin.poin) as total_poin'))
-            ->groupBy('t_kegiatan.nama_kegiatan', 't_user.nama')
+        $poinDosen = DB::table('t_user')
+            ->leftJoin('t_anggota', 't_user.id_user', '=', 't_anggota.id_user')
+            ->leftJoin('t_jabatan_kegiatan', 't_anggota.id_jabatan_kegiatan', '=', 't_jabatan_kegiatan.id_jabatan_kegiatan')
+            ->select(
+                't_user.nama',
+                DB::raw('COUNT(t_anggota.id_kegiatan) as total_kegiatan'),
+                DB::raw('COALESCE(SUM(t_jabatan_kegiatan.poin), 0) as total_poin')
+            )
+            ->where('t_user.level', 'dosen')
+            ->groupBy('t_user.nama')
             ->get();
+
         return view('admin.statistik.index', compact('breadcrumb', 'activeMenu', 'poinDosen'));
     }
 
@@ -31,10 +36,23 @@ class StatistikController extends Controller
     {
         $breadcrumb = (object) [
             'title' => 'Home',
-            'list' => ['Home', 'Statistik Pimpinan'],
+            'list' => ['Home', 'Statistik'],
         ];
         $activeMenu = 'statistik pimpinan';
-        return view('pimpinan.statistik.index', ['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu]);
+
+        $poinDosen = DB::table('t_user')
+            ->leftJoin('t_anggota', 't_user.id_user', '=', 't_anggota.id_user')
+            ->leftJoin('t_jabatan_kegiatan', 't_anggota.id_jabatan_kegiatan', '=', 't_jabatan_kegiatan.id_jabatan_kegiatan')
+            ->select(
+                't_user.nama',
+                DB::raw('COUNT(t_anggota.id_kegiatan) as total_kegiatan'),
+                DB::raw('COALESCE(SUM(t_jabatan_kegiatan.poin), 0) as total_poin')
+            )
+            ->where('t_user.level', 'dosen')
+            ->groupBy('t_user.nama')
+            ->get();
+
+        return view('pimpinan.statistik.index', compact('breadcrumb', 'activeMenu', 'poinDosen'));
     }
 
     public function dosenPIC()
@@ -56,4 +74,14 @@ class StatistikController extends Controller
         $activeMenu = 'statistik anggota';
         return view('dosenAnggota.statistik.index', ['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu]);
     }
+
+    // public function exportPdf()
+    // {
+    //     $kegiatan = StatistikModel::select('id_statistik', 'nama_dosen', 'deskripsi_kegiatan', 'tanggal_mulai', 'tanggal_selesai', 'tanggal_acara', 'tempat_kegiatan', 'jenis_kegiatan')->get();
+    //     $pdf = Pdf::loadView('admin.statistik.export_pdf', ['statistik' => $kegiatan]);
+    //     $pdf->setPaper('a4', 'portrait');
+    //     $pdf->setOption("isRemoteEnabled", true);
+    //     $pdf->render();
+    //     return $pdf->stream('Data Poin' . date('Y-m-d H:i:s') . '.pdf');
+    // }
 }

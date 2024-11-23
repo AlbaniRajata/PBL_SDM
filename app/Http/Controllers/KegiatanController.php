@@ -640,7 +640,7 @@ class KegiatanController extends Controller
         $titleRun = $section->addTextRun(['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER]);
         $titleRun->addText("SURAT TUGAS", ['bold' => true, 'size' => 14]);
         $titleRun->addTextBreak();
-        $titleRun->addText("Nomor : 31464/PL2.1/KP/2024");
+        $titleRun->addText("Nomor : ...../...../../2024");
         $section->addTextBreak();
 
         // Introduction text

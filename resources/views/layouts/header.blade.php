@@ -80,7 +80,7 @@
               <div class="dropdown-divider"></div>
               <a href="{{ url('dosenPIC/kegiatan') }}" class="dropdown-item">Masuk sebagai PIC</a>
               <a href="{{ url('dosenAnggota/kegiatan') }}" class="dropdown-item">Masuk sebagai Anggota</a>
-              @if($activeMenu == "kegiatan pic" || $activeMenu == "kegiatan anggota")
+              @if($activeMenu == "kegiatan pic" || $activeMenu == "kegiatan anggota" || $activeMenu == "statistik pic")
               <div class="dropdown-divider"></div>
               <a href="{{ url('dosen/kegiatan') }}" class="dropdown-item">Kembali ke Dosen</a>
               @endif

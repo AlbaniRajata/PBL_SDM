@@ -43,7 +43,7 @@
                     <label for="level">Level</label>
                     <select class="form-control" id="level" name="level" required>
                         <option value="admin">Admin</option>
-                        <option value="user">Dosen</option>
+                        <option value="dosen">Dosen</option>
                         <option value="pimpinan">Pimpinan</option>
                     </select>
                     <small id="error-level" class="error-text form-text text-danger"></small>

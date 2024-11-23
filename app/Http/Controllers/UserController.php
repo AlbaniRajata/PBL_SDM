@@ -97,7 +97,7 @@ class UserController extends Controller
                 'email' => 'required|string|email|max:255|unique:t_user',
                 'password' => 'required|string|min:5',
                 'NIP' => 'required|string|max:255|unique:t_user',
-                'level' => 'required|string|in:admin,user,pimpinan',
+                'level' => 'required|string|in:admin,dosen,pimpinan',
             ]);
 
             if ($validator->fails()) {

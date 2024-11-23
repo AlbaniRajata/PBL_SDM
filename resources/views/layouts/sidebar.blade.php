@@ -113,13 +113,6 @@
               <p>Agenda Anggota </p>
             </a>
           </li>
-          <li class="nav-header">Statistik</li>
-          <li class="nav-item">
-            <a href="{{ url('dosenPIC/statistik')}}" class="nav-link {{($activeMenu == 'statistik pic')? 'active' : ''}}">
-              <i class="nav-icon fas fa-chart-simple"></i>
-              <p>Statistik </p>
-            </a>
-          </li>
           @endif
           @if($activeMenu  == "kegiatan anggota" || $activeMenu == "statistik anggota" || $activeMenu == "agenda") 
         <li class="nav-header">Data Kegiatan</li>
@@ -133,13 +126,6 @@
             <a href="{{ url('dosenAnggota/agenda')}}" class="nav-link {{($activeMenu == 'agenda')? 'active' : ''}}">
               <i class="nav-icon fas fa-list-ol"></i>
               <p>Agenda Kegiatan </p>
-            </a>
-          </li>
-          <li class="nav-header">Statistik</li>
-          <li class="nav-item">
-            <a href="{{ url('dosenAnggota/statistik')}}" class="nav-link {{($activeMenu == 'statistik anggota')? 'active' : ''}}">
-              <i class="nav-icon fa-solid fa-chart-simple"></i>
-              <p>Statistik</p>
             </a>
           </li>
           @endif
