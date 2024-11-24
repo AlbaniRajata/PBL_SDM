@@ -32,11 +32,11 @@ Route::get('/api/kegiatan/events', [KegiatanController::class, 'getEvents']);
 
 // Route::get('/', [DashboardController::class, 'index']);
 Route::middleware('auth')->group(function () {
-    
+
     Route::middleware('authorize:admin,dosen,pimpinan')->group(function () {
         Route::get('/', [DashboardController::class, 'index']);
     });
-    
+
     Route::group(['prefix' => 'admin', 'middleware' => ['authorize:admin']], function () {
         Route::prefix('user')->group(function () {
             Route::get('/', [UserController::class, 'admin']);
@@ -53,7 +53,7 @@ Route::middleware('auth')->group(function () {
         });
 
         Route::prefix('kegiatan')->group(function () {
-            Route::get('/',[KegiatanController::class, 'admin']);
+            Route::get('/', [KegiatanController::class, 'admin']);
             Route::post('/list', [KegiatanController::class, 'listAdmin'])->name('admin.kegiatan.list');
             Route::get('/{id}/show_ajax', [KegiatanController::class, 'show_ajaxAdmin'])->name('admin.kegiatan.show_ajax');
             Route::get('/create_ajax', [KegiatanController::class, 'create_ajaxAdmin'])->name('admin.kegiatan.create_ajax');
@@ -82,13 +82,13 @@ Route::middleware('auth')->group(function () {
             Route::get('/', [StatistikController::class, 'admin']);
             Route::post('/list', [StatistikController::class, 'list'])->name('admin.statistik.list');
         });
-        
+
         Route::prefix('jenispengguna')->group(function () {
             Route::get('/', [UserController::class, 'levelAdmin'])->name('admin.jenispengguna.index');
         });
     });
 
-    Route::group(['prefix' =>'profil'],function(){
+    Route::group(['prefix' => 'profil'], function () {
         Route::get('/', [ProfilController::class, 'index'])->name('profil.index');
         Route::patch('/{id}', [ProfilController::class, 'update'])->name('profil.update');
     });
@@ -103,13 +103,13 @@ Route::middleware('auth')->group(function () {
 
     Route::group(['prefix' => 'pimpinan', 'middleware' => ['authorize:pimpinan']], function () {
         Route::prefix('user')->group(function () {
-            Route::get('/',[UserController::class, 'pimpinan']);
+            Route::get('/', [UserController::class, 'pimpinan']);
             Route::post('/list', [UserController::class, 'listPimpinan'])->name('pimpinan.user.list');
             Route::get('/{id}/show_ajax', [UserController::class, 'show_ajaxPimpinan'])->name('pimpinan.user.show_ajax');
         });
 
         Route::prefix('kegiatan')->group(function () {
-            Route::get('/',[KegiatanController::class, 'pimpinan']);
+            Route::get('/', [KegiatanController::class, 'pimpinan']);
             Route::post('/list', [KegiatanController::class, 'listPimpinan'])->name('pimpinan.kegiatan.list');
             Route::get('/{id}/show_ajax', [KegiatanController::class, 'show_ajaxPimpinan'])->name('pimpinan.kegiatan.show_ajax');
         });
@@ -122,7 +122,7 @@ Route::middleware('auth')->group(function () {
 
     Route::group(['prefix' => 'dosen', 'middleware' => ['authorize:dosen']], function () {
         Route::prefix('kegiatan')->group(function () {
-            Route::get('/',[KegiatanController::class, 'dosen']);
+            Route::get('/', [KegiatanController::class, 'dosen']);
             Route::post('/list', [KegiatanController::class, 'listDosen'])->name('dosen.kegiatan.list');
             Route::get('/{id}/show_ajax', [KegiatanController::class, 'show_ajaxDosen'])->name('dosen.kegiatan.show_ajax');
             Route::get('/create_ajax', [KegiatanController::class, 'create_ajaxDosen'])->name('dosen.kegiatan.create_ajax');
@@ -137,12 +137,12 @@ Route::middleware('auth')->group(function () {
         Route::prefix('statistik')->group(function () {
             Route::get('/', [StatistikController::class, 'dosen']);
             Route::post('/list', [StatistikController::class, 'list'])->name('dosen.statistik.list');
-        });  
+        });
     });
 
     Route::group(['prefix' => 'dosenPIC', 'middleware' => ['authorize:dosenPIC,dosen']], function () {
         Route::prefix('kegiatan')->group(function () {
-            Route::get('/',[KegiatanController::class, 'dosenPIC'])->name('dosenPIC.kegiatan.index');
+            Route::get('/', [KegiatanController::class, 'dosenPIC'])->name('dosenPIC.kegiatan.index');
             Route::post('/list', [KegiatanController::class, 'listDosenPIC'])->name('dosenPIC.kegiatan.list');
             Route::get('/{id}/show_ajax', [KegiatanController::class, 'show_ajaxDosenPIC'])->name('dosenPIC.kegiatan.show_ajax');
             Route::post('/ajax', [KegiatanController::class, 'storeDosenPIC'])->name('dosenPIC.storeAjax');
@@ -154,6 +154,25 @@ Route::middleware('auth')->group(function () {
         Route::prefix('statistik')->group(function () {
             Route::get('/', [StatistikController::class, 'dosenPIC']);
         });
+
+        Route::prefix('agendaAnggota')->group(function () {
+            Route::get('/', [KegiatanController::class, 'agendaAnggota'])->name('dosenPIC.agendaAnggota.index');
+        });
+
+        Route::prefix('agendaAnggota')->group(function () {
+            Route::get('agendaAnggota/index', [KegiatanController::class, 'agendaAnggota'])->name('agendaAnggota.index');
+            Route::get('agendaAnggota/edit/{id}', [KegiatanController::class, 'editAgendaAnggota'])->name('agendaAnggota.edit_ajax');
+            Route::get('agendaAnggota/detail/{id}', [KegiatanController::class, 'detailAgendaAnggota'])->name('agendaAnggota.detail');
+            Route::delete('agendaAnggota/delete/{id}', [KegiatanController::class, 'deleteAgendaAnggota'])->name('agendaAnggota.delete');
+        });
+    });
+
+    Route::prefix('agendaAnggota')->group(function () {
+        Route::get('/', [KegiatanController::class, 'agendaAnggota'])->name('agendaAnggota.index');
+        Route::get('/edit/{id}', [KegiatanController::class, 'editAgendaAnggota'])->name('agendaAnggota.edit');
+        Route::get('/detail/{id}', [KegiatanController::class, 'detailAgendaAnggota'])->name('agendaAnggota.detail');
+        Route::delete('/delete/{id}', [KegiatanController::class, 'deleteAgendaAnggota'])->name('agendaAnggota.delete');
+        Route::put('/update/{id}', [KegiatanController::class, 'updateAgendaAnggota'])->name('agendaAnggota.update');
     });
 });
 
@@ -167,5 +186,5 @@ Route::middleware('auth')->group(function () {
 
 //Route dosenAnggota
 // Index
-Route::get('/dosenAnggota/kegiatan',[KegiatanController::class, 'dosenAnggota']);
-Route::get('/dosenAnggota/statistik',[StatistikController::class, 'dosenAnggota']);
+Route::get('/dosenAnggota/kegiatan', [KegiatanController::class, 'dosenAnggota']);
+Route::get('/dosenAnggota/statistik', [StatistikController::class, 'dosenAnggota']);

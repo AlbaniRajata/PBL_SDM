@@ -85,7 +85,6 @@
               <p>Kegiatan</p>
             </a>
           </li>
-          <li class="nav-header">Statistik</li>
           <li class="nav-item">
             <a href="{{ url('pimpinan/statistik')}}" class="nav-link {{($activeMenu == 'statistik pimpinan')? 'active' : ''}}">
               <i class="nav-icon fas fa-chart-simple"></i>
@@ -102,13 +101,13 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="{{ url('/progress')}}" class="nav-link {{($activeMenu == 'progress')? 'active' : ''}}">
+            <a href="{{ url('progresKegiatan/index')}}" class="nav-link {{($activeMenu == 'agenda anggota pic')? 'active' : ''}}">
               <i class="nav-icon fas fa-solid fa-list-check"></i>
               <p>Progress Kegiatan </p>
             </a>
           </li>
-          <li class="nav-item">
-            <a href="{{ url('/agenda')}}" class="nav-link {{($activeMenu == 'agenda')? 'active' : ''}}">
+            <li class="nav-item">
+            <a href="{{ url('dosenPIC/agendaAnggota')}}" class="nav-link {{($activeMenu == 'agenda anggota pic')? 'active' : ''}}">
               <i class="nav-icon fas fa-list-ol"></i>
               <p>Agenda Anggota </p>
             </a>

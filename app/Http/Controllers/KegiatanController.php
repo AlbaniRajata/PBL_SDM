@@ -14,6 +14,7 @@ use App\Models\JabatanKegiatanModel;
 use PhpOffice\PhpWord\PhpWord;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\DB;
 
 class KegiatanController extends Controller
 {
@@ -717,5 +718,50 @@ class KegiatanController extends Controller
         }
 
         return response()->json(['success' => true]);
+    }
+
+    // fungsi agenda kegiatan
+    public function agendaAnggota()
+    {
+        $breadcrumb = (object) [
+            'title' => 'Agenda Anggota',
+            'list' => ['Home', 'Agenda Anggota'],
+        ];
+        $activeMenu = 'agenda_anggota';
+
+        $agendaAnggota = DB::table('t_kegiatan')
+            ->join('t_anggota', 't_kegiatan.id_kegiatan', '=', 't_anggota.id_kegiatan')
+            ->join('t_user', 't_anggota.id_user', '=', 't_user.id_user')
+            ->select(
+                't_kegiatan.id_kegiatan',
+                't_kegiatan.nama_kegiatan',
+                DB::raw('GROUP_CONCAT(t_user.nama SEPARATOR ", ") as anggota'),
+                't_kegiatan.tanggal_mulai',
+                't_kegiatan.tanggal_selesai'
+            )
+            ->groupBy('t_kegiatan.id_kegiatan', 't_kegiatan.nama_kegiatan', 't_kegiatan.tanggal_mulai', 't_kegiatan.tanggal_selesai')
+            ->get();
+
+        return view('dosenPIC.agendaAnggota.index', ['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu, 'agendaAnggota' => $agendaAnggota]);
+    }
+
+    public function editAgendaAnggota($id)
+    {
+        
+    }
+
+    public function detailAgendaAnggota($id)
+    {
+        
+    }
+
+    public function updateAgendaAnggota(Request $request, $id)
+    {
+        
+    }
+
+    public function deleteAgendaAnggota($id)
+    {
+        
     }
 }
