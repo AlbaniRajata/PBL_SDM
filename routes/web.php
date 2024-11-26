@@ -27,7 +27,7 @@ Route::get('login', [AuthController::class, 'login'])->name('login');
 Route::post('login', [AuthController::class, 'postlogin']);
 Route::get('logout', [AuthController::class, 'logout'])->middleware('auth');
 
-Route::get('/api/kegiatan/events', [KegiatanController::class, 'getEvents']);
+Route::get('/api/kegiatan/events', [KegiatanController::class, 'getKegiatanEvents'])->name('api.kegiatan.events');
 
 
 

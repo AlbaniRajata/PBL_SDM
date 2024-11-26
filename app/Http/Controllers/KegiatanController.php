@@ -847,4 +847,12 @@ class KegiatanController extends Controller
             ], 400);
         }
     }
+
+    public function getKegiatanEvents()
+{
+    $kegiatan = KegiatanModel::select('id_kegiatan as id', 'nama_kegiatan as title', 'deskripsi_kegiatan as description', 'tanggal_mulai as start', 'tanggal_selesai as end')
+                             ->get();
+
+    return response()->json($kegiatan);
+}
 }

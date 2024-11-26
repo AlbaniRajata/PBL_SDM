@@ -15,25 +15,25 @@
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.js"></script>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Render FullCalendar
-    var calendarEl = document.getElementById('calendar');
-    var calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'dayGridMonth',
-        height: 'auto',
-        events: '/api/kegiatan/events',  // Pastikan API ini mengembalikan data acara
-        headerToolbar: {
-            left: 'prev,next today',
-            center: 'title',
-            right: 'dayGridMonth,timeGridWeek,timeGridDay'
-        },
-        eventClick: function(info) {
-            alert('Event: ' + info.event.title + '\nDeskripsi: ' + info.event.extendedProps.description);
-        }
+    document.addEventListener('DOMContentLoaded', function() {
+        // Render FullCalendar
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            height: 'auto',
+            events: '/api/kegiatan/events',  // Pastikan API ini mengembalikan data acara
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            },
+            eventClick: function(info) {
+                alert('Event: ' + info.event.title + '\nDeskripsi: ' + info.event.extendedProps.description);
+            }
+        });
+        calendar.render();
     });
-    calendar.render();
-});
-</script>
+    </script>
 
 <style>
     #calendar {
