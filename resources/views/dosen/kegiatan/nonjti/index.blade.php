@@ -2,7 +2,10 @@
 @section('content')
 <div class="card card-outline card-primary">
     <div class="card-header">
-        <h3 class="card-title">Daftar Kegiatan JTI</h3>
+        <h3 class="card-title">Daftar Kegiatan Non JTI</h3>
+        <div class="card-tools">
+            <button onclick="modalAction('{{ url('/dosen/kegiatan/create_ajax') }}')" class="btn btn-sm btn-success mt-1">Tambah Ajax</button>
+        </div>
     </div>
     <div class="card-body">
         @if (session('success'))
@@ -68,14 +71,14 @@
             dataKegiatan = $('#kegiatan-table').DataTable({
                 serverSide: true,
                 ajax: {
-                    url: "{{route('dosen.kegiatan.jti.list') }}", // Fixed URL syntax
+                    url: "{{route('dosen.kegiatan.nonjti.list') }}", // Fixed URL syntax
                     dataType: "json",
                     type: "POST",
                     headers: {
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     },
                     data: function (d) {
-                        d.jenis_kegiatan = "Kegiatan JTI";
+                        d.jenis_kegiatan = "Kegiatan Non-JTI";
                     }
                 },
                 columns: [

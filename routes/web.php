@@ -139,8 +139,12 @@ Route::middleware('auth')->group(function () {
             Route::get('/jti', [KegiatanController::class, 'KegiatanJTI']);
             Route::post('/jti/list', [KegiatanController::class, 'listDosenJTI'])->name('dosen.kegiatan.jti.list');
             Route::get('/jti/{id}/show_ajax', [KegiatanController::class, 'show_ajaxDosenJTI'])->name('dosen.kegiatan.jti.show_ajax');
-            Route::get('/jti/{id}/edit_ajax', [KegiatanController::class, 'editAjaxDosen'])->name('dosen.kegiatan.jti.edit_ajax');
-            Route::get('/jti/{id}/delete_ajax', [KegiatanController::class, 'deleteAjaxDosen'])->name('dosen.kegiatan.jti.delete_ajax');
+
+            //non-jti
+            Route::get('/nonjti', [KegiatanController::class, 'KegiatanNonJTI']);
+            Route::post('/nonjti/list', [KegiatanController::class, 'listDosenNonJTI'])->name('dosen.kegiatan.nonjti.list');
+            Route::get('/nonjti/{id}/show_ajax', [KegiatanController::class, 'show_ajaxDosenNonJTI'])->name('dosen.kegiatan.nonjti.show_ajax');
+
         });
 
         Route::prefix('statistik')->group(function () {

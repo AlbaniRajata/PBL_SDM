@@ -788,6 +788,51 @@ class KegiatanController extends Controller
         return view('dosen.kegiatan.jti.show_ajax', ['kegiatan' => $kegiatan, 'anggota' => $angggota]);
     }
 
+    public function KegiatanNonJTI(): mixed{
+        $breadcrumb = (object) [
+            'title' => 'Kegiatan',
+            'list' => ['Home','Kegiatan Dosen Non JTI'],
+        ];
+        $activeMenu = 'kegiatan non jti';
+        return view('dosen.kegiatan.nonjti.index',['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu]);
+    }
+
+    
+    public function listDosenNonJTI(Request $request)
+    {
+        $dosenId = auth()->user()->id_user;
+
+        $kegiatan = KegiatanModel::select('id_kegiatan', 'nama_kegiatan', 'deskripsi_kegiatan', 'tanggal_mulai', 'tanggal_selesai', 'tanggal_acara', 'tempat_kegiatan', 'jenis_kegiatan')
+        ->where('jenis_kegiatan', 'Kegiatan Non-JTI')
+        ->whereHas('anggota', function ($query) use ($dosenId) {
+            $query->where('id_user', $dosenId);
+        });
+
+        return DataTables::of($kegiatan)
+        ->addIndexColumn()
+        ->addColumn('aksi', function ($kegiatan) {
+            $btn = '<button onclick="modalAction(\'' . url('/dosen/kegiatan/' . $kegiatan->id_kegiatan . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
+            $btn .= '<button onclick="modalAction(\'' . url('/dosen/kegiatan/' . $kegiatan->id_kegiatan . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
+            $btn .= '<button onclick="modalAction(\'' . url('/dosen/kegiatan/' . $kegiatan->id_kegiatan . '/delete_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button> ';
+            return $btn;
+        })
+        ->rawColumns(['aksi'])
+        ->make(true);
+    }
+
+    public function show_ajaxDosenNonJTI($id)
+    {
+        $kegiatan = KegiatanModel::find($id);
+        $angggota = anggotaModel::select('id_kegiatan','id_anggota','id_user', 'id_jabatan_kegiatan')->where('id_kegiatan', $id)->with('user', 'jabatan')->get();
+    
+        if (!$kegiatan) {
+            return response()->json(['message' => 'Data not found'], 404);
+        }
+
+    
+        return view('dosen.kegiatan.nonjti.show_ajax', ['kegiatan' => $kegiatan, 'anggota' => $angggota]);
+    }
+
     public function confirm_ajaxAdmin($id)
     {
         $kegiatan = KegiatanModel::find($id);
