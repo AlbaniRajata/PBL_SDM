@@ -8,6 +8,7 @@ use App\Http\Controllers\StatistikController;
 use App\Http\Controllers\JabatanKegiatanController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProfilController;
+use App\Http\Controllers\ContactController;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,7 +35,8 @@ Route::get('/api/kegiatan/events', [KegiatanController::class, 'getEvents']);
 Route::middleware('auth')->group(function () {
 
     Route::middleware('authorize:admin,dosen,pimpinan')->group(function () {
-        Route::get('/', [DashboardController::class, 'index']);
+        Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/contact', [ContactController::class, 'index'])->name('contact.index');
     });
 
     Route::group(['prefix' => 'admin', 'middleware' => ['authorize:admin']], function () {
