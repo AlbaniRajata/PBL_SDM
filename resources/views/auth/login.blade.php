@@ -20,99 +20,108 @@
     <link rel="icon" href="{{ url('polinema.png') }}" type="image/png">
     <style>
         body {
-            position: relative; /* Position relative for the pseudo-element */
-            height: 100vh; /* Full viewport height */
-            margin: 0; /* Removes default margin */
-            overflow: hidden; /* Prevents any overflow */
-        }
-
-        body::before {
-            content: ''; /* Required to create a pseudo-element */
-            position: absolute; /* Position it absolutely within the body */
-            top: 0; /* Align to the top */
-            left: 0; /* Align to the left */
-            right: 0; /* Align to the right */
-            bottom: 0; /* Align to the bottom */
-            background-image: url('img/jtiblur.png'); /* Background image */
-            background-size: cover; /* Ensures the image covers the entire area */
-            background-position: center; /* Centers the background image */
-            background-repeat: no-repeat; /* Prevents the image from repeating */
-            filter: blur(5px); /* Adjust blur amount here (increase or decrease as needed) */
-            z-index: -1; /* Send to the back */
-        }
-
-        .content {
-            display: flex; /* Use flexbox for positioning */
-            justify-content: flex-end; /* Align items to the right */
-            align-items: center; /* Center vertically */
-            height: 100vh; /* Full height */
-            color: white; /* Change text color for better visibility */
-            position: relative; /* Ensures content appears above the blurred background */
-        }
-
-        .login-box {
-            width: 400px; /* Set a fixed width for the login box */
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-            margin-right: 20px; /* Optional: add some spacing from the right edge */
-        }
-
-        .card {
-            border-radius: 0;
-            overflow: hidden;
-        }
-
-        .card-header {
-            background: linear-gradient(to right, #007bff, #6f42c1);
-            color: white;
-        }
-
-        .btn-primary {
-            background-color: #007bff;
-            border-color: #007bff;
-        }
-
-        .btn-primary:hover {
-            background-color: #0056b3;
-            border-color: #004085;
-        }
-
-        .error-text {
-            font-size: 0.9rem;
-            margin-top: 5px;
-        }
-
-        .login-box-msg {
-            margin-bottom: 15px;
-        }
-
-        /* Animasi input focus */
-        .input-group input:focus {
-            border-color: #007bff;
-            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-        }
-        @media (max-width: 576px) {
-    .login-box {
-        width: 95%; /* Slightly increase width on small screens */
+        margin: 0;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Source Sans Pro', sans-serif;
+        background: url('img/background.png') no-repeat center center; /* Mengatur gambar sebagai latar */
+        background-size: cover; /* Menyesuaikan gambar agar mencakup seluruh area */
     }
-}
 
+    .content {
+        display: flex;
+        justify-content: space-between;
+        width: 90%;
+        max-width: 1200px;
+        color: white;
+    }
+
+    .intro {
+        max-width: 50%;
+        padding: 20px;
+    }
+
+    .intro h1 {
+        font-size: 2.5rem;
+        font-weight: bold;
+    }
+
+    .intro p {
+        font-size: 1.2rem;
+        margin-top: 10px;
+    }
+
+    .login-box {
+        width: 400px;
+        background-color: white;
+        border-radius: 15px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        overflow: hidden;
+    }
+
+    .card-header {
+        background: #3498db;
+        color: white;
+        text-align: center;
+        padding: 15px 0;
+        font-size: 1.5rem;
+    }
+
+    .card-body {
+        padding: 20px;
+    }
+
+    .login-box-msg {
+        text-align: center;
+        margin-bottom: 20px;
+        font-weight: bold;
+        color: #555;
+    }
+
+    .input-group .form-control {
+        border-radius: 20px;
+    }
+
+    .btn-primary {
+        background-color: #3498db;
+        border: none;
+        border-radius: 20px;
+    }
+
+    .btn-primary:hover {
+        background-color: #2980b9;
+    }
+
+    .btn-link {
+        text-decoration: none;
+        color: #3498db;
+    }
+
+    .btn-link:hover {
+        text-decoration: underline;
+        color: #2980b9;
+    }
     </style>
 </head>
 
-<body class="hold-transition login-page">
+<div class="content">
+    <div class="intro">
+        <h1>Selamat datang<br>Dosen Jurusan Teknologi Informasi</h1>
+        <p>di <strong>Sistem Manajemen SDM</strong><br>Silahkan isi formulir yang ada untuk masuk.</p>
+    </div>
     <div class="login-box">
         <div class="card card-outline card-primary">
             <div class="card-header text-center">
                 <a href="{{ url('/') }}" class="h1"><b>SI - </b>SDM</a>
             </div>
             <div class="card-body">
-                <p class="login-box-msg">Masuk untuk memulai sesi Anda</p>
+                <p class="login-box-msg">Please Login</p>
                 <form action="{{ url('login') }}" method="POST" id="form-login">
                     @csrf
                     <div class="input-group mb-3">
-                        <input type="text" id="username" name="username" class="form-control" placeholder="Username" required>
+                        <input type="text" id="username" name="username" class="form-control" placeholder="Isi Username Anda" required>
                         <div class="input-group-append">
                             <div class="input-group-text">
                                 <span class="fas fa-user"></span>
@@ -121,7 +130,7 @@
                         <small id="error-username" class="error-text text-danger"></small>
                     </div>
                     <div class="input-group mb-3">
-                        <input type="password" id="password" name="password" class="form-control" placeholder="Password" required>
+                        <input type="password" id="password" name="password" class="form-control" placeholder="Isi Password Anda" required>
                         <div class="input-group-append">
                             <div class="input-group-text">
                                 <span class="fas fa-lock"></span>
@@ -129,21 +138,19 @@
                         </div>
                         <small id="error-password" class="error-text text-danger"></small>
                     </div>
-                    <div class="col-8">
-                        <div class="icheck-primary">
-                            <input type="checkbox" id="remember">
-                            <label for="remember">Ingat Saya</label>
+                    <div class="row">
+                        <div class="col-6">
+                            <a href="#" class="btn btn-link">Lupa Password?</a>
                         </div>
-                    </div>
-                    <div class="row mt-12">
-                        <div class="col-12 text-center">
-                            <button type="submit" class="btn btn-success btn-block">Masuk</button>
+                        <div class="col-6">
+                            <button type="submit" class="btn btn-primary btn-block">Login</button>
                         </div>
                     </div>
                 </form>
             </div>
         </div>
     </div>
+</div>
 
     <!-- jQuery -->
     <script src="{{ url('/plugins/jquery/jquery.min.js') }}"></script>
