@@ -11,6 +11,7 @@ use Yajra\DataTables\Facades\DataTables;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\AnggotaModel;
 use App\Models\JabatanKegiatanModel;
+use App\Models\AgendaAnggotaModel;
 use PhpOffice\PhpWord\PhpWord;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
@@ -64,6 +65,8 @@ class KegiatanController extends Controller
         return view('dosenAnggota.kegiatan.index',['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu]);
     }
 
+
+    
     // function list
     public function listAdmin(Request $request)
     {
@@ -457,30 +460,6 @@ class KegiatanController extends Controller
         }
     }
 
-    public function confirm_ajaxAdmin($id)
-    {
-        $kegiatan = KegiatanModel::find($id);
-        if (!$kegiatan) {
-            return response()->json(['status' => false, 'message' => 'Kegiatan tidak ditemukan'], 404);
-        }
-
-        $kegiatan->status = 'confirmed';
-        $kegiatan->save();
-
-        return response()->json(['status' => true, 'message' => 'Kegiatan berhasil dikonfirmasi']);
-    }
-
-    //function delete (admin)
-    public function delete_ajaxAdmin($id)
-    {
-        $kegiatan = KegiatanModel::find($id);
-        if ($kegiatan) {
-            $kegiatan->delete();
-            return response()->json(['status' => true, 'message' => 'Kegiatan berhasil dihapus']);
-        }
-        return response()->json(['status' => false, 'message' => 'Kegiatan tidak ditemukan']);
-    }
-
     public function delete_ajaxDosen($id)
     {
         $kegiatan = KegiatanModel::find($id);
@@ -763,5 +742,109 @@ class KegiatanController extends Controller
     public function deleteAgendaAnggota($id)
     {
         
+    }
+
+    public function KegiatanJTI(): mixed{
+        $breadcrumb = (object) [
+            'title' => 'Kegiatan',
+            'list' => ['Home','Kegiatan Dosen JTI'],
+        ];
+        $activeMenu = 'kegiatan jti';
+        return view('dosen.kegiatan.jti.index',['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu]);
+    }
+
+    
+    public function listDosenJTI(Request $request)
+    {
+        $dosenId = auth()->user()->id_user;
+
+        $kegiatan = KegiatanModel::select('id_kegiatan', 'nama_kegiatan', 'deskripsi_kegiatan', 'tanggal_mulai', 'tanggal_selesai', 'tanggal_acara', 'tempat_kegiatan', 'jenis_kegiatan')
+        ->where('jenis_kegiatan', 'Kegiatan JTI')
+        ->whereHas('anggota', function ($query) use ($dosenId) {
+            $query->where('id_user', $dosenId);
+        });
+
+
+        return DataTables::of($kegiatan)
+            ->addIndexColumn()
+            ->addColumn('aksi', function ($kegiatan) {
+                $btn = '<button onclick="modalAction(\'' . url('/dosen/kegiatan/jti/' . $kegiatan->id_kegiatan . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
+                return $btn;
+            })
+            ->rawColumns(['aksi'])
+            ->make(true);
+    }
+
+    public function show_ajaxDosenJTI($id)
+    {
+        $kegiatan = KegiatanModel::find($id);
+        $angggota = anggotaModel::select('id_kegiatan','id_anggota','id_user', 'id_jabatan_kegiatan')->where('id_kegiatan', $id)->with('user', 'jabatan')->get();
+    
+        if (!$kegiatan) {
+            return response()->json(['message' => 'Data not found'], 404);
+        }
+
+    
+        return view('dosen.kegiatan.jti.show_ajax', ['kegiatan' => $kegiatan, 'anggota' => $angggota]);
+    }
+
+    public function confirm_ajaxAdmin($id)
+    {
+        $kegiatan = KegiatanModel::find($id);
+        return view('admin.kegiatan.confirm_ajax',['kegiatan' => $kegiatan]);
+    }
+
+    public function delete_ajaxAdmin($id)
+    {
+        if (request()->ajax() || request()->wantsJson()) {
+            // Cari data kegiatan berdasarkan ID dengan eager loading
+            $kegiatan = kegiatanModel::with(['agenda', 'anggota'])->find($id);
+
+            if ($kegiatan) {
+                try {
+                    DB::beginTransaction();
+
+                    // 1. Hapus semua agenda_anggota terkait
+                    AgendaAnggotaModel::whereIn('id_agenda', $kegiatan->agenda->pluck('id_agenda'))
+                        ->orWhereIn('id_anggota', $kegiatan->anggota->pluck('id_anggota'))
+                        ->delete();
+
+                    // 2. Hapus semua agenda terkait
+                    $kegiatan->agenda()->delete();
+
+                    // 3. Hapus semua anggota terkait
+                    $kegiatan->anggota()->delete();
+
+                    // 4. Hapus kegiatan
+                    $kegiatan->delete();
+
+                    DB::commit();
+
+                    return response()->json([
+                        'status' => true,
+                        'message' => 'Kegiatan berhasil dihapus beserta semua data terkait'
+                    ]);
+
+                } catch (\Exception $e) {
+                    DB::rollBack();
+
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'Gagal menghapus kegiatan. Terjadi kesalahan sistem.',
+                        'detail' => $e->getMessage()
+                    ], 500);
+                }
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Data kegiatan tidak ditemukan'
+                ], 404);
+            }
+        } else {
+            return response()->json([
+                'status' => false,
+                'message' => 'Permintaan harus melalui AJAX'
+            ], 400);
+        }
     }
 }

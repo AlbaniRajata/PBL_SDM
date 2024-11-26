@@ -61,12 +61,12 @@ Route::middleware('auth')->group(function () {
             Route::get('/create_ajax', [KegiatanController::class, 'create_ajaxAdmin'])->name('admin.kegiatan.create_ajax');
             Route::post('/ajax', [KegiatanController::class, 'storeAdmin'])->name('admin.storeAjax');
             Route::get('/{id}/edit_ajax', [KegiatanController::class, 'editAjaxAdmin'])->name('admin.kegiatan.edit_ajax');
-            Route::put('/{id}/confirm_ajax', [KegiatanController::class, 'confirm_ajaxAdmin'])->name('admin.kegiatan.confirm_ajax');
             Route::put('/{id}/update_ajax', [KegiatanController::class, 'updateAjaxAdmin'])->name('admin.kegiatan.update_ajax');
-            Route::get('/{id}/delete_ajax', [KegiatanController::class, 'delete_ajaxAdmin'])->name('admin.kegiatan.delete_ajax');
             Route::get('/export_pdf', [KegiatanController::class, 'exportPdf'])->name('admin.kegiatan.export_pdf');
             Route::get('/{id}/export_word', [KegiatanController::class, 'exportWord'])->name('admin.kegiatan.export_word');
             Route::post('/{id}/upload_surat_tugas', [KegiatanController::class, 'uploadSuratTugas'])->name('admin.kegiatan.upload_surat_tugas');
+            Route::delete('/{id}/confirm_ajax', [KegiatanController::class, 'delete_ajaxAdmin'])->name('admin.kegiatan.confirm_ajax');
+            Route::get('/{id}/delete_ajax', [KegiatanController::class, 'confirm_ajaxAdmin'])->name('admin.kegiatan.confirm_ajax');
         });
 
         Route::prefix('jabatan')->group(function () {
@@ -134,6 +134,13 @@ Route::middleware('auth')->group(function () {
             Route::get('/{id}/delete_ajax', [KegiatanController::class, 'deleteAjaxDosen'])->name('dosen.kegiatan.delete_ajax');
             Route::get('/{id}/export_word', [KegiatanController::class, 'exportWordDosen'])->name('dosen.kegiatan.export_word');
             Route::post('/{id}/upload_surat_tugas', [KegiatanController::class, 'uploadSuratTugas'])->name('dosen.kegiatan.upload_surat_tugas');
+
+            //jti
+            Route::get('/jti', [KegiatanController::class, 'KegiatanJTI']);
+            Route::post('/jti/list', [KegiatanController::class, 'listDosenJTI'])->name('dosen.kegiatan.jti.list');
+            Route::get('/jti/{id}/show_ajax', [KegiatanController::class, 'show_ajaxDosenJTI'])->name('dosen.kegiatan.jti.show_ajax');
+            Route::get('/jti/{id}/edit_ajax', [KegiatanController::class, 'editAjaxDosen'])->name('dosen.kegiatan.jti.edit_ajax');
+            Route::get('/jti/{id}/delete_ajax', [KegiatanController::class, 'deleteAjaxDosen'])->name('dosen.kegiatan.jti.delete_ajax');
         });
 
         Route::prefix('statistik')->group(function () {
@@ -151,6 +158,8 @@ Route::middleware('auth')->group(function () {
             Route::get('/{id}/edit_ajax', [KegiatanController::class, 'editAjaxDosenPIC'])->name('dosenPIC.kegiatan.edit_ajax');
             Route::put('/{id}/update_ajax', [KegiatanController::class, 'updateAjaxDosenPIC'])->name('dosenPIC.kegiatan.update_ajax');
             Route::get('/{id}/delete_ajax', [KegiatanController::class, 'deleteAjaxDosenPIC'])->name('dosenPIC.kegiatan.delete_ajax');
+
+            Route::get('/jti', [KegiatanController::class, 'listDosenJti'])->name('dosen.kegiatan.jti.index');
         });
 
         Route::prefix('statistik')->group(function () {

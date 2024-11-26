@@ -1,5 +1,5 @@
 <nav class="main-header navbar navbar-expand navbar-white navbar-light">
-    <!-- Left navbar links -->
+  <!-- Left navbar links -->
     <ul class="navbar-nav">
       <li class="nav-item">
         <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
@@ -30,6 +30,7 @@
     <span class="nav-link">{{ auth()->user()->level }}/{{ auth()->user()->username }}</span>
     </li>
   </ul>
+
     <!-- Right navbar links -->
     <ul class="navbar-nav ml-auto">
       <!-- Navbar Search -->
@@ -88,11 +89,12 @@
       </li>
 
       @if(auth()->user()->level == "dosen")
-        <li class="nav-item dropdown">
-            <a href="#" class="nav-link dropdown-toggle" id="profileDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Edit Profil">
-                <i class="fas fa-user"></i>
-            </a>
-            <div class="dropdown-menu dropdown-menu-right animate__animated animate__fadeIn" aria-labelledby="profileDropdown">
+      <!-- Profile Menu -->
+      <li class="nav-item dropdown">
+          <a href="#" class="nav-link dropdown-toggle" id="profileDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Edit Profil">
+              <i class="fas fa-user"></i>
+          </a>
+          <div class="dropdown-menu dropdown-menu-right animate__animated animate__fadeIn" aria-labelledby="profileDropdown">
                 <a href="{{ route('profil.index') }}" class="dropdown-item">
                     <i class="fas fa-edit mr-2"></i> Edit Profil
                 </a>
@@ -105,7 +107,7 @@
                 </a>
                 @if($activeMenu == "kegiatan pic" || $activeMenu == "kegiatan anggota" || $activeMenu == "statistik pic")
                 <div class="dropdown-divider"></div>
-                <a href="{{ url('dosen/kegiatan') }}" class="dropdown-item">
+                <a href="{{ url('dosen/kegiatan/jti') }}" class="dropdown-item">
                     <i class="fas fa-arrow-left mr-2"></i> Kembali ke Dosen
                 </a>
                 @endif

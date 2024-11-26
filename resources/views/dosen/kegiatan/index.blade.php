@@ -60,11 +60,13 @@
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 }
             });
+            
             function modalAction(url = '') {
                 $('#myModal').load(url, function() {
                     $('#myModal').modal('show');
                 });
             }
+            
             var dataKegiatan;
             $(document).ready(function() {
                 dataKegiatan = $('#kegiatan-table').DataTable({

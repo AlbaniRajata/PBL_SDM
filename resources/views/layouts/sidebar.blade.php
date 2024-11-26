@@ -62,6 +62,14 @@
               <p>Kegiatan</p>
             </a>
           </li>
+          <li class="nav-item">
+          <li class="nav-header">Kegiatan JTI</li>
+            <li class="nav-item">
+                <a href="{{ url('dosen/kegiatan/jti')}}" class="nav-link {{($activeMenu == 'kegiatan jti')? 'active' : ''}}">
+                    <i class="nav-icon fa-regular fa-calendar-check"></i>
+                    <p>Kegiatan JTI</p>
+                </a>
+            </li>
           <li class="nav-header">Statistik</li>
           <li class="nav-item">
             <a href="{{ url('dosen/statistik')}}" class="nav-link {{($activeMenu == 'statistik dosen')? 'active' : ''}}">
