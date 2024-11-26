@@ -21,7 +21,15 @@
         </span> -->
     </li>
     </ul>
-
+  <!-- Left navbar links -->
+  <ul class="navbar-nav">
+    <li class="nav-item">
+    <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+    </li>
+    <li class="nav-item d-none d-sm-inline-block">
+    <span class="nav-link">{{ auth()->user()->level }}/{{ auth()->user()->username }}</span>
+    </li>
+  </ul>
     <!-- Right navbar links -->
     <ul class="navbar-nav ml-auto">
       <!-- Navbar Search -->
