@@ -37,4 +37,11 @@ class AnggotaModel extends Model
     {
         return $this->hasMany(PoinModel::class, 'id_user', 'id_user');
     }
+
+    public function agendaAnggota() 
+    {
+        return $this->hasMany(AgendaDetailModel::class, 'id_anggota', 'id_anggota');
+    }
+
+    
 }

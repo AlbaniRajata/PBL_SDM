@@ -34,4 +34,9 @@ class AgendaModel extends Model
     {
         return $this->belongsTo(AnggotaModel::class, 'id_anggota', 'id_anggota');
     }
+
+    public function agendaAnggota()
+    {
+        return $this->hasMany(AgendaDetailModel::class, 'id_agenda', 'id_agenda');
+    }
 }
