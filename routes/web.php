@@ -65,7 +65,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/export_pdf', [KegiatanController::class, 'exportPdf'])->name('admin.kegiatan.export_pdf');
             Route::get('/{id}/export_word', [KegiatanController::class, 'exportWord'])->name('admin.kegiatan.export_word');
             Route::post('/{id}/upload_surat_tugas', [KegiatanController::class, 'uploadSuratTugas'])->name('admin.kegiatan.upload_surat_tugas');
-            Route::delete('/{id}/confirm_ajax', [KegiatanController::class, 'delete_ajaxAdmin'])->name('admin.kegiatan.confirm_ajax');
+            Route::delete('/{id}/delete_ajax', [KegiatanController::class, 'delete_ajaxAdmin'])->name('admin.kegiatan.confirm_ajax');
             Route::get('/{id}/delete_ajax', [KegiatanController::class, 'confirm_ajaxAdmin'])->name('admin.kegiatan.confirm_ajax');
         });
 
@@ -131,7 +131,8 @@ Route::middleware('auth')->group(function () {
             Route::post('/ajax', [KegiatanController::class, 'storeDosen'])->name('dosen.storeAjax');
             Route::get('/{id}/edit_ajax', [KegiatanController::class, 'editAjaxDosen'])->name('dosen.kegiatan.edit_ajax');
             Route::put('/{id}/update_ajax', [KegiatanController::class, 'updateAjaxDosen'])->name('dosen.kegiatan.update_ajax');
-            Route::get('/{id}/delete_ajax', [KegiatanController::class, 'deleteAjaxDosen'])->name('dosen.kegiatan.delete_ajax');
+            Route::get('/{id}/delete_ajax', [KegiatanController::class, 'confirmAjaxDosen'])->name('dosen.kegiatan.confirm_ajax');
+            Route::delete('/{id}/delete_ajax', [KegiatanController::class, 'deleteAjaxDosen'])->name('dosen.kegiatan.delete_ajax');
             Route::get('/{id}/export_word', [KegiatanController::class, 'exportWordDosen'])->name('dosen.kegiatan.export_word');
             Route::post('/{id}/upload_surat_tugas', [KegiatanController::class, 'uploadSuratTugas'])->name('dosen.kegiatan.upload_surat_tugas');
 

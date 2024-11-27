@@ -47,30 +47,32 @@
                 </div>
                 <div id="jabatan-anggota-container">
                     @foreach ($anggota_kegiatan as $ag)
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label>Jabatan</label>
-                            <select name="jabatan_id[]" class="form-control jabatan-select" required>
-                                <option value="">- Pilih Jabatan -</option>
-                                @foreach($jabatan as $j)
-                                    <option value="{{ $j->id_jabatan_kegiatan }}" {{ $ag->id_jabatan_kegiatan == $j->id_jabatan_kegiatan ? 'selected' : '' }}>{{ $j->jabatan_nama }}</option>
-                                @endforeach
-                            </select>
-                            <small id="error-jabatan_id" class="error-text form-text text-danger"></small>
+                        <div class="form-row jabatan-anggota-item">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Jabatan</label>
+                                    <select name="jabatan_id[]" class="form-control jabatan-select" required>
+                                        <option value="">- Pilih Jabatan -</option>
+                                        @foreach($jabatan as $j)
+                                            <option value="{{ $j->id_jabatan_kegiatan }}" {{ $ag->id_jabatan_kegiatan == $j->id_jabatan_kegiatan ? 'selected' : '' }}>{{ $j->jabatan_nama }}</option>
+                                        @endforeach
+                                    </select>
+                                    <small id="error-jabatan_id" class="error-text form-text text-danger"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Anggota</label>
+                                    <select name="anggota_id[]" class="form-control anggota-select" required>
+                                        <option value="">- Pilih Anggota -</option>
+                                        @foreach($anggota as $a)
+                                            <option value="{{ $a->id_user }}" {{ $ag->id_user == $a->id_user ? 'selected' : '' }}>{{ $a->nama }}</option>
+                                        @endforeach
+                                    </select>
+                                    <small id="error-anggota_id" class="error-text form-text text-danger"></small>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label>Anggota</label>
-                            <select name="anggota_id[]" class="form-control anggota-select" required>
-                                <option value="">- Pilih Anggota -</option>
-                                @foreach($anggota as $a)
-                                    <option value="{{ $a->id_user }}" {{ $ag->id_user == $a->id_user ? 'selected' : '' }}>{{ $a->nama }}</option>
-                                @endforeach
-                            </select>
-                            <small id="error-anggota_id" class="error-text form-text text-danger"></small>
-                        </div>
-                    </div>
                     @endforeach
                 </div>
                 <div class="text-right">
@@ -127,7 +129,7 @@
                     data: $(form).serialize(),
                     success: function(response) {
                         if (response.status) {
-                            $('#modal-master').modal('hide');
+                            $('#myModal').modal('hide');
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Berhasil',
