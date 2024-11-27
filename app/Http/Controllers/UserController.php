@@ -89,7 +89,7 @@ class UserController extends Controller
 
     public function store_ajaxAdmin(Request $request)
     {
-        if($request->ajax() || $request->wantsJson()){
+        if ($request->ajax() || $request->wantsJson()) {
             $validator = Validator::make($request->all(), [
                 'username' => 'required|string|max:255|unique:t_user',
                 'nama' => 'required|string|max:255',
@@ -102,7 +102,7 @@ class UserController extends Controller
 
             if ($validator->fails()) {
                 return response()->json([
-                    'status' => false, 
+                    'status' => false,
                     'message' => 'Validation failed',
                     'msgField' => $validator->errors()
                 ]);
@@ -117,9 +117,9 @@ class UserController extends Controller
                 'NIP' => $request->NIP,
                 'level' => $request->level,
             ]);
-            
+
             return response()->json([
-                'status' => true, 
+                'status' => true,
                 'message' => 'User berhasil ditambahkan'
             ]);
         }
@@ -168,7 +168,7 @@ class UserController extends Controller
             return response()->json(['error' => 'Data not found'], 404);
         }
 
-        if($request->ajax() || $request->wantsJson()){
+        if ($request->ajax() || $request->wantsJson()) {
             $validator = Validator::make($request->all(), [
                 'username' => 'required|string|max:255|unique:t_user,username,' . $id . ',id_user',
                 'nama' => 'required|string|max:255',
@@ -180,7 +180,7 @@ class UserController extends Controller
 
             if ($validator->fails()) {
                 return response()->json([
-                    'status' => false, 
+                    'status' => false,
                     'message' => 'Validation failed',
                     'msgField' => $validator->errors()
                 ]);
@@ -196,7 +196,7 @@ class UserController extends Controller
             ]);
 
             return response()->json([
-                'status' => true, 
+                'status' => true,
                 'message' => 'User updated successfully'
             ]);
         }
@@ -205,12 +205,13 @@ class UserController extends Controller
 
     public function confirm_ajaxAdmin($id, Request $request)
     {
-        if($request->ajax() || $request->wantsJson()){
+        if ($request->ajax() || $request->wantsJson()) {
             $user = UserModel::find($id);
             if (!$user) {
                 return response()->json([
-                'status' => false, 
-                'message' => 'Data user tidak ditemukan']);
+                    'status' => false,
+                    'message' => 'Data user tidak ditemukan'
+                ]);
             }
         }
         return view('admin.user.confirm_ajax', compact('user'));
@@ -227,7 +228,7 @@ class UserController extends Controller
 
             $user->delete();
         }
-            return response()->json(['success' => 'User deleted successfully']);
+        return response()->json(['success' => 'User deleted successfully']);
     }
     // function export (admin)
     public function exportPdf()
@@ -297,5 +298,65 @@ class UserController extends Controller
         // Save file to output
         $writer->save('php://output');
         exit;
+    }
+
+    public function import()
+    {
+        return view('admin.user.import');
+    }
+
+    public function import_ajax(Request $request)
+    {
+        if ($request->ajax()) {
+            $rules = [
+                'file_user' => 'required|mimes:xlsx|max:1024', // Validasi file
+            ];
+            $validator = Validator::make($request->all(), $rules);
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Validasi Gagal',
+                    'msgField' => $validator->errors(),
+                ]);
+            }
+
+            try {
+                $file = $request->file('file_user');
+                $reader = IOFactory::createReader('Xlsx');
+                $reader->setReadDataOnly(true);
+                $spreadsheet = $reader->load($file->getRealPath());
+                $data = $spreadsheet->getActiveSheet()->toArray(null, true, true, true);
+
+                $insert = [];
+                foreach ($data as $index => $row) {
+                    if ($index === 1) continue; // Lewati header
+                    $insert[] = [
+                        'level' => $row['A'],
+                        'username' => $row['B'],
+                        'nama' => $row['C'],
+                        'tanggal_lahir' => $row['D'],
+                        'password' => Hash::make($row['E']),
+                        'email' => $row['F'],
+                        'NIP' => $row['G'],
+                        'created_at' => now(),
+                    ];
+                }
+
+                if (count($insert) > 0) {
+                    UserModel::insertOrIgnore($insert);
+                }
+
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Data berhasil diimport',
+                ]);
+            } catch (\Exception $e) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Terjadi kesalahan: ' . $e->getMessage(),
+                ]);
+            }
+        }
+        return redirect()->back();
     }
 }

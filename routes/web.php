@@ -52,6 +52,8 @@ Route::middleware('auth')->group(function () {
             Route::delete('/{id}/delete_ajax', [UserController::class, 'delete_ajaxAdmin'])->name('admin.user.delete_ajax');
             Route::get('/export_pdf', [UserController::class, 'exportPdf'])->name('admin.user.export_pdf');
             Route::get('/export_excel', [UserController::class, 'exportExcel'])->name('admin.user.export_excel');
+            Route::get('/import', [UserController::class, 'import'])->name('admin.user.import');
+            Route::post('/import_ajax', [UserController::class, 'import_ajax'])->name('admin.user.import_ajax');
         });
 
         Route::prefix('kegiatan')->group(function () {
