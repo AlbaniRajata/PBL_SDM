@@ -13,15 +13,12 @@
         <li class="nav-item d-none d-sm-inline-block">
             <!-- Using PHP strtoupper function -->
             <span class="nav-link border border-primary text-primary rounded px-3 py-2">
-                {{ strtoupper(auth()->user()->level) }}
+                {{ strtoupper(auth()->user()->level) }}/{{ auth()->user()->username }}
             </span>
             <!-- Using CSS text-transform property -->
             <!-- <span class="nav-link border border-primary text-primary rounded px-3 py-2 text-uppercase">
             {{ auth()->user()->level }}
         </span> -->
-        </li>
-        <li class="nav-item d-none d-sm-inline-block">
-            <span class="nav-link">{{ auth()->user()->level }}/{{ auth()->user()->username }}</span>
         </li>
     </ul>
 
