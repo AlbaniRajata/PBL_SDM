@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laporan Poin Dosen</title>
+    <h2 class="text-center font-bold">Laporan Poin Dosen</h2>
     <style>
         .border-all, .border-all th, .border-all td {
             border: 1px solid;
@@ -51,42 +51,46 @@
         }
     </style>
 </head>
+
 <body>
     <!-- Header Section -->
     <table class="border-bottom-header">
         <tr>
             <td width="15%" class="text-center"><img class="image" id="image"
-                src="{{ public_path('polinema.png') }}"></td>
+                    src="{{ public_path('polinema.png') }}"></td>
             </td>
             <td width="85%">
-                <span class="text-center d-block font-11 font-bold mb-1">KEMENTERIAN PENDIDIKAN, KEBUDAYAAN, RISET, DAN TEKNOLOGI</span>
+                <span class="text-center d-block font-11 font-bold mb-1">KEMENTERIAN PENDIDIKAN, KEBUDAYAAN, RISET, DAN
+                    TEKNOLOGI</span>
                 <span class="text-center d-block font-13 font-bold mb-1">POLITEKNIK NEGERI MALANG</span>
                 <span class="text-center d-block font-10">JL, Soekarno-Hatta No.9 Malang 65141</span>
-                <span class="text-center d-block font-10">Telepon (0341) 404424 Pes. 101-105 0341-404420, Fax. (0341) 404420</span>
+                <span class="text-center d-block font-10">Telepon (0341) 404424 Pes. 101-105 0341-404420, Fax. (0341)
+                    404420</span>
                 <span class="text-center d-block font-10">Laman: www.polinema.ac.id</span>
             </td>
         </tr>
     </table>
-
-    <!-- Content Section -->
-    <h2 class="text-center font-bold">Laporan Poin Dosen</h2>
-    <table class="border-all">
+    <table>
         <thead>
             <tr>
-                <th>Nama Dosen</th>
-                <th>Jumlah Kegiatan</th>
+                <th>No</th>
+                <th>Nama Kegiatan</th>
+                <th>Jabatan</th>
                 <th>Poin</th>
             </tr>
         </thead>
         <tbody>
-            @foreach ($data as $poin)
+            @forelse ($data as $index => $item)
                 <tr>
-                    <td>{{ $poin->nama }}</td>
-                    <td>{{ $poin->total_kegiatan }}</td>
-                    <td>{{ $poin->total_poin }}</td>
+                    <td>{{ $index + 1 }}</td>
+                    <td>{{ $item->judul_kegiatan }}</td>
+                    <td>{{ $item->jabatan }}</td>
+                    <td>{{ $item->poin }}</td>
                 </tr>
-            @endforeach
+            @empty
+                <tr>
+                    <td colspan="4" style="text-align: center;">Tidak ada data kegiatan</td>
+                </tr>
+            @endforelse
         </tbody>
     </table>
-</body>
-</html>

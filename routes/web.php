@@ -83,6 +83,7 @@ Route::middleware('auth')->group(function () {
         Route::prefix('statistik')->group(function () {
             Route::get('/', [StatistikController::class, 'admin']);
             Route::post('/list', [StatistikController::class, 'list'])->name('admin.statistik.list');
+            Route::get('/export_pdf', [StatistikController::class, 'exportPdf'])->name('admin.statistik.export_pdf');
         });
 
         Route::prefix('jenispengguna')->group(function () {
@@ -119,6 +120,7 @@ Route::middleware('auth')->group(function () {
         Route::prefix('statistik')->group(function () {
             Route::get('/', [StatistikController::class, 'pimpinan']);
             Route::post('/list', [StatistikController::class, 'list'])->name('pimpinan.statistik.list');
+            Route::get('/export_pdf', [StatistikController::class, 'exportPdf'])->name('pimpinan.statistik.export_pdf');
         });
     });
 
@@ -151,6 +153,7 @@ Route::middleware('auth')->group(function () {
         Route::prefix('statistik')->group(function () {
             Route::get('/', [StatistikController::class, 'dosen']);
             Route::post('/list', [StatistikController::class, 'list'])->name('dosen.statistik.list');
+            Route::get('/export_pdf', [StatistikController::class, 'exportPdf'])->name('dosen.statistik.export_pdf');
         });
     });
 
