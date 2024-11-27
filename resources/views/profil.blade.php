@@ -20,15 +20,11 @@
 
                         <div class="text-center mb-4">
                             <div class="position-relative mb-3">
-                                @if ($user->profile_image)
-                                    <img src="{{ asset('storage/photos/' . $user->profile_image) }}"
-                                        class="img-fluid rounded-circle shadow-lg"
-                                        style="width: 120px; height: 120px; object-fit: cover; border: 3px solid #f8f9fa;">
-                                @else
-                                    <img src="{{ asset('/public/img/polinema-bw.png') }}"
-                                        class="img-fluid rounded-circle shadow-lg"
-                                        style="width: 120px; height: 120px; object-fit: cover; border: 3px solid #f8f9fa;">
-                                @endif
+                                <!-- Tambahkan id "profile-pic-preview" untuk gambar -->
+                                <img id="profile-pic-preview" 
+                                    src="{{ $user->profile_image ? asset('storage/photos/' . $user->profile_image) : asset('/public/img/polinema-bw.png') }}"
+                                    class="img-fluid rounded-circle shadow-lg"
+                                    style="width: 120px; height: 120px; object-fit: cover; border: 3px solid #f8f9fa;">
                             </div>
                             <h5 class="mt-3 font-weight-bold">{{ $user->nama }}</h5>
                             <p class="text-muted">{{ $user->level }}</p>
@@ -38,9 +34,11 @@
                             @method('PATCH')
                             @csrf
 
+                            <!-- Tambahkan atribut onchange untuk memanggil fungsi previewImage -->
                             <div class="form-group mb-3">
                                 <label for="profile_image" class="form-label">{{ __('Ganti Foto Profil') }}</label>
-                                <input id="profile_image" type="file" class="form-control shadow-sm" name="profile_image">
+                                <input id="profile_image" type="file" class="form-control shadow-sm" name="profile_image"
+                                    accept="image/*" onchange="previewImage(event)">
                             </div>
 
                             <div class="form-group mb-3">
@@ -118,4 +116,20 @@
             margin-bottom: 1.5rem;
         }
     </style>
+
+    <!-- Tambahkan JavaScript untuk preview gambar -->
+    <script>
+        function previewImage(event) {
+            const file = event.target.files[0];
+            const preview = document.getElementById('profile-pic-preview');
+            
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+    </script>
 @endsection
