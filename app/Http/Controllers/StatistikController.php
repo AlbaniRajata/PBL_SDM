@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\StatistikModel;
+use Illuminate\Support\Facades\Auth;
 
 class StatistikController extends Controller
 {
@@ -55,23 +56,29 @@ class StatistikController extends Controller
         return view('pimpinan.statistik.index', compact('breadcrumb', 'activeMenu', 'poinDosen'));
     }
 
-    public function dosenPIC()
+    public function dosen()
     {
         $breadcrumb = (object) [
             'title' => 'Home',
-            'list' => ['Home', 'Statistik DosenPIC'],
+            'list' => ['Home', 'Statistik Dosen'],
         ];
-        $activeMenu = 'statistik pic';
-        return view('dosenPIC.statistik.index', ['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu]);
-    }
+        $activeMenu = 'statistik dosen';
 
-    public function dosenAnggota()
-    {
-        $breadcrumb = (object) [
-            'title' => 'Home',
-            'list' => ['Home', 'Statistik Dosen Anggota'],
-        ];
-        $activeMenu = 'statistik anggota';
-        return view('dosenAnggota.statistik.index', ['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu]);
+        $userId = Auth::id();
+
+        $poinDosen = DB::table('t_user')
+            ->join('t_anggota', 't_user.id_user', '=', 't_anggota.id_user')
+            ->join('t_jabatan_kegiatan', 't_anggota.id_jabatan_kegiatan', '=', 't_jabatan_kegiatan.id_jabatan_kegiatan')
+            ->join('t_kegiatan', 't_anggota.id_kegiatan', '=', 't_kegiatan.id_kegiatan')
+            ->select(
+                't_user.nama',
+                't_jabatan_kegiatan.jabatan_nama as jabatan',
+                't_kegiatan.nama_kegiatan as judul_kegiatan',
+                't_jabatan_kegiatan.poin'
+            )
+            ->where('t_user.id_user', $userId)
+            ->get();
+
+        return view('dosen.statistik.index', compact('breadcrumb', 'activeMenu', 'poinDosen'));
     }
 }
