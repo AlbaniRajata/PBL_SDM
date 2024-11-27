@@ -20,53 +20,58 @@ use Illuminate\Support\Facades\DB;
 class KegiatanController extends Controller
 {
     // function index
-    public function admin(){
+    public function admin()
+    {
         $breadcrumb = (object) [
             'title' => 'Kegiatan',
-            'list' => ['Home','Kegiatan Admin'],
+            'list' => ['Home', 'Kegiatan Admin'],
         ];
         $activeMenu = 'kegiatan admin';
-        return view('admin.kegiatan.index',['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu]);
+        return view('admin.kegiatan.index', ['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu]);
     }
 
-    public function pimpinan(){
+    public function pimpinan()
+    {
         $breadcrumb = (object) [
             'title' => 'Kegiatan',
-            'list' => ['Home','Kegiatan Pimpinan'],
+            'list' => ['Home', 'Kegiatan Pimpinan'],
         ];
         $activeMenu = 'kegiatan pimpinan';
-        return view('pimpinan.kegiatan.index',['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu]);
+        return view('pimpinan.kegiatan.index', ['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu]);
     }
 
-    public function dosen(): mixed{
+    public function dosen(): mixed
+    {
         $breadcrumb = (object) [
             'title' => 'Kegiatan',
-            'list' => ['Home','Kegiatan Dosen'],
+            'list' => ['Home', 'Kegiatan Dosen'],
         ];
         $activeMenu = 'kegiatan dosen';
-        return view('dosen.kegiatan.index',['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu]);
+        return view('dosen.kegiatan.index', ['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu]);
     }
 
-    public function dosenPIC(){
+    public function dosenPIC()
+    {
         $breadcrumb = (object) [
             'title' => 'Kegiatan',
-            'list' => ['Home','Kegiatan PIC'],
+            'list' => ['Home', 'Kegiatan PIC'],
         ];
         $activeMenu = 'kegiatan pic';
-        return view('dosenPIC.kegiatan.index',['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu]);
+        return view('dosenPIC.kegiatan.index', ['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu]);
     }
 
-    public function dosenAnggota(){
+    public function dosenAnggota()
+    {
         $breadcrumb = (object) [
             'title' => 'Kegiatan',
-            'list' => ['Home','Kegiatan Anggota'],
+            'list' => ['Home', 'Kegiatan Anggota'],
         ];
         $activeMenu = 'kegiatan anggota';
-        return view('dosenAnggota.kegiatan.index',['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu]);
+        return view('dosenAnggota.kegiatan.index', ['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu]);
     }
 
 
-    
+
     // function list
     public function listAdmin(Request $request)
     {
@@ -146,48 +151,48 @@ class KegiatanController extends Controller
     public function show_ajaxAdmin($id)
     {
         $kegiatan = KegiatanModel::find($id);
-        $angggota = anggotaModel::select('id_kegiatan','id_anggota','id_user', 'id_jabatan_kegiatan')->where('id_kegiatan', $id)->with('user', 'jabatan')->get();
-    
+        $angggota = anggotaModel::select('id_kegiatan', 'id_anggota', 'id_user', 'id_jabatan_kegiatan')->where('id_kegiatan', $id)->with('user', 'jabatan')->get();
+
         if (!$kegiatan) {
             return response()->json(['message' => 'Data not found'], 404);
         }
-    
+
         return view('admin.kegiatan.show_ajax', ['kegiatan' => $kegiatan, 'anggota' => $angggota]);
     }
 
     public function show_ajaxPimpinan($id)
     {
         $kegiatan = KegiatanModel::find($id);
-        $angggota = anggotaModel::select('id_kegiatan','id_anggota','id_user', 'id_jabatan_kegiatan')->where('id_kegiatan', $id)->with('user', 'jabatan')->get();
-    
+        $angggota = anggotaModel::select('id_kegiatan', 'id_anggota', 'id_user', 'id_jabatan_kegiatan')->where('id_kegiatan', $id)->with('user', 'jabatan')->get();
+
         if (!$kegiatan) {
             return response()->json(['message' => 'Data not found'], 404);
         }
-    
+
         return view('pimpinan.kegiatan.show_ajax', ['kegiatan' => $kegiatan, 'anggota' => $angggota]);
     }
 
     public function show_ajaxDosen($id)
     {
         $kegiatan = KegiatanModel::find($id);
-        $angggota = anggotaModel::select('id_kegiatan','id_anggota','id_user', 'id_jabatan_kegiatan')->where('id_kegiatan', $id)->with('user', 'jabatan')->get();
-    
+        $angggota = anggotaModel::select('id_kegiatan', 'id_anggota', 'id_user', 'id_jabatan_kegiatan')->where('id_kegiatan', $id)->with('user', 'jabatan')->get();
+
         if (!$kegiatan) {
             return response()->json(['message' => 'Data not found'], 404);
         }
-    
+
         return view('dosen.kegiatan.show_ajax', ['kegiatan' => $kegiatan, 'anggota' => $angggota]);
     }
 
     public function show_ajaxDosenPIC($id)
     {
         $kegiatan = KegiatanModel::find($id);
-        $angggota = anggotaModel::select('id_kegiatan','id_anggota','id_user', 'id_jabatan_kegiatan')->where('id_kegiatan', $id)->with('user', 'jabatan')->get();
-    
+        $angggota = anggotaModel::select('id_kegiatan', 'id_anggota', 'id_user', 'id_jabatan_kegiatan')->where('id_kegiatan', $id)->with('user', 'jabatan')->get();
+
         if (!$kegiatan) {
             return response()->json(['message' => 'Data not found'], 404);
         }
-    
+
         return view('dosen.kegiatan.show_ajax', ['kegiatan' => $kegiatan, 'anggota' => $angggota]);
     }
 
@@ -195,7 +200,7 @@ class KegiatanController extends Controller
     {
         $jenis_kegiatan = KegiatanModel::all();
         $jabatan = JabatanKegiatanModel::all();
-        $anggota = UserModel::select('id_user', 'username', 'nama', 'email', 'NIP', 'level')->where('level' , 'dosen')->get();
+        $anggota = UserModel::select('id_user', 'username', 'nama', 'email', 'NIP', 'level')->where('level', 'dosen')->get();
         return view('admin.kegiatan.create_ajax', compact('jenis_kegiatan', 'jabatan', 'anggota'));
     }
 
@@ -203,13 +208,13 @@ class KegiatanController extends Controller
     {
         $jenis_kegiatan = KegiatanModel::all();
         $jabatan = JabatanKegiatanModel::all();
-        $anggota = UserModel::select('id_user', 'username', 'nama', 'email', 'NIP', 'level')->where('level' , 'dosen')->get();
+        $anggota = UserModel::select('id_user', 'username', 'nama', 'email', 'NIP', 'level')->where('level', 'dosen')->get();
         return view('dosen.kegiatan.create_ajax', compact('jenis_kegiatan', 'jabatan', 'anggota'));
     }
 
     public function storeAdmin(Request $request)
     {
-        if($request->ajax() || $request->wantsJson()){
+        if ($request->ajax() || $request->wantsJson()) {
             $validator = Validator::make($request->all(), [
                 'nama_kegiatan' => 'required|string|max:255',
                 'jenis_kegiatan' => 'required|string',
@@ -237,14 +242,14 @@ class KegiatanController extends Controller
                 'tanggal_mulai' => $request->tanggal_mulai,
                 'tanggal_selesai' => $request->tanggal_selesai,
             ]);
-            $index = 0; 
-            foreach ($request->anggota_id as $a) { 
-                AnggotaModel::create([ 
-                    'id_kegiatan' => $kegiatan->id_kegiatan, 
-                    'id_user' => $request->anggota_id[$index], 
-                    'id_jabatan_kegiatan' => $request->jabatan_id[$index], 
-                ]); 
-                $index++; 
+            $index = 0;
+            foreach ($request->anggota_id as $a) {
+                AnggotaModel::create([
+                    'id_kegiatan' => $kegiatan->id_kegiatan,
+                    'id_user' => $request->anggota_id[$index],
+                    'id_jabatan_kegiatan' => $request->jabatan_id[$index],
+                ]);
+                $index++;
             }
 
             return response()->json([
@@ -257,7 +262,7 @@ class KegiatanController extends Controller
 
     public function storeDosen(Request $request)
     {
-        if($request->ajax() || $request->wantsJson()){
+        if ($request->ajax() || $request->wantsJson()) {
             $validator = Validator::make($request->all(), [
                 'nama_kegiatan' => 'required|string|max:255',
                 'jenis_kegiatan' => 'required|string',
@@ -287,14 +292,14 @@ class KegiatanController extends Controller
                 'tanggal_selesai' => $request->tanggal_selesai,
                 'tempat_kegiatan' => $request->tempat_kegiatan,
             ]);
-            $index = 0; 
-            foreach ($request->anggota_id as $a) { 
-                AnggotaModel::create([ 
-                    'id_kegiatan' => $kegiatan->id_kegiatan, 
-                    'id_user' => $request->anggota_id[$index], 
-                    'id_jabatan_kegiatan' => $request->jabatan_id[$index], 
-                ]); 
-                $index++; 
+            $index = 0;
+            foreach ($request->anggota_id as $a) {
+                AnggotaModel::create([
+                    'id_kegiatan' => $kegiatan->id_kegiatan,
+                    'id_user' => $request->anggota_id[$index],
+                    'id_jabatan_kegiatan' => $request->jabatan_id[$index],
+                ]);
+                $index++;
             }
 
             return response()->json([
@@ -309,15 +314,15 @@ class KegiatanController extends Controller
     {
         // $kegiatan = KegiatanModel::with('anggota.user', 'anggota.jabatan')->find($id);
         $kegiatan = KegiatanModel::select('id_kegiatan', 'nama_kegiatan', 'jenis_kegiatan', 'deskripsi_kegiatan', 'tanggal_mulai', 'tanggal_selesai', 'tanggal_acara', 'tempat_kegiatan')
-        ->where('id_kegiatan', $id)
-        ->with('anggota.user', 'anggota.jabatan')
-        ->first();
+            ->where('id_kegiatan', $id)
+            ->with('anggota.user', 'anggota.jabatan')
+            ->first();
         if (!$kegiatan) {
             return response()->json(['status' => false, 'message' => 'Kegiatan tidak ditemukan'], 404);
         }
         $anggota_kegiatan = AnggotaModel::select('id_anggota', 'id_user', 'id_jabatan_kegiatan')
-        ->where('id_kegiatan', $id)
-        ->get();
+            ->where('id_kegiatan', $id)
+            ->get();
         $jabatan = JabatanKegiatanModel::all();
         $anggota = UserModel::select('id_user', 'username', 'nama', 'email', 'NIP', 'level')->where('level', 'dosen')->get();
         return view('admin.kegiatan.edit_ajax', ['kegiatan' => $kegiatan, 'jabatan' => $jabatan, 'anggota' => $anggota, 'anggota_kegiatan' => $anggota_kegiatan]);
@@ -326,15 +331,15 @@ class KegiatanController extends Controller
     public function editAjaxDosenPIC($id)
     {
         $kegiatan = KegiatanModel::select('id_kegiatan', 'nama_kegiatan', 'jenis_kegiatan', 'deskripsi_kegiatan', 'tanggal_mulai', 'tanggal_selesai', 'tanggal_acara', 'tempat_kegiatan')
-        ->where('id_kegiatan', $id)
-        ->with('anggota.user', 'anggota.jabatan')
-        ->first();
+            ->where('id_kegiatan', $id)
+            ->with('anggota.user', 'anggota.jabatan')
+            ->first();
         if (!$kegiatan) {
             return response()->json(['status' => false, 'message' => 'Kegiatan tidak ditemukan'], 404);
         }
         $anggota_kegiatan = AnggotaModel::select('id_anggota', 'id_user', 'id_jabatan_kegiatan')
-        ->where('id_kegiatan', $id)
-        ->get();
+            ->where('id_kegiatan', $id)
+            ->get();
         $jabatan = JabatanKegiatanModel::all();
         $anggota = UserModel::select('id_user', 'username', 'nama', 'email', 'NIP', 'level')->where('level', 'dosen')->get();
         // return view('dosen.kegiatan.edit_ajax', compact('kegiatan','jabatan', 'anggota'));
@@ -343,7 +348,7 @@ class KegiatanController extends Controller
 
     public function updateAjaxAdmin(Request $request, $id)
     {
-        if($request->ajax() || $request->wantsJson()){
+        if ($request->ajax() || $request->wantsJson()) {
             $validator = Validator::make($request->all(), [
                 'nama_kegiatan' => 'required|string|max:255',
                 'jenis_kegiatan' => 'required|string|max:255',
@@ -354,7 +359,7 @@ class KegiatanController extends Controller
                 'jabatan_id' => 'required|array',
                 'anggota_id' => 'required|array',
             ]);
-        
+
             if ($validator->fails()) {
                 return response()->json([
                     'status' => false,
@@ -362,12 +367,12 @@ class KegiatanController extends Controller
                     'msgField' => $validator->errors()
                 ]);
             }
-        
+
             $kegiatan = KegiatanModel::find($id);
             if (!$kegiatan) {
                 return response()->json(['status' => false, 'message' => 'Kegiatan tidak ditemukan'], 404);
             }
-        
+
             $kegiatan->update([
                 'nama_kegiatan' => $request->nama_kegiatan,
                 'jenis_kegiatan' => $request->jenis_kegiatan,
@@ -376,7 +381,7 @@ class KegiatanController extends Controller
                 'tanggal_selesai' => $request->tanggal_selesai,
                 'tanggal_acara' => $request->tanggal_acara,
             ]);
-        
+
             // Update anggota
             // AnggotaModel::where('id_kegiatan', $id);
             // foreach ($request->anggota_id as $index => $anggota_id) {
@@ -387,17 +392,17 @@ class KegiatanController extends Controller
             //     ]);
             // }
             $index = 0;
-            foreach($request->anggota_id as $ag){
+            foreach ($request->anggota_id as $ag) {
                 $check = AnggotaModel::select('id_anggota', 'id_kegiatan', 'id_user', 'id_jabatan_kegiatan')->where('id_kegiatan', $id)->where('id_user', $request->anggota_id[$index])->get();
-                if($check){
+                if ($check) {
                     $check->update([
                         'id_user' => $request->anggota_id[$index],
                         'id_jabatan_kegiatan' => $request->jabatan_id[$index]
                     ]);
                     $index++;
-                } 
+                }
             }
-        
+
             return response()->json([
                 'status' => true,
                 'message' => 'Kegiatan berhasil diperbarui'
@@ -407,7 +412,7 @@ class KegiatanController extends Controller
 
     public function updateAjaxDosen(Request $request, $id)
     {
-        if($request->ajax() || $request->wantsJson()){
+        if ($request->ajax() || $request->wantsJson()) {
             $validator = Validator::make($request->all(), [
                 'nama_kegiatan' => 'required|string|max:255',
                 'jenis_kegiatan' => 'required|string|max:255',
@@ -419,7 +424,7 @@ class KegiatanController extends Controller
                 'jabatan_id' => 'required|array',
                 'anggota_id' => 'required|array',
             ]);
-        
+
             if ($validator->fails()) {
                 return response()->json([
                     'status' => false,
@@ -427,12 +432,12 @@ class KegiatanController extends Controller
                     'msgField' => $validator->errors()
                 ]);
             }
-        
+
             $kegiatan = KegiatanModel::find($id);
             if (!$kegiatan) {
                 return response()->json(['status' => false, 'message' => 'Kegiatan tidak ditemukan'], 404);
             }
-        
+
             $kegiatan->update([
                 'nama_kegiatan' => $request->nama_kegiatan,
                 'jenis_kegiatan' => $request->jenis_kegiatan,
@@ -442,7 +447,7 @@ class KegiatanController extends Controller
                 'tanggal_acara' => $request->tanggal_acara,
                 'tempat_kegiatan' => $request->tempat_kegiatan,
             ]);
-        
+
             // Update anggota
             AnggotaModel::where('id_kegiatan', $id)->delete();
             foreach ($request->anggota_id as $index => $anggota_id) {
@@ -452,7 +457,7 @@ class KegiatanController extends Controller
                     'id_jabatan_kegiatan' => $request->jabatan_id[$index],
                 ]);
             }
-        
+
             return response()->json([
                 'status' => true,
                 'message' => 'Kegiatan berhasil diperbarui'
@@ -724,45 +729,34 @@ class KegiatanController extends Controller
         return view('dosenPIC.agendaAnggota.index', ['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu, 'agendaAnggota' => $agendaAnggota]);
     }
 
-    public function editAgendaAnggota($id)
-    {
-        
-    }
+    public function editAgendaAnggota($id) {}
 
-    public function detailAgendaAnggota($id)
-    {
-        
-    }
+    public function detailAgendaAnggota($id) {}
 
-    public function updateAgendaAnggota(Request $request, $id)
-    {
-        
-    }
+    public function updateAgendaAnggota(Request $request, $id) {}
 
-    public function deleteAgendaAnggota($id)
-    {
-        
-    }
+    public function deleteAgendaAnggota($id) {}
 
-    public function KegiatanJTI(): mixed{
+    public function KegiatanJTI(): mixed
+    {
         $breadcrumb = (object) [
             'title' => 'Kegiatan',
-            'list' => ['Home','Kegiatan Dosen JTI'],
+            'list' => ['Home', 'Kegiatan Dosen JTI'],
         ];
         $activeMenu = 'kegiatan jti';
-        return view('dosen.kegiatan.jti.index',['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu]);
+        return view('dosen.kegiatan.jti.index', ['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu]);
     }
 
-    
+
     public function listDosenJTI(Request $request)
     {
         $dosenId = auth()->user()->id_user;
 
         $kegiatan = KegiatanModel::select('id_kegiatan', 'nama_kegiatan', 'deskripsi_kegiatan', 'tanggal_mulai', 'tanggal_selesai', 'tanggal_acara', 'tempat_kegiatan', 'jenis_kegiatan')
-        ->where('jenis_kegiatan', 'Kegiatan JTI')
-        ->whereHas('anggota', function ($query) use ($dosenId) {
-            $query->where('id_user', $dosenId);
-        });
+            ->where('jenis_kegiatan', 'Kegiatan JTI')
+            ->whereHas('anggota', function ($query) use ($dosenId) {
+                $query->where('id_user', $dosenId);
+            });
 
 
         return DataTables::of($kegiatan)
@@ -778,65 +772,66 @@ class KegiatanController extends Controller
     public function show_ajaxDosenJTI($id)
     {
         $kegiatan = KegiatanModel::find($id);
-        $angggota = anggotaModel::select('id_kegiatan','id_anggota','id_user', 'id_jabatan_kegiatan')->where('id_kegiatan', $id)->with('user', 'jabatan')->get();
-    
+        $angggota = anggotaModel::select('id_kegiatan', 'id_anggota', 'id_user', 'id_jabatan_kegiatan')->where('id_kegiatan', $id)->with('user', 'jabatan')->get();
+
         if (!$kegiatan) {
             return response()->json(['message' => 'Data not found'], 404);
         }
 
-    
+
         return view('dosen.kegiatan.jti.show_ajax', ['kegiatan' => $kegiatan, 'anggota' => $angggota]);
     }
 
-    public function KegiatanNonJTI(): mixed{
+    public function KegiatanNonJTI(): mixed
+    {
         $breadcrumb = (object) [
             'title' => 'Kegiatan',
-            'list' => ['Home','Kegiatan Dosen Non JTI'],
+            'list' => ['Home', 'Kegiatan Dosen Non JTI'],
         ];
         $activeMenu = 'kegiatan non jti';
-        return view('dosen.kegiatan.nonjti.index',['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu]);
+        return view('dosen.kegiatan.nonjti.index', ['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu]);
     }
 
-    
+
     public function listDosenNonJTI(Request $request)
     {
         $dosenId = auth()->user()->id_user;
 
         $kegiatan = KegiatanModel::select('id_kegiatan', 'nama_kegiatan', 'deskripsi_kegiatan', 'tanggal_mulai', 'tanggal_selesai', 'tanggal_acara', 'tempat_kegiatan', 'jenis_kegiatan')
-        ->where('jenis_kegiatan', 'Kegiatan Non-JTI')
-        ->whereHas('anggota', function ($query) use ($dosenId) {
-            $query->where('id_user', $dosenId);
-        });
+            ->where('jenis_kegiatan', 'Kegiatan Non-JTI')
+            ->whereHas('anggota', function ($query) use ($dosenId) {
+                $query->where('id_user', $dosenId);
+            });
 
         return DataTables::of($kegiatan)
-        ->addIndexColumn()
-        ->addColumn('aksi', function ($kegiatan) {
-            $btn = '<button onclick="modalAction(\'' . url('/dosen/kegiatan/' . $kegiatan->id_kegiatan . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
-            $btn .= '<button onclick="modalAction(\'' . url('/dosen/kegiatan/' . $kegiatan->id_kegiatan . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
-            $btn .= '<button onclick="modalAction(\'' . url('/dosen/kegiatan/' . $kegiatan->id_kegiatan . '/delete_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button> ';
-            return $btn;
-        })
-        ->rawColumns(['aksi'])
-        ->make(true);
+            ->addIndexColumn()
+            ->addColumn('aksi', function ($kegiatan) {
+                $btn = '<button onclick="modalAction(\'' . url('/dosen/kegiatan/' . $kegiatan->id_kegiatan . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
+                $btn .= '<button onclick="modalAction(\'' . url('/dosen/kegiatan/' . $kegiatan->id_kegiatan . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
+                $btn .= '<button onclick="modalAction(\'' . url('/dosen/kegiatan/' . $kegiatan->id_kegiatan . '/delete_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button> ';
+                return $btn;
+            })
+            ->rawColumns(['aksi'])
+            ->make(true);
     }
 
     public function show_ajaxDosenNonJTI($id)
     {
         $kegiatan = KegiatanModel::find($id);
-        $angggota = anggotaModel::select('id_kegiatan','id_anggota','id_user', 'id_jabatan_kegiatan')->where('id_kegiatan', $id)->with('user', 'jabatan')->get();
-    
+        $angggota = anggotaModel::select('id_kegiatan', 'id_anggota', 'id_user', 'id_jabatan_kegiatan')->where('id_kegiatan', $id)->with('user', 'jabatan')->get();
+
         if (!$kegiatan) {
             return response()->json(['message' => 'Data not found'], 404);
         }
 
-    
+
         return view('dosen.kegiatan.nonjti.show_ajax', ['kegiatan' => $kegiatan, 'anggota' => $angggota]);
     }
 
     public function confirm_ajaxAdmin($id)
     {
         $kegiatan = KegiatanModel::find($id);
-        return view('admin.kegiatan.confirm_ajax',['kegiatan' => $kegiatan]);
+        return view('admin.kegiatan.confirm_ajax', ['kegiatan' => $kegiatan]);
     }
 
     public function delete_ajaxAdmin($id)
@@ -869,7 +864,6 @@ class KegiatanController extends Controller
                         'status' => true,
                         'message' => 'Kegiatan berhasil dihapus beserta semua data terkait'
                     ]);
-
                 } catch (\Exception $e) {
                     DB::rollBack();
 
@@ -894,10 +888,72 @@ class KegiatanController extends Controller
     }
 
     public function getKegiatanEvents()
-{
-    $kegiatan = KegiatanModel::select('id_kegiatan as id', 'nama_kegiatan as title', 'deskripsi_kegiatan as description', 'tanggal_mulai as start', 'tanggal_selesai as end')
-                             ->get();
+    {
+        $kegiatan = KegiatanModel::select('id_kegiatan as id', 'nama_kegiatan as title', 'deskripsi_kegiatan as description', 'tanggal_mulai as start', 'tanggal_selesai as end')
+            ->get();
 
-    return response()->json($kegiatan);
-}
+        return response()->json($kegiatan);
+    }
+
+    // Proges Kegiatan
+    public function progresKegiatan()
+    {
+        $breadcrumb = (object) [
+            'title' => 'Progres Kegiatan',
+            'list' => ['Home', 'Progres Kegiatan'],
+        ];
+        $activeMenu = 'progres kegiatan pic';
+
+        $progresKegiatan = KegiatanModel::select('id_kegiatan', 'nama_kegiatan', 'progress')->get();
+
+        return view('dosenPIC.progresKegiatan.index', compact('breadcrumb', 'activeMenu', 'progresKegiatan'));
+    }
+
+    public function editProgresKegiatan($id)
+    {
+        $kegiatan = KegiatanModel::find($id);
+        if (!$kegiatan) {
+            return response()->json(['status' => false, 'message' => 'Kegiatan tidak ditemukan'], 404);
+        }
+
+        return response()->json(['status' => true, 'data' => $kegiatan]);
+    }
+
+    public function updateProgresKegiatan(Request $request, $id)
+    {
+        $kegiatan = KegiatanModel::find($id);
+        if (!$kegiatan) {
+            return response()->json(['status' => false, 'message' => 'Kegiatan tidak ditemukan'], 404);
+        }
+
+        $kegiatan->update($request->all());
+
+        return response()->json(['status' => true, 'message' => 'Progres kegiatan berhasil diperbarui']);
+    }
+
+    public function detailProgresKegiatan($id)
+    {
+        $kegiatan = KegiatanModel::find($id);
+        if (!$kegiatan) {
+            return response()->json(['status' => false, 'message' => 'Kegiatan tidak ditemukan'], 404);
+        }
+
+        return response()->json(['status' => true, 'data' => $kegiatan]);
+    }
+
+    public function listProgresKegiatan(Request $request)
+    {
+        if ($request->ajax()) {
+            $data = KegiatanModel::select('id_kegiatan', 'nama_kegiatan', 'progress')->get();
+            return DataTables::of($data)
+                ->addIndexColumn()
+                ->addColumn('aksi', function ($row) {
+                    $btn = '<button class="btn btn-sm btn-primary" onclick="editProgressKegiatan(' . $row->id_kegiatan . ')">Edit</button>';
+                    $btn .= ' <button class="btn btn-sm btn-info" onclick="detailProgressKegiatan(' . $row->id_kegiatan . ')">Detail</button>';
+                    return $btn;
+                })
+                ->rawColumns(['aksi'])
+                ->make(true);
+        }
+    }
 }

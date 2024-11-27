@@ -74,14 +74,4 @@ class StatistikController extends Controller
         $activeMenu = 'statistik anggota';
         return view('dosenAnggota.statistik.index', ['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu]);
     }
-
-    // public function exportPdf()
-    // {
-    //     $kegiatan = StatistikModel::select('id_statistik', 'nama_dosen', 'deskripsi_kegiatan', 'tanggal_mulai', 'tanggal_selesai', 'tanggal_acara', 'tempat_kegiatan', 'jenis_kegiatan')->get();
-    //     $pdf = Pdf::loadView('admin.statistik.export_pdf', ['statistik' => $kegiatan]);
-    //     $pdf->setPaper('a4', 'portrait');
-    //     $pdf->setOption("isRemoteEnabled", true);
-    //     $pdf->render();
-    //     return $pdf->stream('Data Poin' . date('Y-m-d H:i:s') . '.pdf');
-    // }
 }

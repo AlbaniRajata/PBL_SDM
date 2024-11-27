@@ -171,35 +171,19 @@ Route::middleware('auth')->group(function () {
         });
 
         Route::prefix('agendaAnggota')->group(function () {
-            Route::get('/', [KegiatanController::class, 'agendaAnggota'])->name('dosenPIC.agendaAnggota.index');
+            Route::get('/', [KegiatanController::class, 'agendaAnggota'])->name('agendaAnggota.index');
+            Route::get('/edit/{id}', [KegiatanController::class, 'editAgendaAnggota'])->name('agendaAnggota.edit');
+            Route::get('/detail/{id}', [KegiatanController::class, 'detailAgendaAnggota'])->name('agendaAnggota.detail');
+            Route::delete('/delete/{id}', [KegiatanController::class, 'deleteAgendaAnggota'])->name('agendaAnggota.delete');
+            Route::put('/update/{id}', [KegiatanController::class, 'updateAgendaAnggota'])->name('agendaAnggota.update');
         });
 
-        Route::prefix('agendaAnggota')->group(function () {
-            Route::get('agendaAnggota/index', [KegiatanController::class, 'agendaAnggota'])->name('agendaAnggota.index');
-            Route::get('agendaAnggota/edit/{id}', [KegiatanController::class, 'editAgendaAnggota'])->name('agendaAnggota.edit_ajax');
-            Route::get('agendaAnggota/detail/{id}', [KegiatanController::class, 'detailAgendaAnggota'])->name('agendaAnggota.detail');
-            Route::delete('agendaAnggota/delete/{id}', [KegiatanController::class, 'deleteAgendaAnggota'])->name('agendaAnggota.delete');
+        Route::prefix('progresKegiatan')->group(function () {
+            Route::get('/', [KegiatanController::class, 'progresKegiatan'])->name('progresKegiatan.index');
+            Route::get('/edit/{id}', [KegiatanController::class, 'editProgresKegiatan'])->name('progresKegiatan.edit');
+            Route::patch('/update/{id}', [KegiatanController::class, 'updateProgresKegiatan'])->name('progresKegiatan.update');
+            Route::get('/detail/{id}', [KegiatanController::class, 'detailProgresKegiatan'])->name('progresKegiatan.detail');
+            Route::post('/list', [KegiatanController::class, 'listProgresKegiatan'])->name('dosenPIC.progresKegiatan.list');
         });
-    });
-
-    Route::prefix('agendaAnggota')->group(function () {
-        Route::get('/', [KegiatanController::class, 'agendaAnggota'])->name('agendaAnggota.index');
-        Route::get('/edit/{id}', [KegiatanController::class, 'editAgendaAnggota'])->name('agendaAnggota.edit');
-        Route::get('/detail/{id}', [KegiatanController::class, 'detailAgendaAnggota'])->name('agendaAnggota.detail');
-        Route::delete('/delete/{id}', [KegiatanController::class, 'deleteAgendaAnggota'])->name('agendaAnggota.delete');
-        Route::put('/update/{id}', [KegiatanController::class, 'updateAgendaAnggota'])->name('agendaAnggota.update');
     });
 });
-
-
-//Route dosenPIC
-// Index
-// Route::get('/dosenPIC/kegiatan',[KegiatanController::class, 'dosenPIC']);
-// Route::get('/dosenPIC/statistik',[StatistikController::class, 'dosenPIC']);
-// Route::get('dosenPIC/user', [UserController::class, 'dosenPIC']);
-// Route::post('/dosenPIC/kegiatan/list', [KegiatanController::class, 'list'])->name('dosenpic.kegiatan.list');
-
-//Route dosenAnggota
-// Index
-Route::get('/dosenAnggota/kegiatan', [KegiatanController::class, 'dosenAnggota']);
-Route::get('/dosenAnggota/statistik', [StatistikController::class, 'dosenAnggota']);

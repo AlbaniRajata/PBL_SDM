@@ -104,18 +104,12 @@
             </a>
           </li>
         @endif
-        @if($activeMenu  == "kegiatan pic" || $activeMenu == "statistik pic" || $activeMenu == "agenda")
+        @if($activeMenu  == "kegiatan pic" || $activeMenu == "statistik pic" || $activeMenu == "agenda anggota pic" || $activeMenu == "progres kegiatan pic")
         <li class="nav-header">Data Kegiatan</li>
           <li class="nav-item">
             <a href="{{ url('dosenPIC/kegiatan')}}" class="nav-link {{($activeMenu == 'kegiatan pic')? 'active' : ''}}">
               <i class="nav-icon fa-regular fa-calendar-check"></i>
               <p>Kegiatan</p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="{{ url('progresKegiatan/index')}}" class="nav-link {{($activeMenu == 'agenda anggota pic')? 'active' : ''}}">
-              <i class="nav-icon fas fa-solid fa-list-check"></i>
-              <p>Progress Kegiatan </p>
             </a>
           </li>
             <li class="nav-item">
@@ -124,6 +118,12 @@
               <p>Agenda Anggota </p>
             </a>
           </li>
+          <li class="nav-item">
+            <a href="{{ url('dosenPIC/progresKegiatan')}}" class="nav-link {{($activeMenu == 'progres kegiatan pic')? 'active' : ''}}">
+              <i class="nav-icon fas fa-chart-line"></i>
+              <p>Progres Kegiatan </p>
+            </a>
+        </li>
           @endif
           @if($activeMenu  == "kegiatan anggota" || $activeMenu == "statistik anggota" || $activeMenu == "agenda") 
         <li class="nav-header">Data Kegiatan</li>
