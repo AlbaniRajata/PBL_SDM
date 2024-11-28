@@ -21,8 +21,6 @@ use App\Http\Controllers\ContactController;
 |
 */
 
-Route::pattern('id', '[0-9]+');
-
 Route::get('login', [AuthController::class, 'login'])->name('login');
 Route::post('login', [AuthController::class, 'postlogin']);
 Route::get('logout', [AuthController::class, 'logout'])->middleware('auth');
@@ -34,8 +32,13 @@ Route::get('/api/kegiatan/events', [KegiatanController::class, 'getKegiatanEvent
 // Route::get('/', [DashboardController::class, 'index']);
 Route::middleware('auth')->group(function () {
 
-    Route::middleware('authorize:admin,dosen,pimpinan')->group(function () {
+    Route::middleware('redirect.if.not.admin.or.pimpinan')->group(function () {
         Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/contact', [ContactController::class, 'index'])->name('contact.index');
+    });
+
+    Route::middleware('authorize:dosen')->group(function () {
+        Route::get('/dashboard-dosen', [DashboardController::class, 'indexDosen'])->name('dashboard.dosen');
         Route::get('/contact', [ContactController::class, 'index'])->name('contact.index');
     });
 
