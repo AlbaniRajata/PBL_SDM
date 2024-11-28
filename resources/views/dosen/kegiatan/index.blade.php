@@ -3,9 +3,6 @@
 <div class="card card-outline card-primary">
     <div class="card-header">
         <h3 class="card-title">Daftar Kegiatan</h3>
-        <div class="card-tools">
-            <button onclick="modalAction('{{ url('/dosen/kegiatan/create_ajax') }}')" class="btn btn-sm btn-success mt-1">Tambah Ajax</button>
-        </div>
     </div>
     <div class="card-body">
         @if (session('success'))
