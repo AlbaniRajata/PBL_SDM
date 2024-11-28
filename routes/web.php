@@ -115,6 +115,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/', [UserController::class, 'pimpinan']);
             Route::post('/list', [UserController::class, 'listPimpinan'])->name('pimpinan.user.list');
             Route::get('/{id}/show_ajax', [UserController::class, 'show_ajaxPimpinan'])->name('pimpinan.user.show_ajax');
+            Route::get('/export_pdf', [UserController::class, 'exportPdf'])->name('admin.user.export_pdf');
         });
 
         Route::prefix('kegiatan')->group(function () {

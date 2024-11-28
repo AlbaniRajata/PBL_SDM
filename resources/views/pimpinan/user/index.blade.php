@@ -3,6 +3,9 @@
 <div class="card card-outline card-primary">
     <div class="card-header">
         <h3 class="card-title">Daftar user</h3>
+        <div class="card-tools">
+            <a href="{{ route('admin.user.export_pdf') }}" class="btn btn-sm btn-warning mt-1"><i class="fa fa-file-pdf"></i> Export Pengguna (PDF)</a>
+        </div>
     </div>
     <div class="card-body">
         @if (session('success'))

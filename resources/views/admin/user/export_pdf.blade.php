@@ -1,88 +1,87 @@
-<!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Laporan Data Pengguna</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
+            font-family: "Times New Roman", Times, serif;
+            margin: 6px 20px 5px 20px;
+            line-height: 15px;
         }
-        .border-all, .border-all th, .border-all td {
-            border: 1px solid;
+        table {
+            width: 100%;
+            border-collapse: collapse;
         }
-        .logo-image {
-            max-width: 100px;
-            max-height: 100px;
-            width: auto;
-            height: auto;
-            object-fit: contain;
+        td,
+        th {
+            padding: 4px 3px;
         }
-        .text-center {
-            text-align: center;
-        }
-        .font-11 {
-            font-size: 15px;
-        }
-        .font-13 {
-            font-size: 14px;
-        }
-        .font-10 {
-            font-size: 12px;
-        }
-        .font-bold {
-            font-weight: bold;
-        }
-        .mb-1 {
-            margin-bottom: 1px;
+        th {
+            text-align: left;
         }
         .d-block {
             display: block;
         }
-        .table-container {
-            width: 100%;
-            margin-top: 20px;
+        img.image {
+            width: auto;
+            height: 80px;
+            max-width: 150px;
+            max-height: 150px;
         }
-        th, td {
-            padding: 8px;
+        .text-right {
+            text-align: right;
+        }
+        .text-center {
             text-align: center;
         }
-        h3 {
-            margin-top: 20px;
-            margin-bottom: 20px;
+        .p-1 {
+            padding: 5px 1px 5px 1px;
         }
-        .header-container {
-            text-align: center;
+        .font-10 {
+            font-size: 10pt;
         }
-        .header-table {
-            width: 100%;
+        .font-11 {
+            font-size: 11pt;
+        }
+        .font-12 {
+            font-size: 12pt;
+        }
+        .font-13 {
+            font-size: 13pt;
+        }
+        .border-bottom-header {
+            border-bottom: 1px solid;
+        }
+        .border-all,
+        .border-all th,
+        .border-all td {
+            border: 1px solid;
         }
     </style>
 </head>
 <body>
-    <div class="header-container">
-        <table class="header-table">
+        <table class="border-bottom-header">
             <tr>
-                <td width="15%" class="text-center">
-                    <img class="logo-image" src="{{ asset('polinema.png') }}">
-                </td>
+                <td width="15%" class="text-center"><img class="image" id="image" src="{{ asset('polinema.png') }}"></td>
                 <td width="85%">
-                    <span class="font-11 font-bold d-block mb-1">KEMENTERIAN PENDIDIKAN, KEBUDAYAAN, RISET, DAN TEKNOLOGI</span>
-                    <span class="font-13 font-bold d-block mb-1">POLITEKNIK NEGERI MALANG</span>
-                    <span class="font-10 d-block">JL, Soekarno-Hatta No.9 Malang 65141</span>
-                    <span class="font-10 d-block">Telepon (0341) 404424 Pes. 101-105 0341-404420, Fax. (0341) 404420</span>
-                    <span class="font-10 d-block">Laman: www.polinema.ac.id</span>
+                    <span class="text-center d-block font-11 font-bold mb-1">KEMENTERIAN
+                        PENDIDIKAN, KEBUDAYAAN, RISET, DAN TEKNOLOGI</span>
+                    <span class="text-center d-block font-13 font-bold mb-1">POLITEKNIK NEGERI
+                        MALANG</span>
+                    <span class="text-center d-block font-10">Jl. Soekarno-Hatta No. 9 Malang
+                        65141</span>
+                    <span class="text-center d-block font-10">Telepon (0341) 404424 Pes. 101-
+                        105, 0341-404420, Fax. (0341) 404420</span>
+                    <span class="text-center d-block font-10">Laman: www.polinema.ac.id</span>
                 </td>
             </tr>
         </table>
-    </div>
     <h3 class="text-center">LAPORAN DATA PENGGUNA</h3>
-    <div class="table-container">
-        <table class="border-all" width="100%">
+        <table class="border-all">
             <thead>
                 <tr>
-                    <th>ID Pengguna</th>
+                    <th class="text-center">ID Pengguna</th>
                     <th>Username</th>
                     <th>Nama</th>
                     <th>Email</th>
@@ -103,6 +102,5 @@
                 @endforeach
             </tbody>
         </table>
-    </div>
 </body>
 </html>
