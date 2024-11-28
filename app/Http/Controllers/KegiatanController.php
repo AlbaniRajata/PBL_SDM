@@ -875,7 +875,7 @@ class KegiatanController extends Controller
             'title' => 'Agenda Anggota',
             'list' => ['Home', 'Agenda Anggota'],
         ];
-        $activeMenu = 'agenda_anggota';
+        $activeMenu = 'agenda anggota';
 
         $agendaAnggota = DB::table('t_kegiatan')
             ->join('t_anggota', 't_kegiatan.id_kegiatan', '=', 't_anggota.id_kegiatan')
