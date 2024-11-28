@@ -68,7 +68,7 @@ Route::middleware('auth')->group(function () {
             Route::put('/{id}/update_ajax', [KegiatanController::class, 'updateAjaxAdmin'])->name('admin.kegiatan.update_ajax');
             Route::get('/export_pdf', [KegiatanController::class, 'exportPdf'])->name('admin.kegiatan.export_pdf');
             Route::get('/{id}/export_word', [KegiatanController::class, 'exportWord'])->name('admin.kegiatan.export_word');
-            Route::post('/{id}/upload_surat_tugas', [KegiatanController::class, 'uploadSuratTugas'])->name('admin.kegiatan.upload_surat_tugas');
+            Route::post('/upload', [KegiatanController::class, 'uploadFile'])->name('kegiatan.upload');
             Route::delete('/{id}/delete_ajax', [KegiatanController::class, 'delete_ajaxAdmin'])->name('admin.kegiatan.confirm_ajax');
             Route::get('/{id}/delete_ajax', [KegiatanController::class, 'confirm_ajaxAdmin'])->name('admin.kegiatan.confirm_ajax');
             Route::delete('/{id}/confirm_ajax', [KegiatanController::class, 'delete_ajaxAdmin'])->name('admin.kegiatan.confirm_ajax');
@@ -116,16 +116,16 @@ Route::middleware('auth')->group(function () {
             Route::get('/', [UserController::class, 'pimpinan']);
             Route::post('/list', [UserController::class, 'listPimpinan'])->name('pimpinan.user.list');
             Route::get('/{id}/show_ajax', [UserController::class, 'show_ajaxPimpinan'])->name('pimpinan.user.show_ajax');
-            Route::get('/export_pdf', [UserController::class, 'exportPdf'])->name('admin.user.export_pdf');
+            Route::get('/export_pdf', [UserController::class, 'exportPdf'])->name('pimpinan.user.export_pdf');
         });
 
         Route::prefix('kegiatan')->group(function () {
             Route::get('/', [KegiatanController::class, 'pimpinan']);
             Route::post('/list', [KegiatanController::class, 'listPimpinan'])->name('pimpinan.kegiatan.list');
             Route::get('/{id}/show_ajax', [KegiatanController::class, 'show_ajaxPimpinan'])->name('pimpinan.kegiatan.show_ajax');
-            Route::get('/{id}/export_word', [KegiatanController::class, 'exportWord'])->name('admin.kegiatan.export_word');
-            Route::get('/export_pdf', [KegiatanController::class, 'exportPdf'])->name('admin.kegiatan.export_pdf');
-            Route::get('/export_excel', [KegiatanController::class, 'exportExcel'])->name('admin.kegiatan.export_excel');
+            Route::get('/{id}/export_word', [KegiatanController::class, 'exportWord'])->name('pimpinan.kegiatan.export_word');
+            Route::get('/export_pdf', [KegiatanController::class, 'exportPdf'])->name('pimpinan.kegiatan.export_pdf');
+            Route::get('/export_excel', [KegiatanController::class, 'exportExcel'])->name('pimpinan.kegiatan.export_excel');
         });
 
         Route::prefix('statistik')->group(function () {

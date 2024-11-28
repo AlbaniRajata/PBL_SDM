@@ -474,7 +474,7 @@ class KegiatanController extends Controller
                 'jabatan_id' => 'required|array',
                 'anggota_id' => 'required|array',
             ]);
-
+    
             if ($validator->fails()) {
                 return response()->json([
                     'status' => false,
@@ -482,12 +482,12 @@ class KegiatanController extends Controller
                     'msgField' => $validator->errors()
                 ]);
             }
-
+    
             $kegiatan = KegiatanModel::find($id);
             if (!$kegiatan) {
                 return response()->json(['status' => false, 'message' => 'Kegiatan tidak ditemukan'], 404);
             }
-
+    
             $kegiatan->update([
                 'nama_kegiatan' => $request->nama_kegiatan,
                 'jenis_kegiatan' => $request->jenis_kegiatan,
@@ -496,28 +496,33 @@ class KegiatanController extends Controller
                 'tanggal_selesai' => $request->tanggal_selesai,
                 'tanggal_acara' => $request->tanggal_acara,
             ]);
-
+    
             // Update anggota
-            // AnggotaModel::where('id_kegiatan', $id);
-            // foreach ($request->anggota_id as $index => $anggota_id) {
-            //     AnggotaModel::create([
-            //         'id_kegiatan' => $kegiatan->id_kegiatan,
-            //         'id_user' => $anggota_id,
-            //         'id_jabatan_kegiatan' => $request->jabatan_id[$index],
-            //     ]);
-            // }
-            $index = 0;
-            foreach ($request->anggota_id as $ag) {
-                $check = AnggotaModel::select('id_anggota', 'id_kegiatan', 'id_user', 'id_jabatan_kegiatan')->where('id_kegiatan', $id)->where('id_user', $request->anggota_id[$index])->get();
-                if ($check) {
-                    $check->update([
-                        'id_user' => $request->anggota_id[$index],
-                        'id_jabatan_kegiatan' => $request->jabatan_id[$index]
+            $existingAnggotaIds = AnggotaModel::where('id_kegiatan', $id)->pluck('id_user')->toArray();
+    
+            foreach ($request->anggota_id as $index => $anggota_id) {
+                if (in_array($anggota_id, $existingAnggotaIds)) {
+                    // Update existing anggota
+                    AnggotaModel::where('id_kegiatan', $id)
+                        ->where('id_user', $anggota_id)
+                        ->update([
+                            'id_jabatan_kegiatan' => $request->jabatan_id[$index]
+                        ]);
+                } else {
+                    // Create new anggota
+                    AnggotaModel::create([
+                        'id_kegiatan' => $id,
+                        'id_user' => $anggota_id,
+                        'id_jabatan_kegiatan' => $request->jabatan_id[$index],
                     ]);
-                    $index++;
                 }
             }
-
+    
+            // Remove anggota that are no longer in the request
+            AnggotaModel::where('id_kegiatan', $id)
+                ->whereNotIn('id_user', $request->anggota_id)
+                ->delete();
+    
             return response()->json([
                 'status' => true,
                 'message' => 'Kegiatan berhasil diperbarui'
@@ -1092,28 +1097,38 @@ class KegiatanController extends Controller
     }
 
     // function upload surat tugas
-    public function uploadSuratTugas(Request $request, $id)
+    public function uploadSurat(Request $request)
     {
+        // Validate the incoming file
         $request->validate([
-            'dokumen' => 'required|file|mimes:pdf,doc,docx|max:2048',
+            'file' => 'required|mimes:pdf,doc,docx,xls,xlsx|max:2048', // File type and size validation
+            'id_kegiatan' => 'required|exists:t_kegiatan,id_kegiatan',
         ]);
 
-        $kegiatan = KegiatanModel::find($id);
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            
+            // Generate a unique filename
+            $filename = time() . '_' . $file->getClientOriginalName();
+            
+            // Store file in the 'dokumen' directory within the 'public' disk
+            $path = $file->storeAs('dokumen', $filename, 'public');
 
-        if ($request->hasFile('dokumen')) {
-            $file = $request->file('dokumen');
-            $path = $file->store('surat_tugas', 'public');
-
-            // Save the file path to the t_dokumen table
-            DokumenModel::create([
-                'id_kegiatan' => $kegiatan->id_kegiatan,
-                'file_path' => $path,
+            // Create a new document record in the database
+            $dokumen = DokumenModel::create([
+                'id_kegiatan' => $request->id_kegiatan,
                 'nama_dokumen' => $file->getClientOriginalName(),
-                'progress' => 0,
+                'file_path' => $path,
+                'progress' => 0, // Default progress
             ]);
+
+            // Optional: You can add more sophisticated error handling
+            if ($dokumen) {
+                return back()->with('success', 'File berhasil diupload.');
+            }
         }
 
-        return response()->json(['success' => true]);
+        return back()->with('error', 'Gagal mengupload file.');
     }
 
     // fungsi agenda kegiatan

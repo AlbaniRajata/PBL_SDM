@@ -84,11 +84,8 @@
     <!-- ./wrapper -->
     {{-- push javascript if exist --}}
 
-    <!-- CSS DataTables -->
-    <link rel="stylesheet" href="path/to/dataTables.bootstrap4.min.css">
     <!-- jQuery -->
     <script src="{{ url('plugins/jquery/jquery.min.js') }}"></script>
-    <script src="{{ url('path/to/jquery.min.js')}}"></script>
     <!-- Bootstrap 4 -->
     <script src="{{ url('plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
     <!-- DataTables & Plugins -->
@@ -112,8 +109,6 @@
     <!-- AdminLTE App -->
     <script src="{{ url('dist/js/adminlte.min.js') }}"></script>
     <!-- DataTables JS -->
-    <script src="{{ url('path/to/jquery.dataTables.min.js')}}"></script>
-    <script src="{{ url('path/to/dataTables.bootstrap4.min.js')}}"></script>
     <script>
         $.ajaxSetup({
             headers: {
