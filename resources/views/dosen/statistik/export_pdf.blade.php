@@ -1,9 +1,7 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <h2 class="text-center font-bold">Laporan Poin Dosen</h2>
     <style>
         .border-all, .border-all th, .border-all td {
             border: 1px solid;
@@ -41,11 +39,6 @@
             border-collapse: collapse;
             margin-top: 20px;
         }
-        th, td {
-            padding: 8px;
-            text-align: left;
-            border: 1px solid #ddd;
-        }
         th {
             background-color: #f2f2f2;
         }
@@ -54,11 +47,10 @@
 
 <body>
     <!-- Header Section -->
-    <table class="border-bottom-header">
+    <table>
         <tr>
             <td width="15%" class="text-center"><img class="image" id="image"
                     src="{{ public_path('polinema.png') }}"></td>
-            </td>
             <td width="85%">
                 <span class="text-center d-block font-11 font-bold mb-1">KEMENTERIAN PENDIDIKAN, KEBUDAYAAN, RISET, DAN
                     TEKNOLOGI</span>
@@ -70,7 +62,8 @@
             </td>
         </tr>
     </table>
-    <table>
+    <h2 class="text-center font-bold">Laporan Statistik Dosen</h2>
+    <table class="border-all">
         <thead>
             <tr>
                 <th>No</th>
@@ -94,3 +87,5 @@
             @endforelse
         </tbody>
     </table>
+</body>
+</html>

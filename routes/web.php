@@ -165,6 +165,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/', [StatistikController::class, 'dosen']);
             Route::post('/list', [StatistikController::class, 'list'])->name('dosen.statistik.list');
             Route::get('/export_pdf', [StatistikController::class, 'exportPdf'])->name('dosen.statistik.export_pdf');
+            Route::get('/export_excel', [StatistikController::class, 'exportExcel'])->name('dosen.statistik.export_excel');
         });
     });
 
