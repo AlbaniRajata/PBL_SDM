@@ -16,6 +16,8 @@ use PhpOffice\PhpWord\PhpWord;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\DB;
+use carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class KegiatanController extends Controller
 {
@@ -47,7 +49,47 @@ class KegiatanController extends Controller
             'list' => ['Home', 'Kegiatan Dosen'],
         ];
         $activeMenu = 'kegiatan dosen';
-        return view('dosen.kegiatan.index', ['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu]);
+
+        // Ambil ID pengguna yang sedang login
+        $userId = Auth::id();
+
+        // Ambil data kegiatan yang terkait dengan pengguna yang sedang login
+        $kegiatanAkanDatang = KegiatanModel::whereHas('anggota', function ($query) use ($userId) {
+            $query->where('id_user', $userId);
+        })
+        ->where('tanggal_mulai', '>=', now())
+        ->get()
+        ->map(function ($kegiatan) {
+            $kegiatan->tanggal_mulai = Carbon::parse($kegiatan->tanggal_mulai);
+            return $kegiatan;
+        });
+
+        return view('dosen.kegiatan.index', [
+            'breadcrumb' => $breadcrumb,
+            'activeMenu' => $activeMenu,
+            'kegiatanAkanDatang' => $kegiatanAkanDatang
+        ]);
+    }
+
+    public function data(Request $request)
+    {
+        if ($request->ajax()) {
+            // Ambil ID pengguna yang sedang login
+            $userId = Auth::id();
+
+            // Ambil data kegiatan yang terkait dengan pengguna yang sedang login
+            $query = KegiatanModel::whereHas('anggota', function ($query) use ($userId) {
+                $query->where('id_user', $userId);
+            });
+
+            if ($request->has('jenis_kegiatan') && $request->jenis_kegiatan != '') {
+                $query->where('jenis_kegiatan', $request->jenis_kegiatan);
+            }
+
+            return DataTables::of($query)
+                ->addIndexColumn()
+                ->make(true);
+        }
     }
 
     public function dosenPIC()
@@ -57,6 +99,7 @@ class KegiatanController extends Controller
             'list' => ['Home', 'Kegiatan PIC'],
         ];
         $activeMenu = 'kegiatan pic';
+
         return view('dosenPIC.kegiatan.index', ['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu]);
     }
 
