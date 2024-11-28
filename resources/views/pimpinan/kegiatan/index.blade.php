@@ -3,6 +3,10 @@
 <div class="card card-outline card-primary">
     <div class="card-header">
         <h3 class="card-title">Daftar Kegiatan</h3>
+        <div class="card-tools">
+            <a href="{{ route('admin.kegiatan.export_excel') }}" class="btn btn-sm btn-primary mt-1"><i class="fa fa-file-excel"></i> Export Kegiatan (Excel)</a>
+            <a href="{{ route('admin.kegiatan.export_pdf') }}" class="btn btn-sm btn-warning mt-1"><i class="fa fa-file-pdf"></i> Export Kegiatan (PDF)</a>
+        </div>
     </div>
     <div class="card-body">
         @if (session('success'))
