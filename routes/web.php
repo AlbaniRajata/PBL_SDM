@@ -148,6 +148,8 @@ Route::middleware('auth')->group(function () {
             Route::get('/{id}/export_word', [KegiatanController::class, 'exportWordDosen'])->name('dosen.kegiatan.export_word');
             Route::post('/{id}/upload_surat_tugas', [KegiatanController::class, 'uploadSuratTugas'])->name('dosen.kegiatan.upload_surat_tugas');
             Route::get('/data', [KegiatanController::class, 'data'])->name('dosen.kegiatan.data');
+            Route::get('/export_pdf', [KegiatanController::class, 'exportPdf_dosen'])->name('dosen.kegiatan.export_pdf');
+            Route::get('/export_excel', [KegiatanController::class, 'exportExcel_dosen'])->name('dosen.kegiatan.export_excel');
 
             //jti
             Route::get('/jti', [KegiatanController::class, 'KegiatanJTI']);
