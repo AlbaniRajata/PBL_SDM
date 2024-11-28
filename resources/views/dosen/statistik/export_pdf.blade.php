@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -8,7 +9,7 @@
             border: 1px solid;
         }
         .image {
-            max-width: 90px;
+            max-width: 90px; 
             max-height: 90px;
             width: auto;
             height: auto;
@@ -40,6 +41,11 @@
             border-collapse: collapse;
             margin-top: 20px;
         }
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
         th {
             background-color: #f2f2f2;
         }
@@ -60,7 +66,7 @@
             </td>
         </tr>
     </table>
-    <h2 class="text-center font-bold">Laporan Statistik Dosen</h2>
+    <h2 class="text-center font-bold">Laporan Poin Dosen</h2>
     <table>
         <thead>
             <tr>

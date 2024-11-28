@@ -103,6 +103,7 @@ class StatistikController extends Controller
                 ->get();
 
             $view = 'admin.statistik.export_pdf';
+            $totalPoin = $data->sum('total_poin');
         } elseif ($userLevel === 'pimpinan') {
             $data = DB::table('t_user')
                 ->leftJoin('t_anggota', 't_user.id_user', '=', 't_anggota.id_user')
@@ -115,7 +116,7 @@ class StatistikController extends Controller
                 ->where('t_user.level', 'dosen')
                 ->groupBy('t_user.nama')
                 ->get();
-
+            $totalPoin = $data->sum('total_poin');
             $view = 'pimpinan.statistik.export_pdf';
         } elseif ($userLevel === 'dosen') {
             $userId = Auth::id();
@@ -133,7 +134,7 @@ class StatistikController extends Controller
                 ->where('t_user.id_user', $userId)
                 ->get();
 
-            $totalPoin = $data->sum('poin');
+            $totalPoin = $data->sum('poin'); // Calculate total points for dosen
             $view = 'dosen.statistik.export_pdf';
         } else {
             return redirect()->back()->with('error', 'Level pengguna tidak dikenali.');
