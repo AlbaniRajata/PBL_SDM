@@ -13,9 +13,13 @@ use App\Models\AnggotaModel;
 use App\Models\JabatanKegiatanModel;
 use App\Models\AgendaAnggotaModel;
 use PhpOffice\PhpWord\PhpWord;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\DB;
+use carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class KegiatanController extends Controller
 {
@@ -47,7 +51,47 @@ class KegiatanController extends Controller
             'list' => ['Home', 'Kegiatan Dosen'],
         ];
         $activeMenu = 'kegiatan dosen';
-        return view('dosen.kegiatan.index', ['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu]);
+
+        // Ambil ID pengguna yang sedang login
+        $userId = Auth::id();
+
+        // Ambil data kegiatan yang terkait dengan pengguna yang sedang login
+        $kegiatanAkanDatang = KegiatanModel::whereHas('anggota', function ($query) use ($userId) {
+            $query->where('id_user', $userId);
+        })
+        ->where('tanggal_mulai', '>=', now())
+        ->get()
+        ->map(function ($kegiatan) {
+            $kegiatan->tanggal_mulai = Carbon::parse($kegiatan->tanggal_mulai);
+            return $kegiatan;
+        });
+
+        return view('dosen.kegiatan.index', [
+            'breadcrumb' => $breadcrumb,
+            'activeMenu' => $activeMenu,
+            'kegiatanAkanDatang' => $kegiatanAkanDatang
+        ]);
+    }
+
+    public function data(Request $request)
+    {
+        if ($request->ajax()) {
+            // Ambil ID pengguna yang sedang login
+            $userId = Auth::id();
+
+            // Ambil data kegiatan yang terkait dengan pengguna yang sedang login
+            $query = KegiatanModel::whereHas('anggota', function ($query) use ($userId) {
+                $query->where('id_user', $userId);
+            });
+
+            if ($request->has('jenis_kegiatan') && $request->jenis_kegiatan != '') {
+                $query->where('jenis_kegiatan', $request->jenis_kegiatan);
+            }
+
+            return DataTables::of($query)
+                ->addIndexColumn()
+                ->make(true);
+        }
     }
 
     public function dosenPIC()
@@ -57,6 +101,7 @@ class KegiatanController extends Controller
             'list' => ['Home', 'Kegiatan PIC'],
         ];
         $activeMenu = 'kegiatan pic';
+
         return view('dosenPIC.kegiatan.index', ['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu]);
     }
 
@@ -70,7 +115,60 @@ class KegiatanController extends Controller
         return view('dosenAnggota.kegiatan.index', ['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu]);
     }
 
+    public function dataDosenA(Request $request)
+    {
+        // Pastikan request adalah Ajax
+        if ($request->ajax()) {
+            // Ambil ID pengguna yang sedang login
+            $userId = Auth::id();
 
+            // Ambil data kegiatan yang terkait dengan pengguna yang sedang login
+            $query = KegiatanModel::with(['anggota.user', 'anggota.jabatan'])
+                ->whereHas('anggota', function ($query) use ($userId) {
+                    $query->where('id_user', $userId);
+                });
+
+            // Filter berdasarkan jenis kegiatan jika ada
+            if ($request->filled('jenis_kegiatan')) {
+                $query->where('jenis_kegiatan', $request->jenis_kegiatan);
+            }
+
+            return DataTables::of($query)
+                ->addIndexColumn()
+                // Kolom PIC
+                ->addColumn('pic', function($row) {
+                    // Perbaikan: Gunakan null coalescing dan safe navigation
+                    $pic = optional($row->anggota->firstWhere('jabatan.jabatan', 'PIC'))->user;
+                    return $pic ? $pic->nama : '-';
+                })
+                // Kolom Tanggal Mulai
+                ->editColumn('tanggal_mulai', function($row) {
+                    return $row->tanggal_mulai ? \Carbon\Carbon::parse($row->tanggal_mulai)->format('d-M-Y') : '-';
+                })
+                // Kolom Tanggal Selesai
+                ->editColumn('tanggal_selesai', function($row) {
+                    return $row->tanggal_selesai ? \Carbon\Carbon::parse($row->tanggal_selesai)->format('d-M-Y') : '-';
+                })
+                // Kolom Aksi
+                ->addColumn('aksi', function($row){
+                    $editUrl = url('/kegiatan/'.$row->id_kegiatan.'/edit_ajax');
+                    $deleteUrl = url('/kegiatan/'.$row->id_kegiatan.'/delete_ajax');
+                    
+                    $btn = '<div class="btn-group">';
+                    $btn .= '<button onclick="modalAction(\''.$editUrl.'\')" class="btn btn-sm btn-primary">Edit</button>';
+                    $btn .= '<button onclick="deleteAction(\''.$deleteUrl.'\')" class="btn btn-sm btn-danger">Delete</button>';
+                    $btn .= '</div>';
+                    
+                    return $btn;
+                })
+                // Izinkan kolom aksi mengandung HTML
+                ->rawColumns(['aksi', 'surat_tugas'])
+                ->make(true);
+        }
+
+        // Kembalikan response jika bukan ajax
+        return response()->json(['error' => 'Invalid request'], 400);
+    }
 
     // function list
     public function listAdmin(Request $request)
@@ -607,6 +705,67 @@ class KegiatanController extends Controller
         return $pdf->stream('Data Kegiatan ' . date('Y-m-d H:i:s') . '.pdf');
     }
 
+    public function exportExcel()
+    {
+        $kegiatan = KegiatanModel::with(['anggota.user', 'anggota.jabatan'])->get();
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet(); // Get the active sheet
+
+        // Set Header Columns
+        $sheet->setCellValue('A1', 'No');
+        $sheet->setCellValue('B1', 'ID Kegiatan');
+        $sheet->setCellValue('C1', 'Nama Kegiatan');
+        $sheet->setCellValue('D1', 'Tanggal Mulai');
+        $sheet->setCellValue('E1', 'Tanggal Selesai');
+        $sheet->setCellValue('F1', 'Nama Anggota');
+        $sheet->setCellValue('G1', 'Jabatan');
+
+        // Make header bold
+        $sheet->getStyle('A1:G1')->getFont()->setBold(true);
+
+        $no = 1; // Data number starts from 1
+        $row = 2; // Data row starts from row 2
+        foreach ($kegiatan as $keg) {
+            foreach ($keg->anggota as $anggota) {
+                $sheet->setCellValue('A' . $row, $no);
+                $sheet->setCellValue('B' . $row, $keg->id_kegiatan);
+                $sheet->setCellValue('C' . $row, $keg->nama_kegiatan);
+                $sheet->setCellValue('D' . $row, $keg->tanggal_mulai ? $keg->tanggal_mulai : '-');
+                $sheet->setCellValue('E' . $row, $keg->tanggal_selesai ? $keg->tanggal_selesai : '-');
+                $sheet->setCellValue('F' . $row, $anggota->user->nama);
+                $sheet->setCellValue('G' . $row, $anggota->jabatan->jabatan);
+                $row++;
+                $no++;
+            }
+        }
+
+        // Set auto column width for all columns
+        foreach (range('A', 'G') as $columnID) {
+            $sheet->getColumnDimension($columnID)->setAutoSize(true);
+        }
+
+        // Set sheet title
+        $sheet->setTitle('Data Kegiatan');
+
+        // Create writer
+        $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+        $filename = 'Data_Kegiatan_' . date('Y-m-d_H-i-s') . '.xlsx';
+
+        // Set headers for download
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="' . $filename . '"');
+        header('Cache-Control: max-age=0');
+        header('Cache-Control: max-age=1');
+        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+        header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
+        header('Cache-Control: cache, must-revalidate');
+        header('Pragma: public');
+
+        // Save file to output
+        $writer->save('php://output');
+        exit;
+    }
+
     // function export word
     public function exportWord($id)
     {
@@ -832,7 +991,7 @@ class KegiatanController extends Controller
             'title' => 'Agenda Anggota',
             'list' => ['Home', 'Agenda Anggota'],
         ];
-        $activeMenu = 'agenda_anggota';
+        $activeMenu = 'agenda anggota';
 
         $agendaAnggota = DB::table('t_kegiatan')
             ->join('t_anggota', 't_kegiatan.id_kegiatan', '=', 't_anggota.id_kegiatan')

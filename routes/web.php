@@ -21,8 +21,6 @@ use App\Http\Controllers\ContactController;
 |
 */
 
-Route::pattern('id', '[0-9]+');
-
 Route::get('login', [AuthController::class, 'login'])->name('login');
 Route::post('login', [AuthController::class, 'postlogin']);
 Route::get('logout', [AuthController::class, 'logout'])->middleware('auth');
@@ -33,10 +31,14 @@ Route::get('/api/kegiatan/events', [KegiatanController::class, 'getKegiatanEvent
 
 // Route::get('/', [DashboardController::class, 'index']);
 Route::middleware('auth')->group(function () {
+    Route::get('/contact', [ContactController::class, 'index'])->name('contact.index');
 
-    Route::middleware('authorize:admin,dosen,pimpinan')->group(function () {
+    Route::middleware('redirect.if.not.admin.or.pimpinan')->group(function () {
         Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
-        Route::get('/contact', [ContactController::class, 'index'])->name('contact.index');
+    });
+
+    Route::middleware('authorize:dosen')->group(function () {
+        Route::get('/dashboard-dosen', [DashboardController::class, 'indexDosen'])->name('dashboard.dosen');
     });
 
     Route::group(['prefix' => 'admin', 'middleware' => ['authorize:admin']], function () {
@@ -70,6 +72,7 @@ Route::middleware('auth')->group(function () {
             Route::delete('/{id}/delete_ajax', [KegiatanController::class, 'delete_ajaxAdmin'])->name('admin.kegiatan.confirm_ajax');
             Route::get('/{id}/delete_ajax', [KegiatanController::class, 'confirm_ajaxAdmin'])->name('admin.kegiatan.confirm_ajax');
             Route::delete('/{id}/confirm_ajax', [KegiatanController::class, 'delete_ajaxAdmin'])->name('admin.kegiatan.confirm_ajax');
+            Route::get('/export_excel', [KegiatanController::class, 'exportExcel'])->name('admin.kegiatan.export_excel');
         });
 
         Route::prefix('jabatan')->group(function () {
@@ -112,12 +115,16 @@ Route::middleware('auth')->group(function () {
             Route::get('/', [UserController::class, 'pimpinan']);
             Route::post('/list', [UserController::class, 'listPimpinan'])->name('pimpinan.user.list');
             Route::get('/{id}/show_ajax', [UserController::class, 'show_ajaxPimpinan'])->name('pimpinan.user.show_ajax');
+            Route::get('/export_pdf', [UserController::class, 'exportPdf'])->name('admin.user.export_pdf');
         });
 
         Route::prefix('kegiatan')->group(function () {
             Route::get('/', [KegiatanController::class, 'pimpinan']);
             Route::post('/list', [KegiatanController::class, 'listPimpinan'])->name('pimpinan.kegiatan.list');
             Route::get('/{id}/show_ajax', [KegiatanController::class, 'show_ajaxPimpinan'])->name('pimpinan.kegiatan.show_ajax');
+            Route::get('/{id}/export_word', [KegiatanController::class, 'exportWord'])->name('admin.kegiatan.export_word');
+            Route::get('/export_pdf', [KegiatanController::class, 'exportPdf'])->name('admin.kegiatan.export_pdf');
+            Route::get('/export_excel', [KegiatanController::class, 'exportExcel'])->name('admin.kegiatan.export_excel');
         });
 
         Route::prefix('statistik')->group(function () {
@@ -140,6 +147,7 @@ Route::middleware('auth')->group(function () {
             Route::delete('/{id}/delete_ajax', [KegiatanController::class, 'deleteAjaxDosen'])->name('dosen.kegiatan.delete_ajax');
             Route::get('/{id}/export_word', [KegiatanController::class, 'exportWordDosen'])->name('dosen.kegiatan.export_word');
             Route::post('/{id}/upload_surat_tugas', [KegiatanController::class, 'uploadSuratTugas'])->name('dosen.kegiatan.upload_surat_tugas');
+            Route::get('/data', [KegiatanController::class, 'data'])->name('dosen.kegiatan.data');
 
             //jti
             Route::get('/jti', [KegiatanController::class, 'KegiatanJTI']);
@@ -191,6 +199,19 @@ Route::middleware('auth')->group(function () {
             Route::patch('/update/{id}', [KegiatanController::class, 'updateProgresKegiatan'])->name('progresKegiatan.update');
             Route::get('/detail/{id}', [KegiatanController::class, 'detailProgresKegiatan'])->name('progresKegiatan.detail');
             Route::post('/list', [KegiatanController::class, 'listProgresKegiatan'])->name('dosenPIC.progresKegiatan.list');
+        });
+    });
+
+    Route::group(['prefix' => 'dosenAnggota', 'middleware' => ['authorize:dosenAnggota,dosen']], function () {
+        Route::prefix('kegiatan')->group(function () {
+        Route::get('/', [KegiatanController::class, 'dosenAnggota'])->name('dosenAnggota.kegiatan.index');
+        Route::post('/list', [KegiatanController::class, 'listDosenAnggota'])->name('dosenAnggota.kegiatan.list');
+        Route::get('/{id}/show_ajax', [KegiatanController::class, 'show_ajaxDosenAnggota'])->name('dosenAnggota.kegiatan.show_ajax');
+        Route::post('/ajax', [KegiatanController::class, 'storeDosenAnggota'])->name('dosenAnggota.storeAjax');
+        Route::get('/{id}/edit_ajax', [KegiatanController::class, 'editAjaxDosenAnggota'])->name('dosenAnggota.kegiatan.edit_ajax');
+        Route::put('/{id}/update_ajax', [KegiatanController::class, 'updateAjaxDosenAnggota'])->name('dosenAnggota.kegiatan.update_ajax');
+        Route::get('/{id}/delete_ajax', [KegiatanController::class, 'deleteAjaxDosenAnggota'])->name('dosenAnggota.kegiatan.delete_ajax');
+        Route::get('/dataDosenA', [KegiatanController::class, 'dataDosenA'])->name('dosenAnggota.kegiatan.dataDosenA');
         });
     });
 });
