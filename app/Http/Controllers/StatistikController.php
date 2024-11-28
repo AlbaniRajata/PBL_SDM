@@ -167,6 +167,52 @@ class StatistikController extends Controller
                 ->where('t_user.level', 'dosen')
                 ->groupBy('t_user.nama')
                 ->get();
+
+            // Create new Spreadsheet object
+            $spreadsheet = new Spreadsheet();
+            $sheet = $spreadsheet->getActiveSheet();
+
+            // Set document properties
+            $spreadsheet->getProperties()->setCreator('YourAppName')
+                ->setLastModifiedBy('YourAppName')
+                ->setTitle('Laporan Statistik Dosen')
+                ->setSubject('Laporan Statistik Dosen')
+                ->setDescription('Laporan Statistik Dosen')
+                ->setKeywords('pdf php')
+                ->setCategory('Laporan');
+
+            // Add some data
+            $sheet->setCellValue('A1', 'No');
+            $sheet->setCellValue('B1', 'Nama Dosen');
+            $sheet->setCellValue('C1', 'Total Kegiatan');
+            $sheet->setCellValue('D1', 'Total Poin');
+
+            // Make header bold
+            $sheet->getStyle('A1:D1')->getFont()->setBold(true);
+
+            // Populate data
+            $row = 2;
+            foreach ($data as $index => $item) {
+                $sheet->setCellValue('A' . $row, $index + 1);
+                $sheet->setCellValue('B' . $row, $item->nama);
+                $sheet->setCellValue('C' . $row, $item->total_kegiatan);
+                $sheet->setCellValue('D' . $row, $item->total_poin);
+                $row++;
+            }
+
+            // Align numbers to the left
+            $sheet->getStyle('A2:A' . $row)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
+
+            // Write the file
+            $writer = new Xlsx($spreadsheet);
+            $fileName = 'Statistik_' . ucfirst($userLevel) . '_' . date('Y-m-d_H:i:s') . '.xlsx';
+
+            // Redirect output to a client’s web browser (Excel2007)
+            header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            header('Content-Disposition: attachment;filename="' . $fileName . '"');
+            header('Cache-Control: max-age=0');
+            $writer->save('php://output');
+            exit;
         } elseif ($userLevel === 'dosen') {
             $userId = Auth::id();
 
@@ -182,63 +228,54 @@ class StatistikController extends Controller
                 )
                 ->where('t_user.id_user', $userId)
                 ->get();
+
+            // Create new Spreadsheet object
+            $spreadsheet = new Spreadsheet();
+            $sheet = $spreadsheet->getActiveSheet();
+
+            // Set document properties
+            $spreadsheet->getProperties()->setCreator('YourAppName')
+                ->setLastModifiedBy('YourAppName')
+                ->setTitle('Laporan Statistik Dosen')
+                ->setSubject('Laporan Statistik Dosen')
+                ->setDescription('Laporan Statistik Dosen')
+                ->setKeywords('pdf php')
+                ->setCategory('Laporan');
+
+            // Add some data
+            $sheet->setCellValue('A1', 'No');
+            $sheet->setCellValue('B1', 'Nama Kegiatan');
+            $sheet->setCellValue('C1', 'Jabatan');
+            $sheet->setCellValue('D1', 'Poin');
+
+            // Make header bold
+            $sheet->getStyle('A1:D1')->getFont()->setBold(true);
+
+            // Populate data
+            $row = 2;
+            foreach ($data as $index => $item) {
+                $sheet->setCellValue('A' . $row, $index + 1);
+                $sheet->setCellValue('B' . $row, $item->judul_kegiatan);
+                $sheet->setCellValue('C' . $row, $item->jabatan);
+                $sheet->setCellValue('D' . $row, $item->poin);
+                $row++;
+            }
+
+            // Align numbers to the left
+            $sheet->getStyle('A2:A' . $row)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
+
+            // Write the file
+            $writer = new Xlsx($spreadsheet);
+            $fileName = 'Statistik_' . ucfirst($userLevel) . '_' . date('Y-m-d_H:i:s') . '.xlsx';
+
+            // Redirect output to a client’s web browser (Excel2007)
+            header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            header('Content-Disposition: attachment;filename="' . $fileName . '"');
+            header('Cache-Control: max-age=0');
+            $writer->save('php://output');
+            exit;
         } else {
             return redirect()->back()->with('error', 'Level pengguna tidak dikenali.');
         }
-
-        // Create new Spreadsheet object
-        $spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
-
-        // Set document properties
-        $spreadsheet->getProperties()->setCreator('YourAppName')
-            ->setLastModifiedBy('YourAppName')
-            ->setTitle('Laporan Statistik Dosen')
-            ->setSubject('Laporan Statistik Dosen')
-            ->setDescription('Laporan Statistik Dosen')
-            ->setKeywords('pdf php')
-            ->setCategory('Laporan');
-
-        // Add some data
-        $sheet->setCellValue('A1', 'No');
-        $sheet->setCellValue('B1', 'Nama Kegiatan');
-        $sheet->setCellValue('C1', 'Jabatan');
-        $sheet->setCellValue('D1', 'Poin');
-
-        // Make header bold
-        $sheet->getStyle('A1:D1')->getFont()->setBold(true);
-
-        // Populate data
-        $row = 2;
-        $totalPoin = 0;
-        foreach ($data as $index => $item) {
-            $sheet->setCellValue('A' . $row, $index + 1);
-            $sheet->setCellValue('B' . $row, $item->judul_kegiatan);
-            $sheet->setCellValue('C' . $row, $item->jabatan);
-            $sheet->setCellValue('D' . $row, $item->poin);
-            $totalPoin += $item->poin;
-            $row++;
-        }
-
-        // Add total points at the bottom
-        $sheet->setCellValue('C' . $row, 'Total Poin');
-        $sheet->setCellValue('D' . $row, $totalPoin);
-        $sheet->getStyle('C' . $row)->getFont()->setBold(true);
-        $sheet->getStyle('D' . $row)->getFont()->setBold(true);
-
-        // Align numbers to the left
-        $sheet->getStyle('A2:A' . $row)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
-
-        // Write the file
-        $writer = new Xlsx($spreadsheet);
-        $fileName = 'Statistik_' . ucfirst($userLevel) . '_' . date('Y-m-d_H:i:s') . '.xlsx';
-
-        // Redirect output to a client’s web browser (Excel2007)
-        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="' . $fileName . '"');
-        header('Cache-Control: max-age=0');
-        $writer->save('php://output');
-        exit;
     }
-    
 }

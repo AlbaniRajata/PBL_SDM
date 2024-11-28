@@ -90,6 +90,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/', [StatistikController::class, 'admin']);
             Route::post('/list', [StatistikController::class, 'list'])->name('admin.statistik.list');
             Route::get('/export_pdf', [StatistikController::class, 'exportPdf'])->name('admin.statistik.export_pdf');
+            Route::get('/export_excel', [StatistikController::class, 'exportExcel'])->name('admin.statistik.export_excel');
         });
 
         Route::prefix('jenispengguna')->group(function () {
@@ -167,7 +168,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/', [StatistikController::class, 'dosen']);
             Route::post('/list', [StatistikController::class, 'list'])->name('dosen.statistik.list');
             Route::get('/export_pdf', [StatistikController::class, 'exportPdf'])->name('dosen.statistik.export_pdf');
-            Route::get('/export_excel', [StatistikController::class, 'exportExcel'])->name('dosen.statistik.export_excel');
+            Route::get('/export_excel', [StatistikController::class, 'exportExcel_dosen'])->name('dosen.statistik.export_excel');
         });
     });
 
