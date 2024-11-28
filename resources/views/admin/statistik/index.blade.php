@@ -6,8 +6,11 @@
             <div class="card-header">
                 <h3 class="card-title">{{ $breadcrumb->title }}</h3>
                 <div class="card-tools">
-                    <a href="{{ url('/admin/statistik/export_excel') }}" class="btn btn-sm btn-primary mt-1"><i class="fa fa-file-excel"></i> Export Statistik (Excel)</a>
-                    <a href="{{ url('/admin/statistik/export_pdf') }}" class="btn btn-sm btn-warning mt-1"><i class="fa fa-file-pdf"></i> Export Statistik (PDF)</a>
+                    <a href="{{ url('/admin/statistik/export_excel') }}" class="btn btn-sm btn-success mt-1">
+                        <i class="fa fa-file-excel"></i> Ekspor Statistik (Excel)</a>
+                    <a href="{{ url('/admin/statistik/export_pdf') }}" class="btn btn-sm btn-warning mt-1">
+                        <i class="fa fa-file-pdf"></i> Ekspor Statistik (PDF)
+                    </a>
                 </div>
             </div>
             <div class="card-body">

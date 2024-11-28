@@ -1,9 +1,7 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laporan Poin Dosen</title>
     <style>
         .border-all, .border-all th, .border-all td {
             border: 1px solid;
@@ -41,49 +39,43 @@
             border-collapse: collapse;
             margin-top: 20px;
         }
-        th, td {
-            padding: 8px;
-            text-align: left;
-            border: 1px solid #ddd;
-        }
         th {
             background-color: #f2f2f2;
         }
     </style>
 </head>
 <body>
-    <!-- Header Section -->
     <table class="border-bottom-header">
         <tr>
             <td width="15%" class="text-center"><img class="image" id="image"
                 src="{{ public_path('polinema.png') }}"></td>
-            </td>
             <td width="85%">
-                <span class="text-center d-block font-11 font-bold mb-1">KEMENTERIAN PENDIDIKAN, KEBUDAYAAN, RISET, DAN TEKNOLOGI</span>
+                <span class="text-center d-block font-11 font-bold mb-1">KEMENTERIAN PENDIDIKAN, KEBUDAYAAN, RISET, DAN
+                    TEKNOLOGI</span>
                 <span class="text-center d-block font-13 font-bold mb-1">POLITEKNIK NEGERI MALANG</span>
                 <span class="text-center d-block font-10">JL, Soekarno-Hatta No.9 Malang 65141</span>
-                <span class="text-center d-block font-10">Telepon (0341) 404424 Pes. 101-105 0341-404420, Fax. (0341) 404420</span>
+                <span class="text-center d-block font-10">Telepon (0341) 404424 Pes. 101-105 0341-404420, Fax. (0341)
+                    404420</span>
                 <span class="text-center d-block font-10">Laman: www.polinema.ac.id</span>
             </td>
         </tr>
     </table>
-
     <!-- Content Section -->
-    <h2 class="text-center font-bold">Laporan Poin Dosen</h2>
+    <h2 class="text-center font-bold">Laporan Statistik Dosen</h2>
     <table class="border-all">
         <thead>
             <tr>
                 <th>Nama Dosen</th>
-                <th>Jumlah Kegiatan</th>
+                <th >Jumlah Kegiatan</th>
                 <th>Poin</th>
             </tr>
         </thead>
         <tbody>
             @foreach ($data as $poin)
                 <tr>
-                    <td>{{ $poin->nama }}</td>
-                    <td>{{ $poin->total_kegiatan }}</td>
-                    <td>{{ $poin->total_poin }}</td>
+                    <td >{{ $poin->nama }}</td>
+                    <td class="text-center">{{ $poin->total_kegiatan }}</td>
+                    <td class="text-center">{{ $poin->total_poin }}</td>
                 </tr>
             @endforeach
         </tbody>

@@ -27,17 +27,17 @@
                 </div>
                 <div class="form-group">
                     <label for="tanggal_mulai">Tanggal Mulai</label>
-                    <input type="datetime-local" class="form-control" id="tanggal_mulai" name="tanggal_mulai" value="{{ $kegiatan->tanggal_mulai }}" required>
+                    <input type="datetime-local" class="form-control" id="tanggal_mulai" name="tanggal_mulai" value="{{ \Carbon\Carbon::parse($kegiatan->tanggal_mulai)->format('Y-m-d\TH:i') }}" required>
                     <small id="error-tanggal_mulai" class="error-text form-text text-danger"></small>
                 </div>
                 <div class="form-group">
                     <label for="tanggal_selesai">Tanggal Selesai</label>
-                    <input type="datetime-local" class="form-control" id="tanggal_selesai" name="tanggal_selesai" value="{{ $kegiatan->tanggal_selesai }}" required>
+                    <input type="datetime-local" class="form-control" id="tanggal_selesai" name="tanggal_selesai" value="{{ \Carbon\Carbon::parse($kegiatan->tanggal_selesai)->format('Y-m-d\TH:i') }}" required>
                     <small id="error-tanggal_selesai" class="error-text form-text text-danger"></small>
                 </div>
                 <div class="form-group">
                     <label for="tanggal_acara">Tanggal Acara</label>
-                    <input type="datetime-local" class="form-control" id="tanggal_acara" name="tanggal_acara" value="{{ $kegiatan->tanggal_acara }}" required>
+                    <input type="datetime-local" class="form-control" id="tanggal_acara" name="tanggal_acara" value="{{ \Carbon\Carbon::parse($kegiatan->tanggal_acara)->format('Y-m-d\TH:i') }}" required>
                     <small id="error-tanggal_acara" class="error-text form-text text-danger"></small>
                 </div>
                 <div id="jabatan-anggota-container">
@@ -70,16 +70,15 @@
                         </div>
                     @endforeach
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="submit" class="btn btn-primary">Save changes</button>
+                <div class="text-right">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
+                    <button type="submit" class="btn btn-success">Simpan</button>
+                </div>
             </div>
         </div>
     </div>
 </form>
 <script>
-    
     $(document).ready(function() {
         function tambahInputJabatanAnggota() {
             let newItem = $('.jabatan-anggota-item:first').clone();
@@ -87,6 +86,7 @@
             newItem.find('.error-text').text('');
             $('#jabatan-anggota-container').append(newItem);
         }
+
         $(document).on('change', '.anggota-select', function() {
             if ($(this).val()) {
                 // Check if this is the last input
@@ -95,6 +95,7 @@
                 }
             }
         });
+
         $('#form-edit').validate({
             rules: {
                 nama_kegiatan: {
@@ -135,16 +136,16 @@
                 $.ajax({
                     url: form.action,
                     type: form.method,
-                    data: $(form).serialize(),
+                    data: $.param(filteredData),
                     success: function(response) {
                         if (response.status) {
-                            $('#modal-master').modal('hide');
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Berhasil',
                                 text: response.message
+                            }).then(() => {
+                                window.location.href = "{{ url('/admin/kegiatan') }}"; // Redirect to index page
                             });
-                            $('#kegiatan-table').DataTable().ajax.reload();
                         } else {
                             $('.error-text').text('');
                             $.each(response.msgField, function(prefix, val) {

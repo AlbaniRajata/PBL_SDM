@@ -108,6 +108,7 @@
     <script src="{{ url('plugins/sweetalert2/sweetalert2.min.js') }}"></script>
     <!-- AdminLTE App -->
     <script src="{{ url('dist/js/adminlte.min.js') }}"></script>
+    <!-- DataTables JS -->
     <script>
         $.ajaxSetup({
             headers: {

@@ -30,6 +30,12 @@ class KegiatanModel extends Model
         'tanggal_acara' => 'date',
     ];
 
+    protected $dates = [
+        'tanggal_mulai',
+        'tanggal_selesai',
+        'tanggal_acara',
+    ];
+
     // Accessors to format the dates
     public function getTanggalMulaiAttribute($value)
     {

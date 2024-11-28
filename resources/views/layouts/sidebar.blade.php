@@ -19,6 +19,8 @@
             <p>Dashboard</p>
           </a>
         </li>
+
+        {{-- ADMIN --}}
         @if(auth()->user()->level == "admin")
         <li class="nav-header">Manage Pengguna</li>
           <li class="nav-item">
@@ -54,7 +56,9 @@
             </a>
           </li>
         @endif
-        @if(auth()->user()->level == "dosen" && $activeMenu != "kegiatan anggota" && $activeMenu != "statistik anggota" && $activeMenu != "agenda" && $activeMenu != "kegiatan pic" && $activeMenu != "statistik pic")
+
+        {{-- DOSEN --}}
+        @if(auth()->user()->level == "dosen" && $activeMenu != "kegiatan anggota" && $activeMenu != "statistik anggota" && $activeMenu != "agenda anggota" && $activeMenu != "kegiatan pic" && $activeMenu != "statistik pic" && $activeMenu != "progres kegiatan pic" && $activeMenu != "agenda Kegiatan")
         <li class="nav-header">Data Kegiatan</li>
           <li class="nav-item">
             <a href="{{ url('dosen/kegiatan')}}" class="nav-link {{($activeMenu == 'kegiatan dosen')? 'active' : ''}}">
@@ -82,6 +86,8 @@
             </a>
           </li>
         @endif
+
+        {{-- PIMPINAN --}}
         @if(auth()->user()->level == "pimpinan")
         <li class="nav-header">Manage Pengguna</li>
           <li class="nav-item">
@@ -104,7 +110,10 @@
             </a>
           </li>
         @endif
-        @if($activeMenu  == "kegiatan pic" || $activeMenu == "statistik pic" || $activeMenu == "agenda anggota pic" || $activeMenu == "progres kegiatan pic")
+
+
+        {{-- PIC --}}
+        @if($activeMenu  == "kegiatan pic" || $activeMenu == "statistik pic" || $activeMenu == "agenda anggota" || $activeMenu == "progres kegiatan pic")
         <li class="nav-header">Data Kegiatan</li>
           <li class="nav-item">
             <a href="{{ url('dosenPIC/kegiatan')}}" class="nav-link {{($activeMenu == 'kegiatan pic')? 'active' : ''}}">
@@ -113,7 +122,7 @@
             </a>
           </li>
             <li class="nav-item">
-            <a href="{{ url('dosenPIC/agendaAnggota')}}" class="nav-link {{($activeMenu == 'agenda anggota pic')? 'active' : ''}}">
+            <a href="{{ url('dosenPIC/agendaAnggota')}}" class="nav-link {{($activeMenu == 'agenda anggota')? 'active' : ''}}">
               <i class="nav-icon fas fa-list-ol"></i>
               <p>Agenda Anggota </p>
             </a>
@@ -125,6 +134,8 @@
             </a>
         </li>
           @endif
+
+          {{-- ANGGOTA --}}
           @if($activeMenu  == "kegiatan anggota" || $activeMenu == "statistik anggota" || $activeMenu == "agenda") 
         <li class="nav-header">Data Kegiatan</li>
           <li class="nav-item">
@@ -134,7 +145,7 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="{{ url('dosenAnggota/agenda')}}" class="nav-link {{($activeMenu == 'agenda')? 'active' : ''}}">
+            <a href="{{ url('dosenAnggota/agenda')}}" class="nav-link {{($activeMenu == 'agenda kegiatan')? 'active' : ''}}">
               <i class="nav-icon fas fa-list-ol"></i>
               <p>Agenda Kegiatan </p>
             </a>

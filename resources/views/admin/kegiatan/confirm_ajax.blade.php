@@ -47,10 +47,10 @@
                             <td class="col-9">{{ $kegiatan->tanggal_selesai }}</td>
                         </tr>
                     </table>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" data-dismiss="modal" class="btn btn-warning">Batal</button>
-                    <button type="submit" class="btn btn-primary">Ya, Konfirmasi</button>
+                    <div class="text-right">
+                        <button type="button" data-dismiss="modal" class="btn btn-warning">Batal</button>
+                        <button type="submit" class="btn btn-danger">Ya, Konfirmasi</button>
+                    </div>
                 </div>
             </div>
         </div>

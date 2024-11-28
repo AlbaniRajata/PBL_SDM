@@ -62,7 +62,7 @@
                     <tr>
                         <th class="text-right col-3"> Draft Surat Tugas : </th>
                         <td>
-                            <button type="button" class="btn btn-sm btn-primary">Download Draft Surat tugas</button>
+                            <button type="button" class="btn btn-sm btn-primary"onclick="window.location.href='{{ route('admin.kegiatan.export_word', $kegiatan->id_kegiatan) }}'">Dowload Draft Surat tugas</button>
                         </td>
                     </tr>
                 </table>

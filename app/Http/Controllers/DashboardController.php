@@ -14,7 +14,6 @@ class DashboardController extends Controller
             'list' => ['Home', 'Dashboard'],
         ];
 
-        // Gunakan kolom `jenis_kegiatan` untuk filter
         $jumlahDosen = DB::table('t_user')->where('level', 'dosen')->count();
         $jumlahKegiatanJTI = DB::table('t_kegiatan')->where('jenis_kegiatan', 'Kegiatan JTI')->count();
         $jumlahKegiatanNonJTI = DB::table('t_kegiatan')->where('jenis_kegiatan', 'Kegiatan Non-JTI')->count();
@@ -27,5 +26,14 @@ class DashboardController extends Controller
             'jumlahKegiatanJTI' => $jumlahKegiatanJTI,
             'jumlahKegiatanNonJTI' => $jumlahKegiatanNonJTI
         ]);
+    }
+
+    public function indexDosen(){
+        $breadcrumb = (object) [
+            'title' => 'Selamat datang',
+            'list' => ['Home', 'Dashboard'],
+        ];
+        $activeMenu = 'dashboard';
+        return view('dosenWelcome', ['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu]);
     }
 }
