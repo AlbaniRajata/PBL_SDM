@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <h2 class="text-center font-bold">Laporan Poin Dosen</h2>
+    <title>Laporan Poin Dosen</title>
     <style>
         .border-all, .border-all th, .border-all td {
             border: 1px solid;
@@ -51,25 +51,22 @@
         }
     </style>
 </head>
-
 <body>
-    <!-- Header Section -->
     <table class="border-bottom-header">
         <tr>
-            <td width="15%" class="text-center"><img class="image" id="image"
-                    src="{{ public_path('polinema.png') }}"></td>
+            <td width="15%" class="text-center">
+                <img class="image" id="image" src="{{ public_path('polinema.png') }}">
             </td>
             <td width="85%">
-                <span class="text-center d-block font-11 font-bold mb-1">KEMENTERIAN PENDIDIKAN, KEBUDAYAAN, RISET, DAN
-                    TEKNOLOGI</span>
+                <span class="text-center d-block font-11 font-bold mb-1">KEMENTERIAN PENDIDIKAN, KEBUDAYAAN, RISET, DAN TEKNOLOGI</span>
                 <span class="text-center d-block font-13 font-bold mb-1">POLITEKNIK NEGERI MALANG</span>
                 <span class="text-center d-block font-10">JL, Soekarno-Hatta No.9 Malang 65141</span>
-                <span class="text-center d-block font-10">Telepon (0341) 404424 Pes. 101-105 0341-404420, Fax. (0341)
-                    404420</span>
+                <span class="text-center d-block font-10">Telepon (0341) 404424 Pes. 101-105 0341-404420, Fax. (0341) 404420</span>
                 <span class="text-center d-block font-10">Laman: www.polinema.ac.id</span>
             </td>
         </tr>
     </table>
+    <h2 class="text-center font-bold">Laporan Statistik Dosen</h2>
     <table>
         <thead>
             <tr>
@@ -89,8 +86,14 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="4" style="text-align: center;">Tidak ada data kegiatan</td>
+                    <td colspan="4" class="text-center">Tidak ada data kegiatan</td>
                 </tr>
             @endforelse
+            <tr>
+                <td colspan="3" class="font-bold text-right">Total Poin</td>
+                <td class="font-bold">{{ $totalPoin }}</td>
+            </tr>
         </tbody>
     </table>
+</body>
+</html>
