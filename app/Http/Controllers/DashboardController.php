@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\KegiatanModel;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
@@ -28,12 +31,32 @@ class DashboardController extends Controller
         ]);
     }
 
-    public function indexDosen(){
+    public function indexDosen()
+    {
         $breadcrumb = (object) [
             'title' => 'Selamat datang',
             'list' => ['Home', 'Dashboard'],
         ];
         $activeMenu = 'dashboard';
-        return view('dosenWelcome', ['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu]);
+
+        // Ambil ID pengguna yang sedang login
+        $userId = Auth::id();
+
+        // Ambil data kegiatan yang terkait dengan pengguna yang sedang login
+        $kegiatanAkanDatang = KegiatanModel::whereHas('anggota', function ($query) use ($userId) {
+            $query->where('id_user', $userId);
+        })
+            ->where('tanggal_mulai', '>=', now())
+            ->get()
+            ->map(function ($kegiatan) {
+                $kegiatan->tanggal_mulai = Carbon::parse($kegiatan->tanggal_mulai);
+                return $kegiatan;
+            });
+
+        return view('dosenWelcome', [
+            'breadcrumb' => $breadcrumb,
+            'activeMenu' => $activeMenu,
+            'kegiatanAkanDatang' => $kegiatanAkanDatang
+        ]);
     }
 }

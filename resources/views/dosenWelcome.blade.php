@@ -20,6 +20,20 @@
             margin-right: 10px;
         }
     </style>
+    <!-- Notifikasi Kegiatan Akan Datang -->
+    @if ($kegiatanAkanDatang->count() > 0)
+    <div class="alert alert-info">
+        <h5><i class="icon fas fa-info"></i> Kegiatan Akan Datang</h5>
+        <ul>
+            @foreach ($kegiatanAkanDatang as $kegiatan)
+                <li>
+                    {{ $kegiatan->nama_kegiatan }} - {{ $kegiatan->tanggal_mulai}}
+                </li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
        <!-- Kalender Kegiatan -->
         <div class="card bg-light shadow-sm mt-4">
             <div class="card-header">
