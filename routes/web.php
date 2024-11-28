@@ -121,6 +121,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/', [KegiatanController::class, 'pimpinan']);
             Route::post('/list', [KegiatanController::class, 'listPimpinan'])->name('pimpinan.kegiatan.list');
             Route::get('/{id}/show_ajax', [KegiatanController::class, 'show_ajaxPimpinan'])->name('pimpinan.kegiatan.show_ajax');
+            Route::get('/{id}/export_word', [KegiatanController::class, 'exportWord'])->name('admin.kegiatan.export_word');
         });
 
         Route::prefix('statistik')->group(function () {
