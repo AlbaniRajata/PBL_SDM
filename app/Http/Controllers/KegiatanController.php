@@ -930,6 +930,71 @@ class KegiatanController extends Controller
         exit;
     }
 
+    public function exportPdf_pic()
+    {
+        $kegiatan = KegiatanModel::select('id_kegiatan', 'nama_kegiatan', 'deskripsi_kegiatan', 'tanggal_mulai', 'tanggal_selesai', 'tanggal_acara', 'tempat_kegiatan', 'jenis_kegiatan')->get();
+        $pdf = Pdf::loadView('dosenPIC.kegiatan.export_pdf', ['kegiatan' => $kegiatan]);
+        $pdf->setPaper('a4', 'portrait');
+        $pdf->setOption("isRemoteEnabled", true);
+        $pdf->render();
+        return $pdf->stream('Data Kegiatan ' . date('Y-m-d H:i:s') . '.pdf');
+    }
+
+    public function exportExcel_pic()
+    {
+        $kegiatan = DB::table('t_kegiatan')->get();
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Set document properties
+        $spreadsheet->getProperties()->setCreator('YourAppName')
+            ->setLastModifiedBy('YourAppName')
+            ->setTitle('Daftar Kegiatan')
+            ->setSubject('Daftar Kegiatan')
+            ->setDescription('Daftar Kegiatan')
+            ->setKeywords('pdf php')
+            ->setCategory('Laporan');
+
+        // Add some data
+        $sheet->setCellValue('A1', 'No');
+        $sheet->setCellValue('B1', 'Nama Kegiatan');
+        $sheet->setCellValue('C1', 'Deskripsi Kegiatan');
+        $sheet->setCellValue('D1', 'Tanggal Mulai');
+        $sheet->setCellValue('E1', 'Tanggal Selesai');
+        $sheet->setCellValue('F1', 'Tanggal Acara');
+        $sheet->setCellValue('G1', 'Tempat Kegiatan');
+        $sheet->setCellValue('H1', 'Jenis Kegiatan');
+
+        // Make header bold
+        $sheet->getStyle('A1:H1')->getFont()->setBold(true);
+
+        // Populate data
+        $row = 2;
+        foreach ($kegiatan as $index => $item) {
+            $sheet->setCellValue('A' . $row, $index + 1);
+            $sheet->setCellValue('B' . $row, $item->nama_kegiatan);
+            $sheet->setCellValue('C' . $row, $item->deskripsi_kegiatan);
+            $sheet->setCellValue('D' . $row, $item->tanggal_mulai);
+            $sheet->setCellValue('E' . $row, $item->tanggal_selesai);
+            $sheet->setCellValue('F' . $row, $item->tanggal_acara);
+            $sheet->setCellValue('G' . $row, $item->tempat_kegiatan);
+            $sheet->setCellValue('H' . $row, $item->jenis_kegiatan);
+            $row++;
+        }
+
+        // Write the file
+        $writer = new Xlsx($spreadsheet);
+        $fileName = 'Daftar_Kegiatan_' . date('Y-m-d_H:i:s') . '.xlsx';
+
+        // Redirect output to a client’s web browser (Excel2007)
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="' . $fileName . '"');
+        header('Cache-Control: max-age=0');
+        $writer->save('php://output');
+        exit;
+    }
+
     public function exportWordDosen($id)
     {
         $kegiatan = KegiatanModel::find($id);

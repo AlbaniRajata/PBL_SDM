@@ -181,6 +181,8 @@ Route::middleware('auth')->group(function () {
             Route::get('/{id}/edit_ajax', [KegiatanController::class, 'editAjaxDosenPIC'])->name('dosenPIC.kegiatan.edit_ajax');
             Route::put('/{id}/update_ajax', [KegiatanController::class, 'updateAjaxDosenPIC'])->name('dosenPIC.kegiatan.update_ajax');
             Route::get('/{id}/delete_ajax', [KegiatanController::class, 'deleteAjaxDosenPIC'])->name('dosenPIC.kegiatan.delete_ajax');
+            Route::get('/export_pdf', [KegiatanController::class, 'exportPdf_pic'])->name('dosenPIC.kegiatan.export_pdf');
+            Route::get('/export_excel', [KegiatanController::class, 'exportExcel_pic'])->name('dosenPIC.kegiatan.export_excel');
 
             Route::get('/jti', [KegiatanController::class, 'listDosenJti'])->name('dosen.kegiatan.jti.index');
         });
