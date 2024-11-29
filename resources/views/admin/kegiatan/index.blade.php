@@ -23,16 +23,22 @@
         @endif
         <div class="row">
             <div class="col-md-12">
-                <div class="form-group row">
-                    <label class="col-1 control-label col-form-label">Filter:</label>
-                    <div class="col-3">
-                        <select class="form-control" id="jenis_kegiatan" name="jenis_kegiatan">
-                            <option value="">- Semua -</option>
+                <div class="form-group row text-center">
+                    <label class="control-label col-form-label" style="margin-right: 10px;">Filter:</label>
+                    <div class="col-md-2">
+                        <select class="form-control" id="jenis_kegiatan" name="jenis_kegiatan" style="text-align: center; text-align-last: center;">
+                            <option value="">- Jenis Kegiatan -</option>
                             <option value="Kegiatan JTI">Kegiatan JTI</option>
                             <option value="Kegiatan Non-JTI">Kegiatan Non-JTI</option>
                         </select>
                     </div>
-                    <small class="form-text text-muted">Jenis Kegiatan</small>
+                    <div class="col-md-2">   
+                        <select class="form-control" id="tangal_acara" name="tangal_acara" style="text-align: center; text-align-last: center;">
+                            <option value="">- Periode -</option>
+                            <option value="Kegiatan JTI">Kegiatan JTI</option>
+                            <option value="Kegiatan Non-JTI">Kegiatan Non-JTI</option>
+                        </select>
+                    </div> 
                 </div>
             </div>
         </div>

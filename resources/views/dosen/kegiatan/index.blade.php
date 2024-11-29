@@ -41,8 +41,6 @@
                     <th style="width: 5%;" class="text-center">No</th>
                     <th style="width: 15%;" class="text-center">Nama Kegiatan</th>
                     <th style="width: 15%;" class="text-center">Deskripsi Kegiatan</th>
-                    <th style="width: 10%;" class="text-center">Tanggal Mulai</th>
-                    <th style="width: 10%;" class="text-center">Tanggal Selesai</th>
                     <th style="width: 10%;" class="text-center">Tanggal Acara</th>
                     <th style="width: 10%;" class="text-center">Tempat Kegiatan</th>
                     <th style="width: 10%;" class="text-center">Jenis Kegiatan</th>
@@ -67,14 +65,12 @@ $(document).ready(function() {
             }
         },
         columns: [
-            { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
-            { data: 'nama_kegiatan', name: 'nama_kegiatan' },
-            { data: 'deskripsi_kegiatan', name: 'deskripsi_kegiatan' },
-            { data: 'tanggal_mulai', name: 'tanggal_mulai' },
-            { data: 'tanggal_selesai', name: 'tanggal_selesai' },
-            { data: 'tanggal_acara', name: 'tanggal_acara' },
-            { data: 'tempat_kegiatan', name: 'tempat_kegiatan' },
-            { data: 'jenis_kegiatan', name: 'jenis_kegiatan' }
+            { data: 'DT_RowIndex', name: 'DT_RowIndex',className: "text-center", orderable: false, searchable: false },
+            { data: 'nama_kegiatan', name: 'nama_kegiatan',className: "text-center" },
+            { data: 'deskripsi_kegiatan', name: 'deskripsi_kegiatan',className: "text-center" },
+            { data: 'tanggal_acara', name: 'tanggal_acara',className: "text-center" },
+            { data: 'tempat_kegiatan', name: 'tempat_kegiatan',className: "text-center" },
+            { data: 'jenis_kegiatan', name: 'jenis_kegiatan',className: "text-center" }
         ]
     });
 
