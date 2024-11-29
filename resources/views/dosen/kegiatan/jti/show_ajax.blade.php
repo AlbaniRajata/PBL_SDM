@@ -60,12 +60,6 @@
                         <td class="col-9">{{ $kegiatan->jenis_kegiatan }}</td>
                     </tr>
                     <tr>
-                        <th class="text-right col-3"> Draft Surat Tugas : </th>
-                        <td>
-                            <button type="button" class="btn btn-sm btn-primary" onclick="window.location.href='{{ route('dosen.kegiatan.export_word', $kegiatan->id_kegiatan) }}'">Buat Draft Surat tugas</button>
-                        </td>
-                    </tr>
-                    <tr>
                         <th class="text-right col-3">Surat Tugas:</th>
                         <td>
                             <form id="uploadForm" enctype="multipart/form-data">

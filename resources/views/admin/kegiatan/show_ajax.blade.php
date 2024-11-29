@@ -47,30 +47,62 @@
                         <th class="text-right col-3">Tanggal Selesai : </th>
                         <td class="col-9">{{ $kegiatan->tanggal_selesai }}</td>
                     </tr>
+                    <tr>
+                        <th class="text-right col-3">Tempat Acara : </th>
+                        <td class="col-9">{{ $kegiatan->tempat_kegiatan }}</td>
+                    </tr>
+                    <tr>
+                        <th class="text-right col-3">Tanggal Acara : </th>
+                        <td class="col-9">{{ $kegiatan->tanggal_acara }}</td>
+                    </tr>
+                    <tr>
+                        <th class="text-right col-3">Jenis Kegiatan : </th>
+                        <td class="col-9">{{ $kegiatan->jenis_kegiatan }}</td>
+                    </tr>
+                    <tr>
+                        <th class="text-right col-3"> Draft Surat Tugas : </th>
+                        <td>
+                            <button type="button" class="btn btn-sm btn-primary"onclick="window.location.href='{{ route('admin.kegiatan.export_word', $kegiatan->id_kegiatan) }}'">Buat Draft Surat tugas</button>
+                        </td>
+                    </tr>
                 </table>
+            </table>
+            <div class="alert alert-info mt-3">
+                <h5><i class="icon fas fa-info"></i> Data Anggota</h5>
+                Berikut adalah anggota yang terlibat dalam kegiatan ini
+            </div>
+            <table class="table table-sm table-bordered table-stripped">
+                <thead>
+                    <tr>
+                        <th class="text-center">Nama</th>
+                        <th class="text-center">Jabatan</th>
+                        <th class="text-center">Poin</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($anggota as $a)
+                        <tr>
+                            <td class="text-center">{{ $a->user->nama }}</td>
+                            <td class="text-center">{{ $a->jabatan->jabatan_nama }}</td>
+                            <td class="text-center">{{ $a->jabatan->poin }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
 
                 <!-- Formulir Upload File -->
-                <form id="uploadForm" enctype="multipart/form-data">
+                <form action="{{ route('kegiatan.upload') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="form-group">
-                        <label for="file">Upload File:</label>
+                        <label for="file">Upload Surat Tugas:</label>
                         <input type="file" class="form-control" id="file" name="file" required>
-                        <input type="hidden" name="kegiatan_id" value="{{ $kegiatan->id_kegiatan }}">
                     </div>
-                    <div class="text-right">
-                        <button type="button" class="btn btn-primary" onclick="uploadSuratTugas()">Upload</button>
+                    <input type="hidden" name="kegiatan_id" value="{{ $kegiatan->id_kegiatan }}">
+                    <div class="d-flex justify-content-between">
+                        <button type="submit" class="btn btn-primary">Upload</button>
+                        <button type="button" class="btn btn-warning" data-dismiss="modal">Tutup</button>
                     </div>
                 </form>
-
-                <!-- Display Uploaded Documents -->
-                <div class="mt-3">
-                    <h5><i class="icon fas fa-file"></i> Dokumen yang Diunggah</h5>
-                    <ul id="uploaded-documents">
-                        @foreach ($kegiatan->dokumen as $dokumen)
-                            <li><a href="{{ asset('storage/' . $dokumen->file_path) }}" target="_blank">{{ $dokumen->nama_dokumen }}</a></li>
-                        @endforeach
-                    </ul>
-                </div>
             </div>
         </div>
     </div>
@@ -87,60 +119,43 @@
         var label = document.getElementById('file_label');
         label.textContent = fileName;
     }
-
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
 
-    function uploadSuratTugas() {
-        var formData = new FormData(document.getElementById('uploadForm'));
-        var fileInput = document.getElementById('file');
-        var file = fileInput.files[0];
-        if (!file) {
-            alert('Please select a file to upload.');
-            return;
-        }
-
-        formData.append('file', file);
-
-        fetch('{{ route("kegiatan.upload") }}', {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            },
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Berhasil',
-                    text: 'File berhasil diupload.'
-                });
-                // Append the new document to the list
-                var uploadedDocuments = document.getElementById('uploaded-documents');
-                var newDocument = document.createElement('li');
-                newDocument.innerHTML = '<a href="{{ asset('storage') }}/' + data.file_path + '" target="_blank">' + data.nama_dokumen + '</a>';
-                uploadedDocuments.appendChild(newDocument);
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Gagal',
-                    text: 'Gagal mengupload file.'
-                });
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            Swal.fire({
-                icon: 'error',
-                title: 'Terjadi Kesalahan',
-                text: 'An error occurred while uploading the file.'
-            });
+    function modalAction(url = '') {
+        $('#myModal').load(url, function() {
+            $('#myModal').modal('show');
         });
     }
+
+    $(document).ready(function() {
+        var dataKegiatan = $('#table_kegiatan').DataTable({
+            serverSide: true,
+            processing: true,
+            ajax: {
+                url: "{{ route('admin.kegiatan.list') }}",
+                type: "POST",
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                data: function (d) {
+                    // Add any additional parameters here if needed
+                }
+            },
+            columns: [
+                { data: 'nama_kegiatan', name: 'nama_kegiatan', className: "text-center", orderable: true, searchable: true },
+                { data: 'tanggal_mulai', name: 'tanggal_mulai', className: "text-center", orderable: true, searchable: true },
+                { data: 'tanggal_selesai', name: 'tanggal_selesai', className: "text-center", orderable: true, searchable: true },
+                { data: 'pic', name: 'pic', className: "text-center", orderable: true, searchable: true },
+                { data: 'status', name: 'status', className: "text-center", orderable: true, searchable: true },
+                { data: 'poin_kegiatan', name: 'poin_kegiatan', className: "text-center", orderable: true, searchable: true },
+                { data: 'surat_tugas', name: 'surat_tugas', className: "text-center", orderable: true, searchable: true },
+                { data: 'aksi', name: 'aksi', className: "text-center", orderable: false, searchable: false }
+            ],
+        });
+    });
 </script>
 @endpush

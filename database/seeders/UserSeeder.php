@@ -63,6 +63,46 @@ class UserSeeder extends Seeder
                 'password' => Hash::make('123456'),
                 'NIP' => '6789012345',
                 'level' => 'admin',
+            ],[
+                'username' => 'AryaW',
+                'nama' => 'Arya Wijaya',
+                'tanggal_lahir' => '1990-03-12',
+                'email' => 'aryawijaya@gmail.com',
+                'password' => Hash::make('123456'),
+                'NIP' => '1980123456',
+                'level' => 'dosen',
+            ],[
+                'username' => 'RinaP',
+                'nama' => 'Rina Permata',
+                'tanggal_lahir' => '1985-09-20',
+                'email' => 'rinapermata@gmail.com',
+                'password' => Hash::make('123456'),
+                'NIP' => '1985098765',
+                'level' => 'dosen',
+            ],[
+                'username' => 'DikaR',
+                'nama' => 'Dika Ramadhan',
+                'tanggal_lahir' => '1995-04-10',
+                'email' => 'dikaramadhan@gmail.com',
+                'password' => Hash::make('123456'),
+                'NIP' => '1995043210',
+                'level' => 'dosen',
+            ],[
+                'username' => 'SitiN',
+                'nama' => 'Siti Nurhaliza',
+                'tanggal_lahir' => '1992-07-15',
+                'email' => 'sitinurhaliza@gmail.com',
+                'password' => Hash::make('123456'),
+                'NIP' => '1992076543',
+                'level' => 'dosen',
+            ],[
+                'username' => 'FajarH',
+                'nama' => 'Fajar Hidayat',
+                'tanggal_lahir' => '1998-12-25',
+                'email' => 'fajarhidayat@gmail.com',
+                'password' => Hash::make('123456'),
+                'NIP' => '1998120987',
+                'level' => 'dosen',
             ]
         ]);
     }
