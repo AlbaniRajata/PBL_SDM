@@ -21,25 +21,23 @@
                 {{ session('error') }}
             </div>
         @endif
-        <div class="row">
-            <div class="col-md-12">
-                <div class="form-group row text-center">
-                    <label class="control-label col-form-label" style="margin-right: 10px;">Filter:</label>
-                    <div class="col-md-2">
-                        <select class="form-control" id="jenis_kegiatan" name="jenis_kegiatan" style="text-align: center; text-align-last: center;">
-                            <option value="">- Jenis Kegiatan -</option>
-                            <option value="Kegiatan JTI">Kegiatan JTI</option>
-                            <option value="Kegiatan Non-JTI">Kegiatan Non-JTI</option>
-                        </select>
-                    </div>
-                    <div class="col-md-2">   
-                        <select class="form-control" id="tangal_acara" name="tangal_acara" style="text-align: center; text-align-last: center;">
-                            <option value="">- Periode -</option>
-                            <option value="Kegiatan JTI">Kegiatan JTI</option>
-                            <option value="Kegiatan Non-JTI">Kegiatan Non-JTI</option>
-                        </select>
-                    </div> 
-                </div>
+        <div class="row mb-3">
+            <div class="col-md-3">
+                <label for="jenis_kegiatan">Jenis Kegiatan:</label>
+                <select class="form-control" id="jenis_kegiatan" name="jenis_kegiatan">
+                    <option value="">- Pilih Jenis Kegiatan -</option>
+                    <option value="Kegiatan JTI">Kegiatan JTI</option>
+                    <option value="Kegiatan Non-JTI">Kegiatan Non-JTI</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="periode">Periode Kegiatan:</label>
+                <select class="form-control" id="periode" name="periode">
+                    <option value="">Pilih Periode Kegiatan</option>
+                    @foreach($years as $year)
+                        <option value="{{ $year }}">Periode {{ $year }} / {{ $year + 1 }}</option>
+                    @endforeach
+                </select>
             </div>
         </div>
         <table class="table table-bordered table-striped table-hover table-sm" id="kegiatan-table">
@@ -87,6 +85,7 @@
                         },
                         data: function (d) {
                             d.jenis_kegiatan = $('#jenis_kegiatan').val();
+                            d.periode = $('#periode').val(); // Tambahkan '#' sebelum 'periode'
                         }
                     },
                     columns: [
@@ -102,8 +101,14 @@
                     ],
                 });
         
+                // Event listener untuk filter 'Jenis Kegiatan'
                 $('#jenis_kegiatan').on('change', function() {
-                    dataKegiatan.ajax.reload();
+                    dataKegiatan.ajax.reload(); // Reload DataTable ketika filter jenis_kegiatan berubah
+                });
+
+                // Event listener untuk filter 'Periode'
+                $('#periode').change(function() {
+                    dataKegiatan.ajax.reload(); // Reload DataTable ketika filter periode berubah
                 });
             });
         </script>
