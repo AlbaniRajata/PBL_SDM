@@ -211,14 +211,11 @@ Route::middleware('auth')->group(function () {
 
     Route::group(['prefix' => 'dosenAnggota', 'middleware' => ['authorize:dosenAnggota,dosen']], function () {
         Route::prefix('kegiatan')->group(function () {
-        Route::get('/', [KegiatanController::class, 'dosenAnggota'])->name('dosenAnggota.kegiatan.index');
+        Route::get('/', [KegiatanController::class, 'dosenAnggota'])->name('dosenAnggota.kegiatan.dosenA');
         Route::post('/list', [KegiatanController::class, 'listDosenAnggota'])->name('dosenAnggota.kegiatan.list');
-        Route::get('/{id}/show_ajax', [KegiatanController::class, 'show_ajaxDosenAnggota'])->name('dosenAnggota.kegiatan.show_ajax');
         Route::post('/ajax', [KegiatanController::class, 'storeDosenAnggota'])->name('dosenAnggota.storeAjax');
-        Route::get('/{id}/edit_ajax', [KegiatanController::class, 'editAjaxDosenAnggota'])->name('dosenAnggota.kegiatan.edit_ajax');
-        Route::put('/{id}/update_ajax', [KegiatanController::class, 'updateAjaxDosenAnggota'])->name('dosenAnggota.kegiatan.update_ajax');
-        Route::get('/{id}/delete_ajax', [KegiatanController::class, 'deleteAjaxDosenAnggota'])->name('dosenAnggota.kegiatan.delete_ajax');
         Route::get('/dataDosenA', [KegiatanController::class, 'dataDosenA'])->name('dosenAnggota.kegiatan.dataDosenA');
-        });
-    });
+        Route::get('/export_pdf', [KegiatanController::class, 'exportPdf_dosenAnggota'])->name('dosenAnggota.kegiatan.export_pdf');
+        Route::get('/export_excel', [KegiatanController::class, 'exportExcel_dosenAnggota'])->name('dosenAnggota.kegiatan.export_excel');
+        });
 });

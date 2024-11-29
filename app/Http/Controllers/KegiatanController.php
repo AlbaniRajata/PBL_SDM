@@ -53,9 +53,24 @@ class KegiatanController extends Controller
         ];
         $activeMenu = 'kegiatan dosen';
 
+        // Ambil ID pengguna yang sedang login
+        $userId = Auth::id();
+
+        // Ambil data kegiatan yang terkait dengan pengguna yang sedang login
+        $kegiatanAkanDatang = KegiatanModel::whereHas('anggota', function ($query) use ($userId) {
+            $query->where('id_user', $userId);
+        })
+        ->where('tanggal_mulai', '>=', now())
+        ->get()
+        ->map(function ($kegiatan) {
+            $kegiatan->tanggal_mulai = Carbon::parse($kegiatan->tanggal_mulai);
+            return $kegiatan;
+        });
+
         return view('dosen.kegiatan.index', [
             'breadcrumb' => $breadcrumb,
             'activeMenu' => $activeMenu,
+            'kegiatanAkanDatang' => $kegiatanAkanDatang
         ]);
     }
 
@@ -101,18 +116,19 @@ class KegiatanController extends Controller
         return view('dosenAnggota.kegiatan.index', ['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu]);
     }
 
+    //Function Dosen Anggota
     public function dataDosenA(Request $request)
     {
-        // Pastikan request adalah Ajax
-        if ($request->ajax()) {
-            // Ambil ID pengguna yang sedang login
-            $userId = Auth::id();
+        // Ambil ID pengguna yang sedang login
+        $dosenId = auth()->user()->id_user;
 
-            // Ambil data kegiatan yang terkait dengan pengguna yang sedang login
-            $query = KegiatanModel::with(['anggota.user', 'anggota.jabatan'])
-                ->whereHas('anggota', function ($query) use ($userId) {
-                    $query->where('id_user', $userId);
-                });
+        // Ambil data kegiatan di mana user login memiliki id_jabatan_kegiatan antara 2 hingga 6
+        $query = KegiatanModel::with(['anggota.user', 'anggota.jabatan', 'dokumen'])
+        ->whereHas('anggota', function ($query) use ($dosenId) {
+            // Filter untuk user login dengan id_jabatan_kegiatan antara 2 hingga 6
+            $query->where('id_user', $dosenId)
+                ->whereBetween('id_jabatan_kegiatan', [2, 6]);
+        });
 
             // Filter berdasarkan jenis kegiatan jika ada
             if ($request->filled('jenis_kegiatan')) {
@@ -123,10 +139,21 @@ class KegiatanController extends Controller
                 ->addIndexColumn()
                 // Kolom PIC
                 ->addColumn('pic', function($row) {
-                    // Perbaikan: Gunakan null coalescing dan safe navigation
-                    $pic = optional($row->anggota->firstWhere('jabatan.jabatan', 'PIC'))->user;
-                    return $pic ? $pic->nama : '-';
+                    // Cari anggota dengan id_jabatan_kegiatan = 1
+                    $pic = $row->anggota->firstWhere('id_jabatan_kegiatan', 1);
+                    // Tampilkan nama user jika ditemukan, jika tidak tampilkan '-'
+                    return $pic && $pic->user ? $pic->user->nama : '-';
                 })
+
+                // Kolom Surat Tugas
+                ->addColumn('surat_tugas', function($row) {
+                    $dokumen = $row->dokumen->firstWhere('jenis_dokumen', 'Surat Tugas');
+                    if ($dokumen) {
+                        return '<a href="' . url('storage/' . $dokumen->path) . '" class="btn btn-sm btn-primary" target="_blank">Unduh</a>';
+                    }
+                    return '-';
+                })
+
                 // Kolom Tanggal Mulai
                 ->editColumn('tanggal_mulai', function($row) {
                     return $row->tanggal_mulai ? \Carbon\Carbon::parse($row->tanggal_mulai)->format('d-M-Y') : '-';
@@ -150,7 +177,6 @@ class KegiatanController extends Controller
                 // Izinkan kolom aksi mengandung HTML
                 ->rawColumns(['aksi', 'surat_tugas'])
                 ->make(true);
-        }
 
         // Kembalikan response jika bukan ajax
         return response()->json(['error' => 'Invalid request'], 400);

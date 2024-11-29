@@ -4,12 +4,6 @@
 <div class="card card-outline card-primary">
     <div class="card-header">
         <h3 class="card-title">Daftar Kegiatan</h3>
-        <div class="card-tools">
-            <button onclick="modalAction('{{ url('/kegiatan/import') }}')" class="btn btn-sm btn-info mt-1">Import Kegiatan</button>
-            <a href="{{ url('/kegiatan/export_excel') }}" class="btn btn-sm btn-primary mt-1"><i class="fa fa-file-excel"></i> Export Kegiatan (Excel)</a>
-            <a href="{{ url('/kegiatan/export_pdf') }}" class="btn btn-sm btn-warning mt-1"><i class="fa fa-file-pdf"></i> Export Kegiatan (PDF)</a>
-            <button onclick="modalAction('{{ url('kegiatan/create_ajax') }}')" class="btn btn-sm btn-success mt-1">Tambah Kegiatan</button>
-        </div>
     </div>
     <div class="card-body">
         @if (session('success'))
@@ -31,9 +25,7 @@
                     <th>Tanggal Selesai</th>
                     <th>PIC</th>
                     <th>Status</th>
-                    <th>Poin Kegiatan</th>
                     <th>Surat Tugas</th>
-                    <th>Aksi</th>
                 </tr>
             </thead>
         </table>
@@ -79,7 +71,7 @@
                 serverSide: true,
                 processing: true, // Tambahkan ini untuk menampilkan loading
                 ajax: {
-                    url: "{{ route('dosen.kegiatan.data') }}",
+                    url: "{{ route('dosenAnggota.kegiatan.dataDosenA') }}",
                     type: "GET",
                     headers: {
                         'X-CSRF-TOKEN': "{{ csrf_token() }}"
@@ -90,22 +82,15 @@
                     { data: "nama_kegiatan", name: "nama_kegiatan" },
                     { data: "tanggal_mulai", name: "tanggal_mulai", className: "text-center" },
                     { data: "tanggal_selesai", name: "tanggal_selesai", className: "text-center" },
-                    { data: "pic", name: "pic" },
-                    { data: "status", name: "status" },
-                    { data: "poin_kegiatan", name: "poin_kegiatan", className: "text-center" },
+                    { data: "pic", name: "pic", className: "text-center" },
+                    { data: "progress", name: "progress", className: "text-center" },
                     { 
                         data: "surat_tugas", 
                         name: "surat_tugas", 
                         className: "text-center", 
                         render: function(data, type, row) {
-                            return data ? `<a href="${data}" class="btn btn-sm btn-info" target="_blank">Download</a>` : '-';
+                            return data ? <a href="${data}" class="btn btn-sm btn-info" target="_blank">Download</a> : '-';
                         }
-                    },
-                    { 
-                        data: "aksi", 
-                        name: "aksi", 
-                        orderable: false, 
-                        searchable: false 
                     }
                 ]
             });
