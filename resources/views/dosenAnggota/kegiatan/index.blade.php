@@ -84,12 +84,16 @@
                     { data: "tanggal_selesai", name: "tanggal_selesai", className: "text-center" },
                     { data: "pic", name: "pic", className: "text-center" },
                     { data: "progress", name: "progress", className: "text-center" },
-                    { 
-                        data: "surat_tugas", 
-                        name: "surat_tugas", 
-                        className: "text-center", 
+                    {
+                        data: "surat_tugas",
+                        name: "surat_tugas",
+                        className: "text-center",
                         render: function(data, type, row) {
-                            return data ? <a href="${data}" class="btn btn-sm btn-info" target="_blank">Download</a> : '-';
+                            if (data) {
+                                return `<a href="${data}" class="btn btn-sm btn-info" target="_blank">Download</a>`;
+                            } else {
+                                return '-';
+                            }
                         }
                     }
                 ]

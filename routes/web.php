@@ -126,6 +126,7 @@ Route::middleware('auth')->group(function () {
                 Route::get('/{id}/export_word', [KegiatanController::class, 'exportWord'])->name('pimpinan.kegiatan.export_word');
                 Route::get('/export_pdf', [KegiatanController::class, 'exportPdf'])->name('pimpinan.kegiatan.export_pdf');
                 Route::get('/export_excel', [KegiatanController::class, 'exportExcel'])->name('pimpinan.kegiatan.export_excel');
+                Route::get('/kegiatan', [KegiatanController::class, 'getPeriodeKegiatan'])->name('pimpinan.kegiatan.index');
             });
 
             Route::prefix('statistik')->group(function () {

@@ -37,13 +37,36 @@ class KegiatanController extends Controller
 
     public function pimpinan()
     {
+        // Data breadcrumb
         $breadcrumb = (object) [
             'title' => 'Kegiatan',
             'list' => ['Home', 'Kegiatan Pimpinan'],
         ];
         $activeMenu = 'kegiatan pimpinan';
-        return view('pimpinan.kegiatan.index', ['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu]);
-    }
+    
+        // Ambil tahun unik dari tabel kegiatan
+        $years = KegiatanModel::selectRaw('YEAR(tanggal_acara) as year')
+            ->distinct()
+            ->orderBy('year', 'asc')
+            ->pluck('year'); // Hanya mengambil nilai tahun saja
+    
+        // Kirimkan data ke view
+        return view('pimpinan.kegiatan.index', [
+            'breadcrumb' => $breadcrumb,
+            'activeMenu' => $activeMenu,
+            'years' => $years, // Tambahkan $years di sini
+            ]);
+        }
+
+        public function getPeriodeKegiatan()
+        {
+            $years = KegiatanModel::selectRaw('YEAR(tanggal_acara) as year')
+                ->distinct()
+                ->orderBy('year', 'asc')
+                ->pluck('year');
+
+            return view('pimpinan.kegiatan.index', compact('years'));
+        }
 
     public function dosen(): mixed
     {
@@ -209,6 +232,13 @@ class KegiatanController extends Controller
         if ($request->jenis_kegiatan) {
             $kegiatan->where('jenis_kegiatan', $request->jenis_kegiatan);
         }
+
+        // Filter berdasarkan tahun dari kolom tanggal_acara
+        if ($request->filled('periode')) {
+            $tahun = $request->periode; // Tahun diambil dari request
+            $kegiatan->whereYear('tanggal_acara', '=', $tahun);
+        }
+        
         return DataTables::of($kegiatan)
             ->addIndexColumn()
             ->addColumn('aksi', function ($kegiatan) {
