@@ -27,13 +27,12 @@
                     <label class="col-1 control-label col-form-label">Filter:</label>
                     <div class="col-3">
                         <select class="form-control" id="level" name="level">
-                            <option value="">- Semua -</option>
+                            <option value="">- Jenis Pengguna -</option>
                             <option value="admin">Admin</option>
                             <option value="dosen">Dosen</option>
                             <option value="pimpinan">Pimpinan</option>
                         </select>
                     </div>
-                    <small class="form-text text-muted">Jenis Pengguna</small>
                 </div>
             </div>
         </div>
@@ -112,6 +111,9 @@
         $('#table_user').on('click', '.delete-user', function() {
             var userId = $(this).data('id');
             modalAction("{{ route('admin.user.delete_ajax', '') }}/" + userId);
+        });
+        $('#level').on('change', function() {
+            dataUser.draw();
         });
     });
 </script>

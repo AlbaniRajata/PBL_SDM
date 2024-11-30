@@ -23,6 +23,7 @@
                     <th>Nama Kegiatan</th>
                     <th>Tanggal Mulai</th>
                     <th>Tanggal Selesai</th>
+                    <th>Tempat Kegiatan</th>
                     <th>PIC</th>
                     <th>Status</th>
                     <th>Surat Tugas</th>
@@ -79,9 +80,10 @@
                 },
                 columns: [
                     { data: "DT_RowIndex", name: "DT_RowIndex", orderable: false, searchable: false },
-                    { data: "nama_kegiatan", name: "nama_kegiatan" },
+                    { data: "nama_kegiatan", name: "nama_kegiatan", className: "text-center" },
                     { data: "tanggal_mulai", name: "tanggal_mulai", className: "text-center" },
                     { data: "tanggal_selesai", name: "tanggal_selesai", className: "text-center" },
+                    { data: "tempat_acara", name: "tempat_acara", className: "text-center" },
                     { data: "pic", name: "pic", className: "text-center" },
                     { data: "progress", name: "progress", className: "text-center" },
                     {

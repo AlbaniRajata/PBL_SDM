@@ -60,7 +60,7 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>Anggota</label>
-                                <select name="anggota_id[]" class="form-control anggota-select" required>
+                                <select name="anggota_id[]" class="form-control anggota-select" data-id="anggota-select" required>
                                     <option value="">- Pilih Anggota -</option>
                                     @foreach($anggota as $a)
                                         <option value="{{ $a->id_user }}">{{ $a->nama }}</option>
@@ -81,80 +81,143 @@
 </form>
 
 <script>
-    $(document).ready(function() {
-        function tambahInputJabatanAnggota() {
-            let newItem = $('.jabatan-anggota-item:first').clone();
-            newItem.find('select').val('');
-            newItem.find('.error-text').text('');
-            $('#jabatan-anggota-container').append(newItem);
-        }
+    $(document).ready(function () {
+    function tambahInputJabatanAnggota() {
+        let newItem = $('.jabatan-anggota-item:first').clone();
+        newItem.find('select').val('');
+        newItem.find('.error-text').text('');
+        $('#jabatan-anggota-container').append(newItem);
+    }
 
-        $(document).on('change', '.anggota-select', function() {
-            if ($(this).val()) {
-                // Check if this is the last input
-                if ($(this).closest('.jabatan-anggota-item').is(':last-child')) {
-                    tambahInputJabatanAnggota();
+    // Periksa duplikasi jabatan
+    function isDuplicateJabatan() {
+        let selectedJabatan = [];
+        let isDuplicate = false;
+
+        $('.jabatan-select').each(function () {
+            let value = $(this).val();
+            if (value) {
+                if (selectedJabatan.includes(value)) {
+                    isDuplicate = true;
+                    $(this).addClass('is-invalid');
+                    $(this).next('.error-text').text('Jabatan ini sudah dipilih.');
+                } else {
+                    selectedJabatan.push(value);
+                    $(this).removeClass('is-invalid');
+                    $(this).next('.error-text').text('');
                 }
             }
         });
 
-        $("#form-tambah").validate({
-            rules: {
-                nama_kegiatan: { required: true, minlength: 3, maxlength: 255 },
-                jenis_kegiatan: { required: true },
-                deskripsi: { required: true, minlength: 3 },
-                tanggal_acara: { required: true },
-                tanggal_mulai: { required: true },
-                tanggal_selesai: { required: true },
-                tempat_acara: { required: true, minlength: 3, maxlength: 255 },
-                'jabatan_id[]': { required: true },
-                'anggota_id[]': { required: true }
-            },
-            submitHandler: function(form) {
-                let formData = $(form).serializeArray();
-                let filteredData = formData.filter(item => {
-                    return !(item.name === 'jabatan_id[]' && item.value === '') && !(item.name === 'anggota_id[]' && item.value === '');
-                });
-                $.ajax({
-                    url: form.action,
-                    type: form.method,
-                    data: $.param(filteredData),
-                    success: function(response) {
-                        if (response.status) {
-                            $('#myModal').modal('hide');
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Berhasil',
-                                text: response.message
-                            }).then(function() {
-                                dataKegiatan.ajax.reload();
-                            });
-                        } else {
-                            $('.error-text').text('');
-                            $.each(response.msgField, function(prefix, val) {
-                                $('#error-' + prefix).text(val[0]);
-                            });
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Terjadi Kesalahan',
-                                text: response.message
-                            });
-                        }
-                    }
-                });
-                return false;
-            },
-            errorElement: 'span',
-            errorPlacement: function(error, element) {
-                error.addClass('invalid-feedback');
-                element.closest('.form-group').append(error);
-            },
-            highlight: function(element, errorClass, validClass) {
-                $(element).addClass('is-invalid');
-            },
-            unhighlight: function(element, errorClass, validClass) {
-                $(element).removeClass('is-invalid');
+        return isDuplicate;
+    }
+
+    // Periksa duplikasi anggota
+    function isDuplicateAnggota() {
+        let selectedAnggota = [];
+        let isDuplicate = false;
+
+        $('.anggota-select').each(function () {
+            let value = $(this).val();
+            if (value) {
+                if (selectedAnggota.includes(value)) {
+                    isDuplicate = true;
+                    $(this).addClass('is-invalid');
+                    $(this).next('.error-text').text('Anggota ini sudah dipilih.');
+                } else {
+                    selectedAnggota.push(value);
+                    $(this).removeClass('is-invalid');
+                    $(this).next('.error-text').text('');
+                }
             }
         });
+
+        return isDuplicate;
+    }
+
+    $(document).on('change', '.jabatan-select', function () {
+        // Periksa apakah jabatan duplikat
+        if (!isDuplicateJabatan()) {
+            // Jika valid dan ini adalah input terakhir, tambahkan input baru
+            if ($(this).closest('.jabatan-anggota-item').is(':last-child')) {
+                tambahInputJabatanAnggota();
+            }
+        }
     });
+
+    $(document).on('change', '.anggota-select', function () {
+        // Periksa apakah anggota duplikat
+        isDuplicateAnggota();
+    });
+
+    // Validasi formulir
+    $("#form-tambah").validate({
+        rules: {
+            nama_kegiatan: { required: true, minlength: 3, maxlength: 255 },
+            jenis_kegiatan: { required: true },
+            deskripsi: { required: true, minlength: 3 },
+            tanggal_acara: { required: true },
+            tanggal_mulai: { required: true },
+            tanggal_selesai: { required: true },
+            'jabatan_id[]': { required: true },
+            'anggota_id[]': { required: true }
+        },
+        submitHandler: function (form) {
+            // Cek duplikasi jabatan dan anggota sebelum submit
+            if (isDuplicateJabatan() || isDuplicateAnggota()) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Terjadi Kesalahan',
+                    text: 'Ada jabatan atau anggota yang duplikat. Mohon periksa kembali.'
+                });
+                return false;
+            }
+
+            let formData = $(form).serializeArray();
+            let filteredData = formData.filter(item => {
+                return !(item.name === 'jabatan_id[]' && item.value === '') && !(item.name === 'anggota_id[]' && item.value === '');
+            });
+
+            $.ajax({
+                url: form.action,
+                type: form.method,
+                data: $.param(filteredData),
+                success: function (response) {
+                    if (response.status) {
+                        $('#myModal').modal('hide');
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil',
+                            text: response.message
+                        }).then(function () {
+                            dataKegiatan.ajax.reload();
+                        });
+                    } else {
+                        $('.error-text').text('');
+                        $.each(response.msgField, function (prefix, val) {
+                            $('#error-' + prefix).text(val[0]);
+                        });
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Terjadi Kesalahan',
+                            text: response.message
+                        });
+                    }
+                }
+            });
+            return false;
+        },
+        errorElement: 'span',
+        errorPlacement: function (error, element) {
+            error.addClass('invalid-feedback');
+            element.closest('.form-group').append(error);
+        },
+        highlight: function (element, errorClass, validClass) {
+            $(element).addClass('is-invalid');
+        },
+        unhighlight: function (element, errorClass, validClass) {
+            $(element).removeClass('is-invalid');
+        }
+    });
+});
 </script>
