@@ -37,6 +37,6 @@ class AgendaModel extends Model
 
     public function agendaAnggota()
     {
-        return $this->hasMany(AgendaDetailModel::class, 'id_agenda', 'id_agenda');
+        return $this->hasMany(AgendaAnggotaModel::class, 'id_agenda', 'id_agenda');
     }
 }
