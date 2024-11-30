@@ -65,18 +65,6 @@
                             <button type="button" class="btn btn-sm btn-primary" onclick="window.location.href='{{ route('dosen.kegiatan.export_word', $kegiatan->id_kegiatan) }}'">Buat Draft Surat tugas</button>
                         </td>
                     </tr>
-                    <tr>
-                        <th class="text-right col-3">Surat Tugas:</th>
-                        <td>
-                            <form id="uploadForm" enctype="multipart/form-data">
-                                <div class="custom-file mb-2">
-                                    <input type="file" name="dokumen" class="custom-file-input" id="draf_surat_tugas">
-                                    <label class="custom-file-label" for="draf_surat_tugas">Draf Surat Tugas</label>
-                                </div>
-                                <!-- <button type="button" class="btn btn-sm btn-warning mt-2" onclick="uploadSuratTugas()">Upload Surat Tugas</button> -->
-                            </form>
-                        </td>
-                    </tr>
                 </table>
                 <div class="alert alert-info mt-3">
                     <h5><i class="icon fas fa-info"></i> Data Anggota</h5>
@@ -113,12 +101,6 @@
 
 @push('js')
 <script>
-    function updateFileName() {
-        var input = document.getElementById('draf_surat_tugas');
-        var fileName = input.files[0].name;
-        var label = document.getElementById('draf_surat_tugas_label');
-        label.textContent = fileName;
-    }
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')

@@ -1238,10 +1238,14 @@ class KegiatanController extends Controller
         ];
         $activeMenu = 'agenda anggota';
 
+        // Ambil ID pengguna yang sedang login
+        $userId = Auth::id();
+
         // Mengambil data menggunakan Eloquent
         $agendaAnggota = KegiatanModel::with(['anggota.user'])
-            ->whereHas('anggota', function ($query) {
-                $query->has('user'); // Pastikan kegiatan memiliki anggota yang terkait dengan user
+            ->whereHas('anggota', function ($query) use ($userId) {
+                $query->where('id_user', $userId)
+                      ->where('id_jabatan_kegiatan', '1'); // Pastikan kolom 'jabatan' ada di tabel anggota
             })
             ->get()
             ->map(function ($kegiatan) {

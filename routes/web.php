@@ -9,6 +9,7 @@ use App\Http\Controllers\JabatanKegiatanController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProfilController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\FileHistoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -99,6 +100,12 @@ Route::middleware('auth')->group(function () {
             Route::prefix('jenispengguna')->group(function () {
                 Route::get('/', [UserController::class, 'levelAdmin'])->name('admin.jenispengguna.index');
             });
+
+            Route::prefix('file')->group(function () {
+                Route::get('/', [FileHistoryController::class, 'index'])->name('admin.file.index');
+                Route::get('/download/{id}', [FileHistoryController::class, 'download'])->name('file.download');
+            });
+
         });
 
         Route::group(['prefix' => 'profil'], function () {
