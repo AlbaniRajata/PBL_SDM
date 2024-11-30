@@ -74,6 +74,8 @@ Route::middleware('auth')->group(function () {
                 Route::delete('/{id}/confirm_ajax', [KegiatanController::class, 'delete_ajaxAdmin'])->name('admin.kegiatan.confirm_ajax');
                 Route::get('/export_excel', [KegiatanController::class, 'exportExcel'])->name('admin.kegiatan.export_excel');
                 Route::get('/kegiatan', [KegiatanController::class, 'getPeriodeKegiatan'])->name('admin.kegiatan.index');
+                Route::get('/import', [KegiatanController::class, 'import'])->name('admin.kegiatan.import');
+                Route::post('/import_ajax', [KegiatanController::class, 'import_ajax'])->name('admin.kegiatan.import_ajax');
             });
 
             Route::prefix('jabatan')->group(function () {
