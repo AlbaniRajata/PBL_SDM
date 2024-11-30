@@ -1171,36 +1171,62 @@ class KegiatanController extends Controller
     // function upload surat tugas
     public function uploadSurat(Request $request)
     {
-        // Validate the incoming file
+        // Validasi file yang diupload
         $request->validate([
-            'file' => 'required|mimes:pdf,doc,docx,xls,xlsx|max:2048', // File type and size validation
-            'id_kegiatan' => 'required|exists:t_kegiatan,id_kegiatan',
+            'file' => 'required|mimes:pdf,doc,docx,xls,xlsx|max:2048', // Batasi tipe dan ukuran file
+            'id_kegiatan' => 'required|exists:t_kegiatan,id_kegiatan', // Pastikan id kegiatan valid
         ]);
 
+        // Periksa apakah file ada
         if ($request->hasFile('file')) {
             $file = $request->file('file');
-
-            // Generate a unique filename
+            
+            // Buat nama file unik
             $filename = time() . '_' . $file->getClientOriginalName();
-
-            // Store file in the 'dokumen' directory within the 'public' disk
+            
+            // Simpan file di direktori 'public/dokumen'
             $path = $file->storeAs('dokumen', $filename, 'public');
+            
+            try {
+                // Buat record dokumen di database
+                $dokumen = DokumenModel::create([
+                    'id_kegiatan' => $request->id_kegiatan,
+                    'nama_dokumen' => $file->getClientOriginalName(),
+                    'file_path' => $path,
+                    'progress' => 0, // Progress awal
+                ]);
 
-            // Create a new document record in the database
-            $dokumen = DokumenModel::create([
-                'id_kegiatan' => $request->id_kegiatan,
-                'nama_dokumen' => $file->getClientOriginalName(),
-                'file_path' => $path,
-                'progress' => 0, // Default progress
-            ]);
-
-            // Optional: You can add more sophisticated error handling
-            if ($dokumen) {
+                // Kembalikan respon sukses
                 return back()->with('success', 'File berhasil diupload.');
+            } catch (\Exception $e) {
+                // Tangani kesalahan jika penyimpanan gagal
+                return back()->with('error', 'Gagal mengupload file: ' . $e->getMessage());
             }
         }
 
-        return back()->with('error', 'Gagal mengupload file.');
+        // Jika tidak ada file
+        return back()->with('error', 'Tidak ada file yang diupload.');
+    }
+
+    public function downloadSurat($id_dokumen)
+    {
+        try {
+            // Cari dokumen berdasarkan ID
+            $dokumen = DokumenModel::findOrFail($id_dokumen);
+
+            // Dapatkan path lengkap file
+            $filePath = storage_path('app/public/' . $dokumen->file_path);
+
+            // Pastikan file exists
+            if (!file_exists($filePath)) {
+                return back()->with('error', 'File tidak ditemukan.');
+            }
+
+            // Return file download
+            return response()->download($filePath, $dokumen->nama_dokumen);
+        } catch (\Exception $e) {
+            return back()->with('error', 'Gagal mendownload file: ' . $e->getMessage());
+        }
     }
 
     // fungsi agenda kegiatan
@@ -1506,5 +1532,136 @@ class KegiatanController extends Controller
     {
         $kegiatan = KegiatanModel::select('id_kegiatan', 'nama_kegiatan', 'progress')->where('id_kegiatan', $id)->first();
         return view('dosenPIC.progresKegiatan.show_ajax', ['kegiatan' => $kegiatan]);
+    }
+
+    public function import(){
+        return view('admin.kegiatan.import');
+    }
+
+    public function import_ajax(Request $request)
+    {
+        if ($request->ajax() || $request->wantsJson()) {
+            // Validasi file
+            $validator = Validator::make($request->all(), [
+                'file_user' => 'required|mimes:xlsx|max:1024',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Validasi Gagal',
+                    'msgField' => $validator->errors()
+                ]);
+            }
+
+            try {
+                $file = $request->file('file_user');
+                $reader = IOFactory::createReader('Xlsx');
+                $reader->setReadDataOnly(true);
+                $spreadsheet = $reader->load($file->getRealPath());
+                $data = $spreadsheet->getActiveSheet()->toArray(null, true, true, true);
+
+                // Validasi struktur kolom
+                $headers = $data[1];
+                $requiredHeaders = ['A' => 'Nama Kegiatan', 'B' => 'Jenis Kegiatan', 'C' => 'Deskripsi', 
+                                    'D' => 'Tanggal Acara', 'E' => 'Tanggal Mulai', 'F' => 'Tanggal Selesai'];
+                
+                foreach ($requiredHeaders as $col => $header) {
+                    if (!isset($headers[$col]) || strtolower(trim($headers[$col])) !== strtolower($header)) {
+                        return response()->json([
+                            'status' => false,
+                            'message' => "Format file tidak sesuai. Kolom $header tidak ditemukan."
+                        ]);
+                    }
+                }
+
+                // Mulai transaksi database
+                DB::beginTransaction();
+
+                $successCount = 0;
+                $errorCount = 0;
+                $errors = [];
+
+                // Proses setiap baris data
+                for ($i = 2; $i <= count($data); $i++) {
+                    try {
+                        $row = $data[$i];
+
+                        // Validasi data yang diperlukan
+                        if (empty($row['A']) || empty($row['B']) || empty($row['C']) || 
+                            empty($row['D']) || empty($row['E']) || empty($row['F'])) {
+                            $errorCount++;
+                            $errors[] = "Baris $i: Data tidak lengkap";
+                            continue;
+                        }
+
+                        // Buat kegiatan
+                        $kegiatan = KegiatanModel::create([
+                            'nama_kegiatan' => $row['A'],
+                            'jenis_kegiatan' => $row['B'],
+                            'deskripsi_kegiatan' => $row['C'],
+                            'tanggal_acara' => $this->convertToDate($row['D']),
+                            'tanggal_mulai' => $this->convertToDate($row['E']),
+                            'tanggal_selesai' => $this->convertToDate($row['F']),
+                            'progress' => 0 // Default progress
+                        ]);
+
+                        // Tambahkan anggota
+                        if (isset($row['G']) && !empty($row['G'])) {
+                            // Misalkan kolom G berisi ID user
+                            $anggotaId = $row['G'];
+                            AnggotaModel::create([
+                                'id_kegiatan' => $kegiatan->id_kegiatan,
+                                'id_user' => $anggotaId,
+                                'id_jabatan_kegiatan' => 1 // Default jabatan atau sesuaikan
+                            ]);
+                        }
+
+                        $successCount++;
+                    } catch (\Exception $rowError) {
+                        $errorCount++;
+                        $errors[] = "Baris $i: " . $rowError->getMessage();
+                    }
+                }
+
+                // Commit transaksi
+                DB::commit();
+
+                // Siapkan respons
+                $response = [
+                    'status' => true,
+                    'message' => "Import berhasil. Berhasil: $successCount, Gagal: $errorCount"
+                ];
+
+                // Tambahkan detail error jika ada
+                if (!empty($errors)) {
+                    $response['errors'] = $errors;
+                }
+
+                return response()->json($response);
+
+            } catch (\Exception $e) {
+                // Rollback transaksi jika terjadi kesalahan
+                DB::rollBack();
+
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+                ]);
+            }
+        }
+
+        return redirect()->back();
+    }
+
+    // Metode bantuan untuk konversi tanggal
+    private function convertToDate($dateString)
+    {
+        try {
+            // Coba parse berbagai format tanggal
+            return Carbon::parse($dateString)->format('Y-m-d');
+        } catch (\Exception $e) {
+            throw new \Exception("Format tanggal tidak valid: $dateString");
+        }
     }
 }

@@ -68,12 +68,14 @@ Route::middleware('auth')->group(function () {
                 Route::put('/{id}/update_ajax', [KegiatanController::class, 'updateAjaxAdmin'])->name('admin.kegiatan.update_ajax');
                 Route::get('/export_pdf', [KegiatanController::class, 'exportPdf'])->name('admin.kegiatan.export_pdf');
                 Route::get('/{id}/export_word', [KegiatanController::class, 'exportWord'])->name('admin.kegiatan.export_word');
-                Route::post('/upload', [KegiatanController::class, 'uploadFile'])->name('kegiatan.upload');
                 Route::delete('/{id}/delete_ajax', [KegiatanController::class, 'delete_ajaxAdmin'])->name('admin.kegiatan.confirm_ajax');
                 Route::get('/{id}/delete_ajax', [KegiatanController::class, 'confirm_ajaxAdmin'])->name('admin.kegiatan.confirm_ajax');
                 Route::delete('/{id}/confirm_ajax', [KegiatanController::class, 'delete_ajaxAdmin'])->name('admin.kegiatan.confirm_ajax');
                 Route::get('/export_excel', [KegiatanController::class, 'exportExcel'])->name('admin.kegiatan.export_excel');
                 Route::get('/kegiatan', [KegiatanController::class, 'getPeriodeKegiatan'])->name('admin.kegiatan.index');
+                Route::get('/import', [KegiatanController::class, 'import'])->name('admin.kegiatan.import');
+                Route::post('/import_ajax', [KegiatanController::class, 'import_ajax'])->name('admin.kegiatan.import_ajax');
+                Route::post('/upload', [KegiatanController::class, 'uploadSurat'])->name('kegiatan.upload');
             });
 
             Route::prefix('jabatan')->group(function () {
@@ -186,7 +188,7 @@ Route::middleware('auth')->group(function () {
                 Route::get('/{id}/delete_ajax', [KegiatanController::class, 'deleteAjaxDosenPIC'])->name('dosenPIC.kegiatan.delete_ajax');
                 Route::get('/export_pdf', [KegiatanController::class, 'exportPdf_pic'])->name('dosenPIC.kegiatan.export_pdf');
                 Route::get('/export_excel', [KegiatanController::class, 'exportExcel_pic'])->name('dosenPIC.kegiatan.export_excel');
-
+                Route::get('/download-surat/{id_dokumen}', [KegiatanController::class, 'downloadSurat'])->name('kegiatan.download-surat');
                 Route::get('/jti', [KegiatanController::class, 'listDosenJti'])->name('dosen.kegiatan.jti.index');
             });
 
