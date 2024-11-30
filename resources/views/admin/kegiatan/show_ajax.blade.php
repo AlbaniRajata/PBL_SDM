@@ -94,10 +94,18 @@
                 <form action="{{ route('kegiatan.upload') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="form-group">
-                        <label for="file">Upload Surat Tugas:</label>
+                        <label for="file">Upload Dokumen:</label>
                         <input type="file" class="form-control" id="file" name="file" required>
+                        
+                        <!-- Validasi error -->
+                        @error('file')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
                     </div>
-                    <input type="hidden" name="kegiatan_id" value="{{ $kegiatan->id_kegiatan }}">
+                    
+                    <!-- Kirim ID kegiatan sebagai hidden input -->
+                    <input type="hidden" name="id_kegiatan" value="{{ $kegiatan->id_kegiatan }}">
+                    
                     <div class="d-flex justify-content-between">
                         <button type="submit" class="btn btn-primary">Upload</button>
                         <button type="button" class="btn btn-warning" data-dismiss="modal">Tutup</button>

@@ -83,6 +83,35 @@
                     @endforeach
                 </tbody>
             </table>
+            <div class="alert alert-info mt-3">
+                <h5><i class="icon fas fa-file"></i> Dokumen Kegiatan</h5>
+                Dokumen terkait kegiatan
+            </div>
+            <table class="table table-sm table-bordered table-stripped">
+                <thead>
+                    <tr>
+                        <th class="text-center">Nama Dokumen</th>
+                        <th class="text-center">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse ($kegiatan->dokumen as $dokumen)
+                        <tr>
+                            <td class="text-center">{{ $dokumen->nama_dokumen }}</td>
+                            <td class="text-center">
+                                <a href="{{ route('kegiatan.download-surat', $dokumen->id_dokumen) }}" 
+                                   class="btn btn-sm btn-primary">
+                                    <i class="fas fa-download"></i> Download
+                                </a>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="2" class="text-center">Tidak ada dokumen</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
     </div>
 @endempty
@@ -92,6 +121,14 @@
 
 @push('js')
 <script>
+    // Dalam method yang menghasilkan data untuk DataTables
+    $data = $data->map(function ($item) {
+        // Tambahkan kolom aksi download surat tugas
+        $item->surat_tugas = $item->dokumen->count() > 0 
+            ? '<a href="' . route('kegiatan.download-surat', $item->dokumen->first()->id_dokumen) . '" class="btn btn-sm btn-primary"><i class="fas fa-download"></i> Download</a>'
+            : 'Belum ada surat';
+        return $item;
+    });
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')

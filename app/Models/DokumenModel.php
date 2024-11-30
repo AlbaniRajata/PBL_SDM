@@ -14,8 +14,8 @@ class DokumenModel extends Model
 
     protected $fillable = [
         'id_kegiatan',
-        'file_path',
         'nama_dokumen',
+        'file_path',
         'progress',
     ];
 
