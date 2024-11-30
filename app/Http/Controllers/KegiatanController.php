@@ -31,19 +31,19 @@ class KegiatanController extends Controller
             'title' => 'Kegiatan',
             'list' => ['Home', 'Kegiatan Admin'],
         ];
-        $activeMenu = 'kegiatan admin';// Ambil tahun unik dari tabel kegiatan
+        $activeMenu = 'kegiatan admin'; // Ambil tahun unik dari tabel kegiatan
 
         $years = KegiatanModel::selectRaw('YEAR(tanggal_acara) as year')
             ->distinct()
             ->orderBy('year', 'asc')
             ->pluck('year'); // Hanya mengambil nilai tahun saja
-    
+
         // Kirimkan data ke view
         return view('admin.kegiatan.index', [
             'breadcrumb' => $breadcrumb,
             'activeMenu' => $activeMenu,
             'years' => $years, // Tambahkan $years di sini
-            ]);
+        ]);
     }
 
     public function pimpinan()
@@ -54,30 +54,30 @@ class KegiatanController extends Controller
             'list' => ['Home', 'Kegiatan Pimpinan'],
         ];
         $activeMenu = 'kegiatan pimpinan';
-    
+
         // Ambil tahun unik dari tabel kegiatan
         $years = KegiatanModel::selectRaw('YEAR(tanggal_acara) as year')
             ->distinct()
             ->orderBy('year', 'asc')
             ->pluck('year'); // Hanya mengambil nilai tahun saja
-    
+
         // Kirimkan data ke view
         return view('pimpinan.kegiatan.index', [
             'breadcrumb' => $breadcrumb,
             'activeMenu' => $activeMenu,
             'years' => $years, // Tambahkan $years di sini
-            ]);
-        }
+        ]);
+    }
 
-        public function getPeriodeKegiatan()
-        {
-            $years = KegiatanModel::selectRaw('YEAR(tanggal_acara) as year')
-                ->distinct()
-                ->orderBy('year', 'asc')
-                ->pluck('year');
+    public function getPeriodeKegiatan()
+    {
+        $years = KegiatanModel::selectRaw('YEAR(tanggal_acara) as year')
+            ->distinct()
+            ->orderBy('year', 'asc')
+            ->pluck('year');
 
-            return view('pimpinan.kegiatan.index', compact('years'));
-        }
+        return view('pimpinan.kegiatan.index', compact('years'));
+    }
 
     public function dosen(): mixed
     {
@@ -94,12 +94,12 @@ class KegiatanController extends Controller
         $kegiatanAkanDatang = KegiatanModel::whereHas('anggota', function ($query) use ($userId) {
             $query->where('id_user', $userId);
         })
-        ->where('tanggal_mulai', '>=', now())
-        ->get()
-        ->map(function ($kegiatan) {
-            $kegiatan->tanggal_mulai = Carbon::parse($kegiatan->tanggal_mulai);
-            return $kegiatan;
-        });
+            ->where('tanggal_mulai', '>=', now())
+            ->get()
+            ->map(function ($kegiatan) {
+                $kegiatan->tanggal_mulai = Carbon::parse($kegiatan->tanggal_mulai);
+                return $kegiatan;
+            });
 
         return view('dosen.kegiatan.index', [
             'breadcrumb' => $breadcrumb,
@@ -158,64 +158,64 @@ class KegiatanController extends Controller
 
         // Ambil data kegiatan di mana user login memiliki id_jabatan_kegiatan antara 2 hingga 6
         $query = KegiatanModel::with(['anggota.user', 'anggota.jabatan', 'dokumen'])
-        ->whereHas('anggota', function ($query) use ($dosenId) {
-            // Filter untuk user login dengan id_jabatan_kegiatan antara 2 hingga 6
-            $query->where('id_user', $dosenId)
-                ->whereBetween('id_jabatan_kegiatan', [2, 6]);
-        });
+            ->whereHas('anggota', function ($query) use ($dosenId) {
+                // Filter untuk user login dengan id_jabatan_kegiatan antara 2 hingga 6
+                $query->where('id_user', $dosenId)
+                    ->whereBetween('id_jabatan_kegiatan', [2, 6]);
+            });
 
-            // Filter berdasarkan jenis kegiatan jika ada
-            if ($request->filled('jenis_kegiatan')) {
-                $query->where('jenis_kegiatan', $request->jenis_kegiatan);
-            }
+        // Filter berdasarkan jenis kegiatan jika ada
+        if ($request->filled('jenis_kegiatan')) {
+            $query->where('jenis_kegiatan', $request->jenis_kegiatan);
+        }
 
-            return DataTables::of($query)
-                ->addIndexColumn()
-                // Kolom PIC
-                ->addColumn('pic', function($row) {
-                    // Cari anggota dengan id_jabatan_kegiatan = 1
-                    $pic = $row->anggota->firstWhere('id_jabatan_kegiatan', 1);
-                    // Tampilkan nama user jika ditemukan, jika tidak tampilkan '-'
-                    return $pic && $pic->user ? $pic->user->nama : '-';
-                })
+        return DataTables::of($query)
+            ->addIndexColumn()
+            // Kolom PIC
+            ->addColumn('pic', function ($row) {
+                // Cari anggota dengan id_jabatan_kegiatan = 1
+                $pic = $row->anggota->firstWhere('id_jabatan_kegiatan', 1);
+                // Tampilkan nama user jika ditemukan, jika tidak tampilkan '-'
+                return $pic && $pic->user ? $pic->user->nama : '-';
+            })
 
-                // Kolom Surat Tugas
-                ->addColumn('surat_tugas', function($row) {
-                    $dokumen = $row->dokumen->firstWhere('jenis_dokumen', 'Surat Tugas');
-                    if ($dokumen) {
-                        return '<a href="' . url('storage/' . $dokumen->path) . '" class="btn btn-sm btn-primary" target="_blank">Unduh</a>';
-                    }
-                    return '-';
-                })
+            // Kolom Surat Tugas
+            ->addColumn('surat_tugas', function ($row) {
+                $dokumen = $row->dokumen->firstWhere('jenis_dokumen', 'Surat Tugas');
+                if ($dokumen) {
+                    return '<a href="' . url('storage/' . $dokumen->path) . '" class="btn btn-sm btn-primary" target="_blank">Unduh</a>';
+                }
+                return '-';
+            })
 
-                // Kolom Tanggal Mulai
-                ->editColumn('tanggal_mulai', function($row) {
-                    return $row->tanggal_mulai ? \Carbon\Carbon::parse($row->tanggal_mulai)->format('d-M-Y') : '-';
-                })
-                // Kolom Tanggal Selesai
-                ->editColumn('tanggal_selesai', function($row) {
-                    return $row->tanggal_selesai ? \Carbon\Carbon::parse($row->tanggal_selesai)->format('d-M-Y') : '-';
-                })
-                //kolom tempat acara
-                ->editColumn('tempat_acara', function($row) {
-                    return $row->tempat_kegiatan ? $row->tempat_kegiatan : '-';
-                })
+            // Kolom Tanggal Mulai
+            ->editColumn('tanggal_mulai', function ($row) {
+                return $row->tanggal_mulai ? \Carbon\Carbon::parse($row->tanggal_mulai)->format('d-M-Y') : '-';
+            })
+            // Kolom Tanggal Selesai
+            ->editColumn('tanggal_selesai', function ($row) {
+                return $row->tanggal_selesai ? \Carbon\Carbon::parse($row->tanggal_selesai)->format('d-M-Y') : '-';
+            })
+            //kolom tempat acara
+            ->editColumn('tempat_acara', function ($row) {
+                return $row->tempat_kegiatan ? $row->tempat_kegiatan : '-';
+            })
 
-                // Kolom Aksi
-                ->addColumn('aksi', function($row){
-                    $editUrl = url('/kegiatan/'.$row->id_kegiatan.'/edit_ajax');
-                    $deleteUrl = url('/kegiatan/'.$row->id_kegiatan.'/delete_ajax');
-                    
-                    $btn = '<div class="btn-group">';
-                    $btn .= '<button onclick="modalAction(\''.$editUrl.'\')" class="btn btn-sm btn-primary">Edit</button>';
-                    $btn .= '<button onclick="deleteAction(\''.$deleteUrl.'\')" class="btn btn-sm btn-danger">Delete</button>';
-                    $btn .= '</div>';
-                    
-                    return $btn;
-                })
-                // Izinkan kolom aksi mengandung HTML
-                ->rawColumns(['aksi', 'surat_tugas'])
-                ->make(true);
+            // Kolom Aksi
+            ->addColumn('aksi', function ($row) {
+                $editUrl = url('/kegiatan/' . $row->id_kegiatan . '/edit_ajax');
+                $deleteUrl = url('/kegiatan/' . $row->id_kegiatan . '/delete_ajax');
+
+                $btn = '<div class="btn-group">';
+                $btn .= '<button onclick="modalAction(\'' . $editUrl . '\')" class="btn btn-sm btn-primary">Edit</button>';
+                $btn .= '<button onclick="deleteAction(\'' . $deleteUrl . '\')" class="btn btn-sm btn-danger">Delete</button>';
+                $btn .= '</div>';
+
+                return $btn;
+            })
+            // Izinkan kolom aksi mengandung HTML
+            ->rawColumns(['aksi', 'surat_tugas'])
+            ->make(true);
 
         // Kembalikan response jika bukan ajax
         return response()->json(['error' => 'Invalid request'], 400);
@@ -235,7 +235,7 @@ class KegiatanController extends Controller
             $tahun = $request->periode; // Tahun diambil dari request
             $kegiatan->whereYear('tanggal_acara', '=', $tahun);
         }
-        
+
         return DataTables::of($kegiatan)
             ->addIndexColumn()
             ->addColumn('aksi', function ($kegiatan) {
@@ -298,7 +298,7 @@ class KegiatanController extends Controller
         $kegiatan = KegiatanModel::select('id_kegiatan', 'nama_kegiatan', 'deskripsi_kegiatan', 'tanggal_mulai', 'tanggal_selesai', 'tanggal_acara', 'tempat_kegiatan', 'jenis_kegiatan')
             ->whereHas('anggota', function ($query) use ($userId) {
                 $query->where('id_user', $userId)
-                      ->where('id_jabatan_kegiatan', '1'); // Pastikan kolom 'jabatan' ada di tabel anggota
+                    ->where('id_jabatan_kegiatan', '1'); // Pastikan kolom 'jabatan' ada di tabel anggota
             });
 
         if ($request->jenis_kegiatan) {
@@ -501,21 +501,21 @@ class KegiatanController extends Controller
     public function editAjaxDosen($id)
     {
         $kegiatan = KegiatanModel::select('id_kegiatan', 'nama_kegiatan', 'jenis_kegiatan', 'deskripsi_kegiatan', 'tanggal_mulai', 'tanggal_selesai', 'tanggal_acara', 'tempat_kegiatan')
-        ->where('id_kegiatan', $id)
-        ->with('anggota.user', 'anggota.jabatan')
-        ->first();
+            ->where('id_kegiatan', $id)
+            ->with('anggota.user', 'anggota.jabatan')
+            ->first();
         if (!$kegiatan) {
             return response()->json(['status' => false, 'message' => 'Kegiatan tidak ditemukan'], 404);
         }
         $anggota_kegiatan = AnggotaModel::select('id_anggota', 'id_user', 'id_jabatan_kegiatan')
-        ->where('id_kegiatan', $id)
-        ->get();
+            ->where('id_kegiatan', $id)
+            ->get();
         $jabatan = JabatanKegiatanModel::all();
         $anggota = UserModel::select('id_user', 'username', 'nama', 'email', 'NIP', 'level')->where('level', 'dosen')->get();
         // return view('dosen.kegiatan.edit_ajax', compact('kegiatan','jabatan', 'anggota'));
         return view('dosen.kegiatan.edit_ajax', ['kegiatan' => $kegiatan, 'jabatan' => $jabatan, 'anggota' => $anggota, 'anggota_kegiatan' => $anggota_kegiatan]);
     }
-    
+
     public function editAjaxDosenPIC($id)
     {
         $kegiatan = KegiatanModel::select('id_kegiatan', 'nama_kegiatan', 'jenis_kegiatan', 'deskripsi_kegiatan', 'tanggal_mulai', 'tanggal_selesai', 'tanggal_acara', 'tempat_kegiatan')
@@ -547,7 +547,7 @@ class KegiatanController extends Controller
                 'jabatan_id' => 'required|array',
                 'anggota_id' => 'required|array',
             ]);
-    
+
             if ($validator->fails()) {
                 return response()->json([
                     'status' => false,
@@ -555,12 +555,12 @@ class KegiatanController extends Controller
                     'msgField' => $validator->errors()
                 ]);
             }
-    
+
             $kegiatan = KegiatanModel::find($id);
             if (!$kegiatan) {
                 return response()->json(['status' => false, 'message' => 'Kegiatan tidak ditemukan'], 404);
             }
-    
+
             $kegiatan->update([
                 'nama_kegiatan' => $request->nama_kegiatan,
                 'jenis_kegiatan' => $request->jenis_kegiatan,
@@ -569,10 +569,10 @@ class KegiatanController extends Controller
                 'tanggal_selesai' => $request->tanggal_selesai,
                 'tanggal_acara' => $request->tanggal_acara,
             ]);
-    
+
             // Update anggota
             $existingAnggotaIds = AnggotaModel::where('id_kegiatan', $id)->pluck('id_user')->toArray();
-    
+
             foreach ($request->anggota_id as $index => $anggota_id) {
                 if (in_array($anggota_id, $existingAnggotaIds)) {
                     // Update existing anggota
@@ -590,12 +590,12 @@ class KegiatanController extends Controller
                     ]);
                 }
             }
-    
+
             // Remove anggota that are no longer in the request
             AnggotaModel::where('id_kegiatan', $id)
                 ->whereNotIn('id_user', $request->anggota_id)
                 ->delete();
-    
+
             return response()->json([
                 'status' => true,
                 'message' => 'Kegiatan berhasil diperbarui'
@@ -660,7 +660,7 @@ class KegiatanController extends Controller
 
     public function updateAjaxDosenPIC(Request $request, $id)
     {
-        if($request->ajax() || $request->wantsJson()){
+        if ($request->ajax() || $request->wantsJson()) {
             $validator = Validator::make($request->all(), [
                 'nama_kegiatan' => 'required|string|max:255',
                 'jenis_kegiatan' => 'required|string|max:255',
@@ -672,7 +672,7 @@ class KegiatanController extends Controller
                 'jabatan_id' => 'required|array',
                 'anggota_id' => 'required|array',
             ]);
-        
+
             if ($validator->fails()) {
                 return response()->json([
                     'status' => false,
@@ -680,12 +680,12 @@ class KegiatanController extends Controller
                     'msgField' => $validator->errors()
                 ]);
             }
-        
+
             $kegiatan = KegiatanModel::find($id);
             if (!$kegiatan) {
                 return response()->json(['status' => false, 'message' => 'Kegiatan tidak ditemukan'], 404);
             }
-        
+
             $kegiatan->update([
                 'nama_kegiatan' => $request->nama_kegiatan,
                 'jenis_kegiatan' => $request->jenis_kegiatan,
@@ -695,7 +695,7 @@ class KegiatanController extends Controller
                 'tanggal_acara' => $request->tanggal_acara,
                 'tempat_kegiatan' => $request->tempat_kegiatan,
             ]);
-        
+
             // Update anggota
             AnggotaModel::where('id_kegiatan', $id)->delete();
             foreach ($request->anggota_id as $index => $anggota_id) {
@@ -705,7 +705,7 @@ class KegiatanController extends Controller
                     'id_jabatan_kegiatan' => $request->jabatan_id[$index],
                 ]);
             }
-        
+
             return response()->json([
                 'status' => true,
                 'message' => 'Kegiatan berhasil diperbarui'
@@ -716,7 +716,7 @@ class KegiatanController extends Controller
     public function confirmAjaxDosen($id)
     {
         $kegiatan = KegiatanModel::find($id);
-        return view('dosen.kegiatan.confirm_ajax',['kegiatan' => $kegiatan]);
+        return view('dosen.kegiatan.confirm_ajax', ['kegiatan' => $kegiatan]);
     }
 
     public function deleteAjaxDosen($id)
@@ -749,7 +749,6 @@ class KegiatanController extends Controller
                         'status' => true,
                         'message' => 'Kegiatan berhasil dihapus beserta semua data terkait'
                     ]);
-
                 } catch (\Exception $e) {
                     DB::rollBack();
 
@@ -1239,37 +1238,50 @@ class KegiatanController extends Controller
         ];
         $activeMenu = 'agenda anggota';
 
-        $agendaAnggota = DB::table('t_kegiatan')
-            ->join('t_anggota', 't_kegiatan.id_kegiatan', '=', 't_anggota.id_kegiatan')
-            ->join('t_user', 't_anggota.id_user', '=', 't_user.id_user')
-            ->select(
-                't_kegiatan.id_kegiatan',
-                't_kegiatan.nama_kegiatan',
-                DB::raw('GROUP_CONCAT(t_user.nama SEPARATOR ", ") as anggota'),
-                't_kegiatan.tanggal_mulai',
-                't_kegiatan.tanggal_selesai'
-            )
-            ->groupBy('t_kegiatan.id_kegiatan', 't_kegiatan.nama_kegiatan', 't_kegiatan.tanggal_mulai', 't_kegiatan.tanggal_selesai')
-            ->get();
+        // Mengambil data menggunakan Eloquent
+        $agendaAnggota = KegiatanModel::with(['anggota.user'])
+            ->whereHas('anggota', function ($query) {
+                $query->has('user'); // Pastikan kegiatan memiliki anggota yang terkait dengan user
+            })
+            ->get()
+            ->map(function ($kegiatan) {
+                return (object) [
+                    'id_kegiatan' => $kegiatan->id_kegiatan,
+                    'nama_kegiatan' => $kegiatan->nama_kegiatan,
+                    'jenis_kegiatan' => $kegiatan->jenis_kegiatan,
+                    'tempat_kegiatan' => $kegiatan->tempat_kegiatan,
+                    'anggota' => $kegiatan->anggota->pluck('user.nama')->join(', '),
+                    'tanggal_mulai' => $kegiatan->tanggal_mulai,
+                    'tanggal_selesai' => $kegiatan->tanggal_selesai,
+                ];
+            });
 
-        return view('dosenPIC.agendaAnggota.index', ['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu, 'agendaAnggota' => $agendaAnggota]);
+        return view('dosenPIC.agendaAnggota.index', [
+            'breadcrumb' => $breadcrumb,
+            'activeMenu' => $activeMenu,
+            'agendaAnggota' => $agendaAnggota,
+        ]);
     }
 
-    public function editAgendaAnggota($id) {
+    public function editAgendaAnggota($id) {}
 
+    public function detailAgendaAnggota($id)
+    {
+        // Ambil data kegiatan beserta relasi agendanya
+        $kegiatan = KegiatanModel::with('agenda')->find($id);
+
+        // Jika data kegiatan tidak ditemukan
+        if (!$kegiatan) {
+            return view('dosenPIC.agendaAnggota.show_ajax', compact('kegiatan'))->render();
+        }
+
+        // Data agenda langsung dari relasi kegiatan
+        $agenda = $kegiatan->agenda;
+
+        return view('dosenPIC.agendaAnggota.show_ajax', ['kegiatan' => $kegiatan, 'agenda'=>$agenda]);
     }
 
-    public function detailAgendaAnggota($id) {
-
-    }
-
-    public function updateAgendaAnggota(Request $request, $id) {
-
-    }
-
-    public function deleteAgendaAnggota($id) {
-
-    }
+    public function updateAgendaAnggota(Request $request, $id) {}
 
     public function KegiatanJTI(): mixed
     {
@@ -1453,7 +1465,7 @@ class KegiatanController extends Controller
             $data = KegiatanModel::select('id_kegiatan', 'nama_kegiatan', 'progress')
                 ->whereHas('anggota', function ($query) use ($userId) {
                     $query->where('id_user', $userId)
-                          ->where('id_jabatan_kegiatan', '1');
+                        ->where('id_jabatan_kegiatan', '1');
                 })
                 ->get();
 
@@ -1468,7 +1480,7 @@ class KegiatanController extends Controller
                 ->make(true);
         }
     }
-    
+
     public function edit_ajax($id)
     {
         $kegiatan = KegiatanModel::select('id_kegiatan', 'nama_kegiatan', 'progress')->where('id_kegiatan', $id)->first();
@@ -1498,7 +1510,7 @@ class KegiatanController extends Controller
         try {
             // Cari kegiatan
             $kegiatan = KegiatanModel::findOrFail($id);
-            
+
             // Update progress
             $kegiatan->update([
                 'progress' => $request->input('progress')
