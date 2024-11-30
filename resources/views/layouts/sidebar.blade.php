@@ -55,6 +55,13 @@
               <p>Statistik </p>
             </a>
           </li>
+          <li class="nav-header">Repository</li>
+          <li class="nav-item">
+            <a href="{{ url('admin/file')}}" class="nav-link {{($activeMenu == 'file')? 'active' : ''}}">
+              <i class="nav-icon fa-solid fa-cloud"></i>
+              <p>Berkas </p>
+            </a>
+          </li>
         @endif
 
         {{-- DOSEN --}}
