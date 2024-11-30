@@ -38,12 +38,9 @@
             <thead>
                 <tr>
                     <th style="width: 5%;" class="text-center">No</th>
-                    <th style="width: 15%;" class="text-center">Nama Kegiatan</th>
-                    <th style="width: 15%;" class="text-center">Deskripsi Kegiatan</th>
-                    <th style="width: 10%;" class="text-center">Tanggal Mulai</th>
-                    <th style="width: 10%;" class="text-center">Tanggal Selesai</th>
+                    <th style="width: 30%;" class="text-center">Nama Kegiatan</th>
                     <th style="width: 10%;" class="text-center">Tanggal Acara</th>
-                    <th style="width: 10%;" class="text-center">Tempat Kegiatan</th>
+                    <th style="width: 30%;" class="text-center">Tempat Kegiatan</th>
                     <th style="width: 10%;" class="text-center">Jenis Kegiatan</th>
                     <th style="width: 15%;" class="text-center">Aksi</th>
                 </tr>
@@ -84,9 +81,6 @@
                     columns: [
                         { data: 'DT_RowIndex', name: 'DT_RowIndex', className: "text-center", orderable: false, searchable: false },
                         { data: 'nama_kegiatan', name: 'nama_kegiatan', className: "text-center", orderable: true, searchable: true },
-                        { data: 'deskripsi_kegiatan', name: 'deskripsi_kegiatan', className: "text-center", orderable: true, searchable: true },
-                        { data: 'tanggal_mulai', name: 'tanggal_mulai', className: "text-center", orderable: true, searchable: true },
-                        { data: 'tanggal_selesai', name: 'tanggal_selesai', className: "text-center", orderable: true, searchable: true },
                         { data: 'tanggal_acara', name: 'tanggal_acara', className: "text-center", orderable: true, searchable: true },
                         { data: 'tempat_kegiatan', name: 'tempat_kegiatan', className: "text-center", orderable: true, searchable: true },
                         { data: 'jenis_kegiatan', name: 'jenis_kegiatan', className: "text-center", orderable: true, searchable: true },
