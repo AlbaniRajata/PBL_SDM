@@ -1,90 +1,82 @@
-<form action="{{ route('progresKegiatan.update', $progresKegiatan->id_kegiatan) }}" method="POST" id="form-edit">
+<form id="form-edit-progress" action="{{ url('/dosenPIC/progresKegiatan/'.$kegiatan->id_kegiatan.'/update' ) }}" method="POST">
     @csrf
-    @method('PATCH')
-    <div id="modal-master" class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title" id="exampleModalLabel">Edit Progres Kegiatan</h5>
-                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="nama_kegiatan">Nama Kegiatan</label>
-                    <input type="text" class="form-control" id="nama_kegiatan" name="nama_kegiatan" value="{{ $progresKegiatan->nama_kegiatan }}" readonly>
-                    <small id="error-nama_kegiatan" class="error-text form-text text-danger"></small>
-                </div>
-                <div class="form-group">
-                    <label for="progress">Presentase</label>
-                    <input type="number" class="form-control" id="progress" name="progress" value="{{ $progresKegiatan->progress }}" min="0" max="100" required>
-                    <small id="error-progress" class="error-text form-text text-danger"></small>
-                </div>
-                <div class="text-right">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
-                    <button type="submit" class="btn btn-success">Simpan</button>
-                </div>
-            </div>
+    @method('PUT')
+    <div class="modal-header">
+        <h5 class="modal-title">Edit Progress Kegiatan</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="form-group">
+            <label>Nama Kegiatan</label>
+            <input type="text" class="form-control" value="{{ $kegiatan->nama_kegiatan }}" readonly>
         </div>
+        <div class="form-group">
+            <label for="progress">Progress Kegiatan (%)</label>
+            <input 
+                type="number" 
+                name="progress" 
+                id="progress" 
+                class="form-control" 
+                value="{{ $kegiatan->progress }}" 
+                min="0" 
+                max="100" 
+                required
+            >
+            <small class="form-text text-muted">
+                Masukkan progress antara 0-100%
+            </small>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+        <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
     </div>
 </form>
 
-@push('js')
 <script>
-    $(document).ready(function() {
-        $('#form-edit').validate({
-            rules: {
-                progress: {
-                    required: true,
-                    number: true,
-                    min: 0,
-                    max: 100
+$(document).ready(function() {
+    $('#form-edit-progress').on('submit', function(e) {
+        e.preventDefault();
+        
+        $.ajax({
+            url: $(this).attr('action'),
+            type: 'POST', // Ubah ke POST karena Laravel memerlukan _method PATCH
+            data: $(this).serialize(),
+            success: function(response) {
+                if (response.status) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil',
+                        text: response.message
+                    });
+
+                    $('#myModal').modal('hide');
+                    $('#kegiatan-table').DataTable().ajax.reload();
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Kesalahan',
+                        text: response.message
+                    });
                 }
             },
-            submitHandler: function(form) {
-                $.ajax({
-                    url: form.action,
-                    type: form.method,
-                    data: $(form).serialize(),
-                    success: function(response) {
-                        if (response.status) {
-                            $('#modal-master').modal('hide');
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Berhasil',
-                                text: response.message
-                            });
-                            $('#progress-kegiatan-table').DataTable().ajax.reload();
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Terjadi Kesalahan',
-                                text: response.message
-                            });
-                        }
-                    },
-                    error: function(response) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Terjadi Kesalahan',
-                            text: 'An error occurred. Please try again.'
-                        });
-                    }
+            error: function(xhr) {
+                let errorMessage = 'Terjadi kesalahan';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMessage = xhr.responseJSON.message;
+                } else if (xhr.status) {
+                    errorMessage = `Error ${xhr.status}: ${xhr.statusText}`;
+                }
+
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Kesalahan',
+                    text: errorMessage
                 });
-                return false;
-            },
-            errorElement: 'span',
-            errorPlacement: function(error, element) {
-                error.addClass('invalid-feedback');
-                element.closest('.form-group').append(error);
-            },
-            highlight: function(element, errorClass, validClass) {
-                $(element).addClass('is-invalid');
-            },
-            unhighlight: function(element, errorClass, validClass) {
-                $(element).removeClass('is-invalid');
             }
         });
     });
+});
 </script>
-@endpush

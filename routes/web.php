@@ -203,11 +203,13 @@ Route::middleware('auth')->group(function () {
             });
 
             Route::prefix('progresKegiatan')->group(function () {
-                Route::get('/', [KegiatanController::class, 'progresKegiatan'])->name('progresKegiatan.index');
-                Route::get('/edit/{id}', [KegiatanController::class, 'editProgresKegiatan'])->name('progresKegiatan.edit');
-                Route::patch('/update/{id}', [KegiatanController::class, 'updateProgresKegiatan'])->name('progresKegiatan.update');
-                Route::get('/detail/{id}', [KegiatanController::class, 'detailProgresKegiatan'])->name('progresKegiatan.detail');
-                Route::post('/list', [KegiatanController::class, 'listProgresKegiatan'])->name('dosenPIC.progresKegiatan.list');
+                Route::get('/', [KegiatanController::class, 'ProgresKegiatan'])->name('ProgresKegiatan.index');
+                Route::get('/list', [KegiatanController::class, 'listProgresKegiatan'])->name('dosenPIC.progresKegiatan.list');
+                Route::get('/{id}/edit_ajax', [KegiatanController::class, 'edit_ajax'])->name('dosenPIC.progresKegiatan.edit_ajax');
+                
+                // Sesuaikan route update
+                Route::put('/{id}/update', [KegiatanController::class, 'update_ajax'])->name('dosenPIC.progresKegiatan.update');
+                Route::get('/{id}/detail_ajax', [KegiatanController::class, 'show_ajax'])->name('dosenPIC.progresKegiatan.detail_ajax');
             });
         });
 
@@ -215,10 +217,7 @@ Route::middleware('auth')->group(function () {
             Route::prefix('kegiatan')->group(function () {
             Route::get('/', [KegiatanController::class, 'dosenAnggota'])->name('dosenAnggota.kegiatan.dosenA');
             Route::post('/list', [KegiatanController::class, 'listDosenAnggota'])->name('dosenAnggota.kegiatan.list');
-            Route::post('/ajax', [KegiatanController::class, 'storeDosenAnggota'])->name('dosenAnggota.storeAjax');
             Route::get('/dataDosenA', [KegiatanController::class, 'dataDosenA'])->name('dosenAnggota.kegiatan.dataDosenA');
-            Route::get('/export_pdf', [KegiatanController::class, 'exportPdf_dosenAnggota'])->name('dosenAnggota.kegiatan.export_pdf');
-            Route::get('/export_excel', [KegiatanController::class, 'exportExcel_dosenAnggota'])->name('dosenAnggota.kegiatan.export_excel');
         });
     });
 });

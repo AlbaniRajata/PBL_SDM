@@ -196,6 +196,11 @@ class KegiatanController extends Controller
                 ->editColumn('tanggal_selesai', function($row) {
                     return $row->tanggal_selesai ? \Carbon\Carbon::parse($row->tanggal_selesai)->format('d-M-Y') : '-';
                 })
+                //kolom tempat acara
+                ->editColumn('tempat_acara', function($row) {
+                    return $row->tempat_kegiatan ? $row->tempat_kegiatan : '-';
+                })
+
                 // Kolom Aksi
                 ->addColumn('aksi', function($row){
                     $editUrl = url('/kegiatan/'.$row->id_kegiatan.'/edit_ajax');
@@ -358,7 +363,7 @@ class KegiatanController extends Controller
             return response()->json(['message' => 'Data not found'], 404);
         }
 
-        return view('dosen.kegiatan.show_ajax', ['kegiatan' => $kegiatan, 'anggota' => $angggota]);
+        return view('dosenPIC.kegiatan.show_ajax', ['kegiatan' => $kegiatan, 'anggota' => $angggota]);
     }
 
     public function create_ajaxAdmin()
@@ -1224,13 +1229,21 @@ class KegiatanController extends Controller
         return view('dosenPIC.agendaAnggota.index', ['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu, 'agendaAnggota' => $agendaAnggota]);
     }
 
-    public function editAgendaAnggota($id) {}
+    public function editAgendaAnggota($id) {
 
-    public function detailAgendaAnggota($id) {}
+    }
 
-    public function updateAgendaAnggota(Request $request, $id) {}
+    public function detailAgendaAnggota($id) {
 
-    public function deleteAgendaAnggota($id) {}
+    }
+
+    public function updateAgendaAnggota(Request $request, $id) {
+
+    }
+
+    public function deleteAgendaAnggota($id) {
+
+    }
 
     public function KegiatanJTI(): mixed
     {
@@ -1391,7 +1404,7 @@ class KegiatanController extends Controller
     }
 
     // Proges Kegiatan
-    public function progresKegiatan()
+    public function ProgresKegiatan()
     {
         $breadcrumb = (object) [
             'title' => 'Progres Kegiatan',
@@ -1399,56 +1412,87 @@ class KegiatanController extends Controller
         ];
         $activeMenu = 'progres kegiatan pic';
 
-        $progresKegiatan = KegiatanModel::select('id_kegiatan', 'nama_kegiatan', 'progress')->get();
+        $progresKegiatan = KegiatanModel::select('id_kegiatan', 'nama_kegiatan', 'progress');
 
-        return view('dosenPIC.progresKegiatan.index', compact('breadcrumb', 'activeMenu', 'progresKegiatan'));
-    }
-
-    public function editProgresKegiatan($id)
-    {
-        $kegiatan = KegiatanModel::find($id);
-        if (!$kegiatan) {
-            return response()->json(['status' => false, 'message' => 'Kegiatan tidak ditemukan'], 404);
-        }
-
-        return response()->json(['status' => true, 'data' => $kegiatan]);
-    }
-
-    public function updateProgresKegiatan(Request $request, $id)
-    {
-        $kegiatan = KegiatanModel::find($id);
-        if (!$kegiatan) {
-            return response()->json(['status' => false, 'message' => 'Kegiatan tidak ditemukan'], 404);
-        }
-
-        $kegiatan->update($request->all());
-
-        return response()->json(['status' => true, 'message' => 'Progres kegiatan berhasil diperbarui']);
-    }
-
-    public function detailProgresKegiatan($id)
-    {
-        $kegiatan = KegiatanModel::find($id);
-        if (!$kegiatan) {
-            return response()->json(['status' => false, 'message' => 'Kegiatan tidak ditemukan'], 404);
-        }
-
-        return response()->json(['status' => true, 'data' => $kegiatan]);
+        return view('dosenPIC.ProgresKegiatan.index', compact('breadcrumb', 'activeMenu', 'progresKegiatan'));
     }
 
     public function listProgresKegiatan(Request $request)
     {
         if ($request->ajax()) {
-            $data = KegiatanModel::select('id_kegiatan', 'nama_kegiatan', 'progress')->get();
+            // Ambil ID pengguna yang sedang login
+            $userId = Auth::id();
+
+            // Ambil data kegiatan yang diikuti oleh pengguna yang sedang login
+            $data = KegiatanModel::select('id_kegiatan', 'nama_kegiatan', 'progress')
+                ->whereHas('anggota', function ($query) use ($userId) {
+                    $query->where('id_user', $userId)
+                          ->where('id_jabatan_kegiatan', '1');
+                })
+                ->get();
+
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('aksi', function ($row) {
-                    $btn = '<button class="btn btn-sm btn-primary" onclick="editProgressKegiatan(' . $row->id_kegiatan . ')">Edit</button>';
-                    $btn .= ' <button class="btn btn-sm btn-info" onclick="detailProgressKegiatan(' . $row->id_kegiatan . ')">Detail</button>';
+                    $btn = '<button onclick="modalAction(\'' . url('/dosenPIC/progresKegiatan/' . $row->id_kegiatan . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
+                    $btn .= '<button onclick="modalAction(\'' . url('/dosenPIC/progresKegiatan/' . $row->id_kegiatan . '/detail_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
                     return $btn;
                 })
                 ->rawColumns(['aksi'])
                 ->make(true);
         }
+    }
+    
+    public function edit_ajax($id)
+    {
+        $kegiatan = KegiatanModel::select('id_kegiatan', 'nama_kegiatan', 'progress')->where('id_kegiatan', $id)->first();
+        return view('dosenPIC.progresKegiatan.edit_ajax', ['kegiatan' => $kegiatan]);
+    }
+
+    public function update_ajax(Request $request, $id)
+    {
+        // Validasi input
+        $validator = Validator::make($request->all(), [
+            'progress' => 'required|numeric|min:0|max:100'
+        ], [
+            'progress.required' => 'Progress harus diisi',
+            'progress.numeric' => 'Progress harus berupa angka',
+            'progress.min' => 'Progress minimal 0',
+            'progress.max' => 'Progress maksimal 100'
+        ]);
+
+        // Jika validasi gagal
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => $validator->errors()->first()
+            ], 400);
+        }
+
+        try {
+            // Cari kegiatan
+            $kegiatan = KegiatanModel::findOrFail($id);
+            
+            // Update progress
+            $kegiatan->update([
+                'progress' => $request->input('progress')
+            ]);
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Progress kegiatan berhasil diperbarui'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Gagal memperbarui progress kegiatan: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function show_ajax($id)
+    {
+        $kegiatan = KegiatanModel::select('id_kegiatan', 'nama_kegiatan', 'progress')->where('id_kegiatan', $id)->first();
+        return view('dosenPIC.progresKegiatan.show_ajax', ['kegiatan' => $kegiatan]);
     }
 }
