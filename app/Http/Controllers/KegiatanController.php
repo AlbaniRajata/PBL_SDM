@@ -286,11 +286,20 @@ class KegiatanController extends Controller
 
     public function listDosenPIC(Request $request)
     {
-        $kegiatan = KegiatanModel::select('id_kegiatan', 'nama_kegiatan', 'deskripsi_kegiatan', 'tanggal_mulai', 'tanggal_selesai', 'tanggal_acara', 'tempat_kegiatan', 'jenis_kegiatan');
+        // Ambil ID pengguna yang sedang login
+        $userId = Auth::id();
+
+        // Ambil data kegiatan di mana pengguna adalah PIC
+        $kegiatan = KegiatanModel::select('id_kegiatan', 'nama_kegiatan', 'deskripsi_kegiatan', 'tanggal_mulai', 'tanggal_selesai', 'tanggal_acara', 'tempat_kegiatan', 'jenis_kegiatan')
+            ->whereHas('anggota', function ($query) use ($userId) {
+                $query->where('id_user', $userId)
+                      ->where('id_jabatan_kegiatan', '1'); // Pastikan kolom 'jabatan' ada di tabel anggota
+            });
 
         if ($request->jenis_kegiatan) {
             $kegiatan->where('jenis_kegiatan', $request->jenis_kegiatan);
         }
+
         return DataTables::of($kegiatan)
             ->addIndexColumn()
             ->addColumn('aksi', function ($kegiatan) {
