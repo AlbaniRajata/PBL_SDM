@@ -28,10 +28,10 @@
                 Masukkan progress antara 0-100%
             </small>
         </div>
-    </div>
-    <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
-        <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+        <div class="text-right">
+            <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
+            <button type="submit" class="btn btn-success">Simpan Perubahan</button>
+        </div>
     </div>
 </form>
 
