@@ -16,19 +16,19 @@ class AgendaSeeder extends Seeder
             ],
             [
                 'id_kegiatan' => 2,
-                'id_dokumen' => 2,
+                'id_dokumen' => 1,
             ],
             [
                 'id_kegiatan' => 3,
-                'id_dokumen' => 3,
+                'id_dokumen' => 1,
             ],
             [
                 'id_kegiatan' => 4,
-                'id_dokumen' => 4,
+                'id_dokumen' => 1,
             ],
             [
                 'id_kegiatan' => 5,
-                'id_dokumen' => 5,
+                'id_dokumen' => 1,
             ],
         ]);
     }
