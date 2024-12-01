@@ -1231,41 +1231,57 @@ class KegiatanController extends Controller
 
     // fungsi agenda kegiatan
     public function agendaAnggota()
-    {
-        $breadcrumb = (object) [
-            'title' => 'Agenda Anggota',
-            'list' => ['Home', 'Agenda Anggota'],
-        ];
-        $activeMenu = 'agenda anggota';
+{
+    $breadcrumb = (object) [
+        'title' => 'Agenda Anggota',
+        'list' => ['Home', 'Agenda Anggota'],
+    ];
+    $activeMenu = 'agenda anggota';
 
-        // Ambil ID pengguna yang sedang login
-        $userId = Auth::id();
+    // Ambil ID pengguna yang sedang login
+    $userId = Auth::id();
 
-        // Mengambil data menggunakan Eloquent
-        $agendaAnggota = KegiatanModel::with(['anggota.user'])
-            ->whereHas('anggota', function ($query) use ($userId) {
-                $query->where('id_user', $userId)
-                      ->where('id_jabatan_kegiatan', '1'); // Pastikan kolom 'jabatan' ada di tabel anggota
-            })
-            ->get()
-            ->map(function ($kegiatan) {
-                return (object) [
-                    'id_kegiatan' => $kegiatan->id_kegiatan,
-                    'nama_kegiatan' => $kegiatan->nama_kegiatan,
-                    'jenis_kegiatan' => $kegiatan->jenis_kegiatan,
-                    'tempat_kegiatan' => $kegiatan->tempat_kegiatan,
-                    'anggota' => $kegiatan->anggota->pluck('user.nama')->join(', '),
-                    'tanggal_mulai' => $kegiatan->tanggal_mulai,
-                    'tanggal_selesai' => $kegiatan->tanggal_selesai,
-                ];
-            });
-
-        return view('dosenPIC.agendaAnggota.index', [
-            'breadcrumb' => $breadcrumb,
-            'activeMenu' => $activeMenu,
-            'agendaAnggota' => $agendaAnggota,
+    // Mengambil data menggunakan Eloquent
+    $kegiatan = KegiatanModel::with(['anggota.user'])
+        ->whereHas('anggota', function ($query) use ($userId) {
+            $query->where('id_user', $userId)
+                  ->where('id_jabatan_kegiatan', '1');
+        })
+        ->select([
+            'id_kegiatan', 
+            'nama_kegiatan', 
+            'jenis_kegiatan', 
+            'tempat_kegiatan', 
+            'tanggal_mulai', 
+            'tanggal_selesai'
         ]);
+
+    // Jika request adalah ajax untuk DataTables
+    if (request()->ajax()) {
+        return DataTables::of($kegiatan)
+            ->addIndexColumn()
+            ->addColumn('anggota', function ($row) {
+                // Ambil nama anggota
+                $anggota = $row->anggota->pluck('user.nama')->join(', ');
+                return $anggota;
+            })
+            ->addColumn('aksi', function ($row) {
+                $btn = '<div class="btn-group" role="group">';
+                $btn .= '<a href="' . url('/dosenPIC/agendaAnggota/edit/', $row->id_kegiatan) . '" class="btn btn-sm btn-primary">Agenda</a>';
+                $btn .= '<a href="' . url('/dosenPIC/agendaAnggota/detail/'.$row->id_kegiatan) . '" class="btn btn-sm btn-info">Detail</a>';
+                $btn .= '</div>';
+                return $btn;
+            })
+            ->rawColumns(['aksi', 'anggota'])
+            ->make(true);
     }
+
+    // Render view untuk halaman pertama kali
+    return view('dosenPIC.agendaAnggota.index', [
+        'breadcrumb' => $breadcrumb,
+        'activeMenu' => $activeMenu,
+    ]);
+}
 
     public function editAgendaAnggota($id) {}
 
