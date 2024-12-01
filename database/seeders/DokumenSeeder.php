@@ -11,24 +11,8 @@ class DokumenSeeder extends Seeder
     {
         DB::table('t_dokumen')->insert([
             [
-                'nama_dokumen' => 'Dokumen A',
+                'nama_dokumen' => 'Percobaan 1',
                 'progress' => 20,
-            ],
-            [
-                'nama_dokumen' => 'Dokumen B',
-                'progress' => 40,
-            ],
-            [
-                'nama_dokumen' => 'Dokumen C',
-                'progress' => 60,
-            ],
-            [
-                'nama_dokumen' => 'Dokumen D',
-                'progress' => 80,
-            ],
-            [
-                'nama_dokumen' => 'Dokumen E',
-                'progress' => 100,
             ],
         ]);
     }

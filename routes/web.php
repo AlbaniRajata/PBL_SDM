@@ -104,6 +104,7 @@ Route::middleware('auth')->group(function () {
             Route::prefix('file')->group(function () {
                 Route::get('/', [FileHistoryController::class, 'index'])->name('admin.file.index');
                 Route::get('/download/{id}', [FileHistoryController::class, 'download'])->name('file.download');
+                Route::delete('/{id}', [FileHistoryController::class, 'destroy'])->name('file.destroy');
             });
 
         });
@@ -209,6 +210,8 @@ Route::middleware('auth')->group(function () {
                 Route::get('/detail/{id}', [KegiatanController::class, 'detailAgendaAnggota'])->name('agendaAnggota.detail');
                 Route::delete('/delete/{id}', [KegiatanController::class, 'deleteAgendaAnggota'])->name('agendaAnggota.delete');
                 Route::put('/update/{id}', [KegiatanController::class, 'updateAgendaAnggota'])->name('agendaAnggota.update');
+                Route::get('/buat-agenda/{id}', [KegiatanController::class, 'buatAgendaModal'])->name('agendaAnggota.buatAgenda');
+                Route::post('/simpan-agenda', [KegiatanController::class, 'simpanAgendaAnggota'])->name('agendaAnggota.simpan');
             });
 
             Route::prefix('progresKegiatan')->group(function () {
