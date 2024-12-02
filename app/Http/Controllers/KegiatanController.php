@@ -12,6 +12,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\AnggotaModel;
 use App\Models\JabatanKegiatanModel;
 use App\Models\AgendaAnggotaModel;
+use App\Models\AgendaModel;
 use PhpOffice\PhpWord\PhpWord;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -1269,37 +1270,114 @@ class KegiatanController extends Controller
         // Mengembalikan data ke DataTables
         return DataTables::of($kegiatan)
             ->addIndexColumn()
-            ->addColumn('anggota', function ($row) {
+            ->addColumn('anggota', function ($kegiatan) {
                 // Ambil nama anggota
-                $anggota = $row->anggota->pluck('user.nama')->join(', ');
+                $anggota = $kegiatan->anggota->pluck('user.nama')->join(', ');
                 return $anggota;
             })
-            ->addColumn('aksi', function ($row) {
-                $btn = '<button onclick="modalAction(\'' . url('/dosenPIC/agendaAnggota/' .$row->id_kegiatan . '/agenda') . '\')" class="btn btn-warning btn-sm">Agenda</button> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/dosenPIC/agendaAnggota/' .$row->id_kegiatan . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
+            ->addColumn('aksi', function ($kegiatan) {
+                $btn = '<button onclick="modalAction(\'' . url('/dosenPIC/agendaAnggota/' . $kegiatan->id_kegiatan . '/create_ajax') . '\')" class="btn btn-warning btn-sm">Agenda</button> ';
+                $btn .= '<button onclick="modalAction(\'' . url('/dosenPIC/agendaAnggota/' . $kegiatan->id_kegiatan . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
                 return $btn;
             })
             ->rawColumns(['aksi', 'anggota'])
             ->make(true);
     }
 
-    public function editAgendaAnggota($id) {}
-
-    public function detailAgendaAnggota($id)
+    public function createAgendaAnggota(Request $request, $id_kegiatan)
     {
-        // Ambil data kegiatan beserta relasi agendanya
-        $kegiatan = KegiatanModel::with('agenda')->find($id);
-
-        // Jika data kegiatan tidak ditemukan
-        if (!$kegiatan) {
-            return view('dosenPIC.agendaAnggota.show_ajax', compact('kegiatan'))->render();
+        // Ambil data kegiatan berdasarkan ID kegiatan
+        $kegiatan = KegiatanModel::findOrFail($id_kegiatan);
+        
+        // Cek apakah id_kegiatan sudah ada di tabel agenda
+        $agenda = AgendaModel::where('id_kegiatan', $id_kegiatan)->first();
+    
+        if ($agenda) {
+            // Jika agenda sudah ada, return error response dan tampilkan pop-up
+            return response()->json([
+                'status' => false,
+                'message' => 'Kegiatan ini sudah diset ' . $e->getMessage()
+            ]);
         }
 
-        // Data agenda langsung dari relasi kegiatan
-        $agenda = $kegiatan->agenda;
-
-        return view('dosenPIC.agendaAnggota.show_ajax', ['kegiatan' => $kegiatan, 'agenda'=>$agenda]);
+        // Ambil semua anggota berdasarkan ID kegiatan
+        $anggota = AnggotaModel::with('user:id_user,nama')
+            ->where('id_kegiatan', $id_kegiatan)
+            ->get();
+    
+        // Jika id_kegiatan belum ada di tabel agenda, buat agenda baru
+        $newAgenda = AgendaModel::create([
+            'id_kegiatan' => $id_kegiatan, // ID kegiatan
+            'id_dokumen' => null, // Nilai default
+        ]);
+    
+        // Kirim data ke view untuk input agenda anggota
+        return view('dosenPIC.agendaAnggota.create_ajax', [
+            'nama_kegiatan' => $kegiatan->nama_kegiatan,
+            'id_agenda' => $newAgenda->id_agenda, // ID agenda yang baru saja dibuat
+            'anggota' => $anggota // Daftar anggota
+        ]);
     }
+    
+    public function storeAgendaAnggota(Request $request)
+    {
+        // Validasi data yang diterima
+        $validated = $request->validate([
+            'id_anggota.*' => 'required|exists:t_anggota,id_anggota', // Validasi anggota
+            'agenda.*' => 'required|string|max:255', // Nama agenda
+            'id_agenda' => 'required|exists:t_agenda,id_agenda', // Validasi id_agenda
+        ]);
+    
+        // Proses penyimpanan agenda untuk setiap anggota
+        foreach ($validated['agenda'] as $index => $agendaNama) {
+            // Simpan data ke tabel `agenda_anggota`
+            AgendaAnggotaModel::create([
+                'id_anggota' => $validated['id_anggota'][$index], // ID anggota dari request
+                'nama_agenda' => $agendaNama, // Nama agenda
+                'id_agenda' => $validated['id_agenda'], // ID agenda yang sudah ada
+            ]);
+        }
+    
+        // Return JSON response untuk status sukses
+        return response()->json([
+            'status' => true,
+            'message' => 'Agenda anggota berhasil disimpan!',
+        ]);
+    }
+    
+
+
+    public function detailAgendaAnggota($id_kegiatan)
+    {
+        // Ambil data kegiatan beserta agendanya
+        $kegiatan = KegiatanModel::with('agenda')->findOrFail($id_kegiatan);
+    
+        // Ambil data agenda anggota berdasarkan id_kegiatan
+        $agendaAnggota = AgendaAnggotaModel::whereHas('anggota', function ($query) use ($id_kegiatan) {
+            $query->where('id_kegiatan', $id_kegiatan);
+        })->with(['anggota.user:id_user,nama'])->get();
+    
+        // Breadcrumb dan metadata
+        $breadcrumb = (object) [
+            'title' => 'Detail Anggota',
+            'list' => ['Home', 'Agenda Anggota', 'Detail'],
+        ];
+    
+        $page = (object) [
+            'title' => 'Detail Agenda Anggota',
+        ];
+    
+        $activeMenu = 'agenda anggota';
+    
+        return view('dosenPIC.agendaAnggota.show_ajax', [
+            'kegiatan' => $kegiatan,
+            'agendaAnggota' => $agendaAnggota,
+            'breadcrumb' => $breadcrumb,
+            'page' => $page,
+            'activeMenu' => $activeMenu,
+        ])->render();
+    }
+    
 
     public function updateAgendaAnggota(Request $request, $id) {}
 

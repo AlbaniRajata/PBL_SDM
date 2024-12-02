@@ -27,6 +27,7 @@
                     </tr>
                 </thead>
             </table>
+            <div id="myModal" class="modal fade animate shake" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false" data-width="75%" aria-hidden="true"></div>
         </div>
     </div>
 </div>
@@ -37,6 +38,13 @@
 
 @push('js')
     <script>
+   function modalAction(url = '') {
+        $('#myModal').load(url, function() {
+            $('#myModal').modal('show');
+        });
+    }
+
+
         $(document).ready(function() {
             $('#dataTable').DataTable({
                 processing: true,
@@ -63,10 +71,11 @@
                 url: url,
                 type: 'GET',
                 success: function(response) {
-                    $('#myModal .modal-content').html(response);
+                    $('#myModal').html(response);
                     $('#myModal').modal('show');
                 },
                 error: function(xhr) {
+                    console.log('data')
                     alert('Terjadi kesalahan saat mengambil data.');
                 }
             });
