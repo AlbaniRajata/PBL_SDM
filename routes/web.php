@@ -205,13 +205,8 @@ Route::middleware('auth')->group(function () {
             });
 
             Route::prefix('agendaAnggota')->group(function () {
-                Route::get('/', [KegiatanController::class, 'agendaAnggota'])->name('agendaAnggota.index');
-                Route::get('/edit/{id}', [KegiatanController::class, 'editAgendaAnggota'])->name('agendaAnggota.edit');
-                Route::get('/detail/{id}', [KegiatanController::class, 'detailAgendaAnggota'])->name('agendaAnggota.detail');
-                Route::delete('/delete/{id}', [KegiatanController::class, 'deleteAgendaAnggota'])->name('agendaAnggota.delete');
-                Route::put('/update/{id}', [KegiatanController::class, 'updateAgendaAnggota'])->name('agendaAnggota.update');
-                Route::get('/buat-agenda/{id}', [KegiatanController::class, 'buatAgendaModal'])->name('agendaAnggota.buatAgenda');
-                Route::post('/simpan-agenda', [KegiatanController::class, 'simpanAgendaAnggota'])->name('agendaAnggota.simpan');
+                Route::get('/', [KegiatanController::class, 'agendaAnggota'])->name('agendaAnggota');
+                Route::get('/list', [KegiatanController::class, 'listAgendaAnggota'])->name('dosenPIC.agendaAnggota.listAgendaAnggota');
             });
 
             Route::prefix('progresKegiatan')->group(function () {
