@@ -1231,21 +1231,27 @@ class KegiatanController extends Controller
 
     // fungsi agenda kegiatan
     public function agendaAnggota()
-{
-    $breadcrumb = (object) [
-        'title' => 'Agenda Anggota',
-        'list' => ['Home', 'Agenda Anggota'],
-    ];
-    $activeMenu = 'agenda anggota';
+    {
+        $breadcrumb = (object) [
+            'title' => 'Agenda Anggota',
+            'list' => ['Home', 'Agenda Anggota'],
+        ];
+        $activeMenu = 'agenda anggota';
 
-    // Ambil ID pengguna yang sedang login
-    $userId = Auth::id();
+        // Render view untuk halaman pertama kali
+        return view('dosenPIC.agendaAnggota.index', [
+            'breadcrumb' => $breadcrumb,
+            'activeMenu' => $activeMenu,
+        ]);
+    }
 
-    // Mengambil data menggunakan Eloquent
-    $kegiatan = KegiatanModel::with(['anggota.user'])
-        ->whereHas('anggota', function ($query) use ($userId) {
-            $query->where('id_user', $userId)
-                  ->where('id_jabatan_kegiatan', '1');
+    public function listAgendaAnggota()
+    {
+        $user = Auth::id();
+        $kegiatan = KegiatanModel::with(['anggota.user'])
+        ->whereHas('anggota', function ($query) use ($user) {
+            $query->where('id_user', $user)
+                ->where('id_jabatan_kegiatan', '1');
         })
         ->select([
             'id_kegiatan', 
@@ -1254,10 +1260,13 @@ class KegiatanController extends Controller
             'tempat_kegiatan', 
             'tanggal_mulai', 
             'tanggal_selesai'
-        ]);
+        ])
+        ->withCount('anggota')
+        ->withCount('anggota AS total_anggota')
+        ->addSelect(DB::raw('(@rownum := @rownum + 1) AS DT_RowIndex'));
 
-    // Jika request adalah ajax untuk DataTables
-    if (request()->ajax()) {
+
+        // Mengembalikan data ke DataTables
         return DataTables::of($kegiatan)
             ->addIndexColumn()
             ->addColumn('anggota', function ($row) {
@@ -1266,22 +1275,13 @@ class KegiatanController extends Controller
                 return $anggota;
             })
             ->addColumn('aksi', function ($row) {
-                $btn = '<div class="btn-group" role="group">';
-                $btn .= '<a href="' . url('/dosenPIC/agendaAnggota/edit/', $row->id_kegiatan) . '" class="btn btn-sm btn-primary">Agenda</a>';
-                $btn .= '<a href="' . url('/dosenPIC/agendaAnggota/detail/'.$row->id_kegiatan) . '" class="btn btn-sm btn-info">Detail</a>';
-                $btn .= '</div>';
+                $btn = '<button onclick="modalAction(\'' . url('/dosenPIC/agendaAnggota/' .$row->id_kegiatan . '/agenda') . '\')" class="btn btn-warning btn-sm">Agenda</button> ';
+                $btn .= '<button onclick="modalAction(\'' . url('/dosenPIC/agendaAnggota/' .$row->id_kegiatan . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
                 return $btn;
             })
             ->rawColumns(['aksi', 'anggota'])
             ->make(true);
     }
-
-    // Render view untuk halaman pertama kali
-    return view('dosenPIC.agendaAnggota.index', [
-        'breadcrumb' => $breadcrumb,
-        'activeMenu' => $activeMenu,
-    ]);
-}
 
     public function editAgendaAnggota($id) {}
 
