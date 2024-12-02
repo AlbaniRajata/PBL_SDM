@@ -140,9 +140,6 @@
                     </div>
                     <div class="row">
                         <div class="col-6">
-                            <a href="#" class="btn btn-link">Lupa Password?</a>
-                        </div>
-                        <div class="col-6">
                             <button type="submit" class="btn btn-primary btn-block">Login</button>
                         </div>
                     </div>
