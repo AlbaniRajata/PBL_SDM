@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\DB;
 use carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class KegiatanController extends Controller
 {
@@ -191,11 +192,11 @@ class KegiatanController extends Controller
 
             // Kolom Tanggal Mulai
             ->editColumn('tanggal_mulai', function ($row) {
-                return $row->tanggal_mulai ? \Carbon\Carbon::parse($row->tanggal_mulai)->format('d-M-Y') : '-';
+                return $row->tanggal_mulai ? Carbon::parse($row->tanggal_mulai)->format('d-M-Y') : '-';
             })
             // Kolom Tanggal Selesai
             ->editColumn('tanggal_selesai', function ($row) {
-                return $row->tanggal_selesai ? \Carbon\Carbon::parse($row->tanggal_selesai)->format('d-M-Y') : '-';
+                return $row->tanggal_selesai ? Carbon::parse($row->tanggal_selesai)->format('d-M-Y') : '-';
             })
             //kolom tempat acara
             ->editColumn('tempat_acara', function ($row) {
@@ -217,9 +218,6 @@ class KegiatanController extends Controller
             // Izinkan kolom aksi mengandung HTML
             ->rawColumns(['aksi', 'surat_tugas'])
             ->make(true);
-
-        // Kembalikan response jika bukan ajax
-        return response()->json(['error' => 'Invalid request'], 400);
     }
 
     // function list
@@ -1284,7 +1282,7 @@ class KegiatanController extends Controller
             ->make(true);
     }
 
-    public function createAgendaAnggota(Request $request, $id_kegiatan)
+    public function createAgendaAnggota(Request $e, $id_kegiatan)
     {
         // Ambil data kegiatan berdasarkan ID kegiatan
         $kegiatan = KegiatanModel::findOrFail($id_kegiatan);
@@ -1773,38 +1771,37 @@ class KegiatanController extends Controller
         return view('dosenAnggota.agenda.index', ['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu]);
     }
     
-    public function listagendaKegiatan(Request $request) 
+    public function listAgendaKegiatan(Request $request) 
     {
         if ($request->ajax()) {
             $userId = auth()->user()->id_user;
 
-            $data = KegiatanModel::with(['anggota.user'])
-                ->whereHas('anggota', function ($query) use ($userId) {
-                    $query->where('id_user', $userId)
-                          ->where('id_jabatan_kegiatan', [2, 6]);
-                })
-                ->get();
-                return response()->json([
-                    'status' => true,
-                    'message' => 'Data kegiatan dan agenda anggota berhasil diambil.',
-                    'data' => $data,
-                ]);
-            
+            $data = AgendaAnggotaModel::select('t_agenda_anggota.id_agenda_anggota', 't_agenda_anggota.nama_agenda', 't_kegiatan.nama_kegiatan')
+                ->join('t_agenda', 't_agenda_anggota.id_agenda', '=', 't_agenda.id_agenda') // Join dengan tabel agenda
+                ->join('t_kegiatan', 't_agenda.id_kegiatan', '=', 't_kegiatan.id_kegiatan') // Join dengan tabel kegiatan
+                ->join('t_anggota', 't_agenda_anggota.id_anggota', '=', 't_anggota.id_anggota') // Join dengan tabel anggota
+                ->where('t_anggota.id_user', $userId) // Filter berdasarkan user yang login
+                ->whereBetween('t_anggota.id_jabatan_kegiatan', [2, 6]) // Filter id_jabatan_kegiatan antara 2 hingga 6
+                ->get(); // Ambil hasil query
 
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('agenda', function ($row) {
-                    return $row->agenda; // Pastikan kolom 'agenda' ada di tabel kegiatan
+                    return $row->nama_agenda; // Correct column name
                 })
                 ->addColumn('aksi', function ($row) {
-                    $btn = '<button onclick="uploadKegiatan(' . $row->id_kegiatan . ')" class="btn btn-sm btn-primary">Upload Kegiatan</button>';
+                    $btn = '<button onclick="uploadKegiatan(' . $row->id_agenda_anggota . ')" class="btn btn-sm btn-primary">Upload Kegiatan</button>'; // Correct button generation
                     return $btn;
                 })
                 ->rawColumns(['aksi'])
                 ->make(true);
         }
+
+        return response()->json([
+            'status' => false,
+            'message' => 'Invalid request',
+        ], 400);
     }
-    
 
     public function upload_dokumen(Request $request) {
         // Validator for file upload
