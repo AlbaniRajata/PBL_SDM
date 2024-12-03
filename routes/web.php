@@ -228,6 +228,13 @@ Route::middleware('auth')->group(function () {
             Route::get('/', [KegiatanController::class, 'dosenAnggota'])->name('dosenAnggota.kegiatan.dosenA');
             Route::post('/list', [KegiatanController::class, 'listDosenAnggota'])->name('dosenAnggota.kegiatan.list');
             Route::get('/dataDosenA', [KegiatanController::class, 'dataDosenA'])->name('dosenAnggota.kegiatan.dataDosenA');
+
+        });
+        
+        Route::prefix('agenda')->group(function () {
+            Route::get('/', [KegiatanController::class, 'agenda'])->name('agenda');
+            Route::get('/list', [KegiatanController::class, 'listAgendaKegiatan'])->name('agenda.listAgendaKegiatan');
+            Route::post('/kegiatan/upload-dokumen', [KegiatanController::class, 'upload_dokumen'])->name('kegiatan.upload_dokumen');
         });
     });
 });

@@ -70,4 +70,5 @@ class UserModel extends Authenticatable
     {
         return $this->hasMany(JabatanKegiatanModel::class, 'id_user', 'id_user');
     }
+
 }

@@ -1762,4 +1762,99 @@ class KegiatanController extends Controller
             throw new \Exception("Format tanggal tidak valid: $dateString");
         }
     }
+
+    public function agenda() {
+        $breadcrumb = (object) [
+            'title' => 'Agenda Kegiatan',
+            'list' => ['Home', 'Agenda Kegiatan'],
+        ];
+        $activeMenu = 'agenda kegiatan';
+
+        return view('dosenAnggota.agenda.index', ['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu]);
+    }
+    
+    public function listagendaKegiatan(Request $request) 
+    {
+        if ($request->ajax()) {
+            $userId = auth()->user()->id_user;
+
+            $data = KegiatanModel::with(['anggota.user'])
+                ->whereHas('anggota', function ($query) use ($userId) {
+                    $query->where('id_user', $userId)
+                          ->where('id_jabatan_kegiatan', [2, 6]);
+                })
+                ->get();
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Data kegiatan dan agenda anggota berhasil diambil.',
+                    'data' => $data,
+                ]);
+            
+
+            return DataTables::of($data)
+                ->addIndexColumn()
+                ->addColumn('agenda', function ($row) {
+                    return $row->agenda; // Pastikan kolom 'agenda' ada di tabel kegiatan
+                })
+                ->addColumn('aksi', function ($row) {
+                    $btn = '<button onclick="uploadKegiatan(' . $row->id_kegiatan . ')" class="btn btn-sm btn-primary">Upload Kegiatan</button>';
+                    return $btn;
+                })
+                ->rawColumns(['aksi'])
+                ->make(true);
+        }
+    }
+    
+
+    public function upload_dokumen(Request $request) {
+        // Validator for file upload
+        $validator = Validator::make($request->all(), [
+            'id_kegiatan' => 'required|exists:t_kegiatan,id_kegiatan',
+            'file' => 'required|mimes:jpeg,jpg,pdf|max:2048', // 2MB max
+        ]);
+
+        // Check validation
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Validasi Gagal',
+                'errors' => $validator->errors()
+            ], 400);
+        }
+
+        try {
+            // Get the uploaded file
+            $file = $request->file('file');
+            
+            // Generate unique filename
+            $originalName = $file->getClientOriginalName();
+            $fileName = time() . '_' . $originalName;
+            
+            // Store file in public/dokumen directory
+            $filePath = $file->storeAs('dokumen', $fileName, 'public');
+
+            // Create new dokumen record
+            $dokumen = new DokumenModel();
+            $dokumen->id_kegiatan = $request->id_kegiatan;
+            $dokumen->nama_dokumen = $originalName;
+            $dokumen->file_path = 'dokumen/' . $fileName; // Relative path
+            $dokumen->progress = 0; // Initial progress
+            $dokumen->save();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Upload Dokumen Berhasil',
+                'data' => $dokumen
+            ]);
+        } catch (\Exception $e) {
+            // Log the error
+            Log::error('Document Upload Error: ' . $e->getMessage());
+
+            return response()->json([
+                'status' => false,
+                'message' => 'Gagal Upload Dokumen',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }
