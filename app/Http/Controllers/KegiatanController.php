@@ -12,6 +12,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\AnggotaModel;
 use App\Models\JabatanKegiatanModel;
 use App\Models\AgendaAnggotaModel;
+use App\Models\AgendaModel;
 use PhpOffice\PhpWord\PhpWord;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -21,6 +22,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\DB;
 use carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class KegiatanController extends Controller
 {
@@ -190,11 +192,11 @@ class KegiatanController extends Controller
 
             // Kolom Tanggal Mulai
             ->editColumn('tanggal_mulai', function ($row) {
-                return $row->tanggal_mulai ? \Carbon\Carbon::parse($row->tanggal_mulai)->format('d-M-Y') : '-';
+                return $row->tanggal_mulai ? Carbon::parse($row->tanggal_mulai)->format('d-M-Y') : '-';
             })
             // Kolom Tanggal Selesai
             ->editColumn('tanggal_selesai', function ($row) {
-                return $row->tanggal_selesai ? \Carbon\Carbon::parse($row->tanggal_selesai)->format('d-M-Y') : '-';
+                return $row->tanggal_selesai ? Carbon::parse($row->tanggal_selesai)->format('d-M-Y') : '-';
             })
             //kolom tempat acara
             ->editColumn('tempat_acara', function ($row) {
@@ -216,9 +218,6 @@ class KegiatanController extends Controller
             // Izinkan kolom aksi mengandung HTML
             ->rawColumns(['aksi', 'surat_tugas'])
             ->make(true);
-
-        // Kembalikan response jika bukan ajax
-        return response()->json(['error' => 'Invalid request'], 400);
     }
 
     // function list
@@ -1269,37 +1268,114 @@ class KegiatanController extends Controller
         // Mengembalikan data ke DataTables
         return DataTables::of($kegiatan)
             ->addIndexColumn()
-            ->addColumn('anggota', function ($row) {
+            ->addColumn('anggota', function ($kegiatan) {
                 // Ambil nama anggota
-                $anggota = $row->anggota->pluck('user.nama')->join(', ');
+                $anggota = $kegiatan->anggota->pluck('user.nama')->join(', ');
                 return $anggota;
             })
-            ->addColumn('aksi', function ($row) {
-                $btn = '<button onclick="modalAction(\'' . url('/dosenPIC/agendaAnggota/' .$row->id_kegiatan . '/agenda') . '\')" class="btn btn-warning btn-sm">Agenda</button> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/dosenPIC/agendaAnggota/' .$row->id_kegiatan . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
+            ->addColumn('aksi', function ($kegiatan) {
+                $btn = '<button onclick="modalAction(\'' . url('/dosenPIC/agendaAnggota/' . $kegiatan->id_kegiatan . '/create_ajax') . '\')" class="btn btn-warning btn-sm">Agenda</button> ';
+                $btn .= '<button onclick="modalAction(\'' . url('/dosenPIC/agendaAnggota/' . $kegiatan->id_kegiatan . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
                 return $btn;
             })
             ->rawColumns(['aksi', 'anggota'])
             ->make(true);
     }
 
-    public function editAgendaAnggota($id) {}
-
-    public function detailAgendaAnggota($id)
+    public function createAgendaAnggota(Request $e, $id_kegiatan)
     {
-        // Ambil data kegiatan beserta relasi agendanya
-        $kegiatan = KegiatanModel::with('agenda')->find($id);
-
-        // Jika data kegiatan tidak ditemukan
-        if (!$kegiatan) {
-            return view('dosenPIC.agendaAnggota.show_ajax', compact('kegiatan'))->render();
+        // Ambil data kegiatan berdasarkan ID kegiatan
+        $kegiatan = KegiatanModel::findOrFail($id_kegiatan);
+        
+        // Cek apakah id_kegiatan sudah ada di tabel agenda
+        $agenda = AgendaModel::where('id_kegiatan', $id_kegiatan)->first();
+    
+        if ($agenda) {
+            // Jika agenda sudah ada, return error response dan tampilkan pop-up
+            return response()->json([
+                'status' => false,
+                'message' => 'Kegiatan ini sudah diset ' . $e->getMessage()
+            ]);
         }
 
-        // Data agenda langsung dari relasi kegiatan
-        $agenda = $kegiatan->agenda;
-
-        return view('dosenPIC.agendaAnggota.show_ajax', ['kegiatan' => $kegiatan, 'agenda'=>$agenda]);
+        // Ambil semua anggota berdasarkan ID kegiatan
+        $anggota = AnggotaModel::with('user:id_user,nama')
+            ->where('id_kegiatan', $id_kegiatan)
+            ->get();
+    
+        // Jika id_kegiatan belum ada di tabel agenda, buat agenda baru
+        $newAgenda = AgendaModel::create([
+            'id_kegiatan' => $id_kegiatan, // ID kegiatan
+            'id_dokumen' => null, // Nilai default
+        ]);
+    
+        // Kirim data ke view untuk input agenda anggota
+        return view('dosenPIC.agendaAnggota.create_ajax', [
+            'nama_kegiatan' => $kegiatan->nama_kegiatan,
+            'id_agenda' => $newAgenda->id_agenda, // ID agenda yang baru saja dibuat
+            'anggota' => $anggota // Daftar anggota
+        ]);
     }
+    
+    public function storeAgendaAnggota(Request $request)
+    {
+        // Validasi data yang diterima
+        $validated = $request->validate([
+            'id_anggota.*' => 'required|exists:t_anggota,id_anggota', // Validasi anggota
+            'agenda.*' => 'required|string|max:255', // Nama agenda
+            'id_agenda' => 'required|exists:t_agenda,id_agenda', // Validasi id_agenda
+        ]);
+    
+        // Proses penyimpanan agenda untuk setiap anggota
+        foreach ($validated['agenda'] as $index => $agendaNama) {
+            // Simpan data ke tabel `agenda_anggota`
+            AgendaAnggotaModel::create([
+                'id_anggota' => $validated['id_anggota'][$index], // ID anggota dari request
+                'nama_agenda' => $agendaNama, // Nama agenda
+                'id_agenda' => $validated['id_agenda'], // ID agenda yang sudah ada
+            ]);
+        }
+    
+        // Return JSON response untuk status sukses
+        return response()->json([
+            'status' => true,
+            'message' => 'Agenda anggota berhasil disimpan!',
+        ]);
+    }
+    
+
+
+    public function detailAgendaAnggota($id_kegiatan)
+    {
+        // Ambil data kegiatan beserta agendanya
+        $kegiatan = KegiatanModel::with('agenda')->findOrFail($id_kegiatan);
+    
+        // Ambil data agenda anggota berdasarkan id_kegiatan
+        $agendaAnggota = AgendaAnggotaModel::whereHas('anggota', function ($query) use ($id_kegiatan) {
+            $query->where('id_kegiatan', $id_kegiatan);
+        })->with(['anggota.user:id_user,nama'])->get();
+    
+        // Breadcrumb dan metadata
+        $breadcrumb = (object) [
+            'title' => 'Detail Anggota',
+            'list' => ['Home', 'Agenda Anggota', 'Detail'],
+        ];
+    
+        $page = (object) [
+            'title' => 'Detail Agenda Anggota',
+        ];
+    
+        $activeMenu = 'agenda anggota';
+    
+        return view('dosenPIC.agendaAnggota.show_ajax', [
+            'kegiatan' => $kegiatan,
+            'agendaAnggota' => $agendaAnggota,
+            'breadcrumb' => $breadcrumb,
+            'page' => $page,
+            'activeMenu' => $activeMenu,
+        ])->render();
+    }
+    
 
     public function updateAgendaAnggota(Request $request, $id) {}
 
@@ -1682,6 +1758,100 @@ class KegiatanController extends Controller
             return Carbon::parse($dateString)->format('Y-m-d');
         } catch (\Exception $e) {
             throw new \Exception("Format tanggal tidak valid: $dateString");
+        }
+    }
+
+    public function agenda() {
+        $breadcrumb = (object) [
+            'title' => 'Agenda Kegiatan',
+            'list' => ['Home', 'Agenda Kegiatan'],
+        ];
+        $activeMenu = 'agenda kegiatan';
+
+        return view('dosenAnggota.agenda.index', ['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu]);
+    }
+    
+    public function listAgendaKegiatan(Request $request) 
+    {
+        if ($request->ajax()) {
+            $userId = auth()->user()->id_user;
+
+            $data = AgendaAnggotaModel::select('t_agenda_anggota.id_agenda_anggota', 't_agenda_anggota.nama_agenda', 't_kegiatan.nama_kegiatan')
+                ->join('t_agenda', 't_agenda_anggota.id_agenda', '=', 't_agenda.id_agenda') // Join dengan tabel agenda
+                ->join('t_kegiatan', 't_agenda.id_kegiatan', '=', 't_kegiatan.id_kegiatan') // Join dengan tabel kegiatan
+                ->join('t_anggota', 't_agenda_anggota.id_anggota', '=', 't_anggota.id_anggota') // Join dengan tabel anggota
+                ->where('t_anggota.id_user', $userId) // Filter berdasarkan user yang login
+                ->whereBetween('t_anggota.id_jabatan_kegiatan', [2, 6]) // Filter id_jabatan_kegiatan antara 2 hingga 6
+                ->get(); // Ambil hasil query
+
+            return DataTables::of($data)
+                ->addIndexColumn()
+                ->addColumn('agenda', function ($row) {
+                    return $row->nama_agenda; // Correct column name
+                })
+                ->addColumn('aksi', function ($row) {
+                    $btn = '<button onclick="uploadKegiatan(' . $row->id_agenda_anggota . ')" class="btn btn-sm btn-primary">Upload Kegiatan</button>'; // Correct button generation
+                    return $btn;
+                })
+                ->rawColumns(['aksi'])
+                ->make(true);
+        }
+
+        return response()->json([
+            'status' => false,
+            'message' => 'Invalid request',
+        ], 400);
+    }
+
+    public function upload_dokumen(Request $request) {
+        // Validator for file upload
+        $validator = Validator::make($request->all(), [
+            'id_kegiatan' => 'required|exists:t_kegiatan,id_kegiatan',
+            'file' => 'required|mimes:jpeg,jpg,pdf|max:2048', // 2MB max
+        ]);
+
+        // Check validation
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Validasi Gagal',
+                'errors' => $validator->errors()
+            ], 400);
+        }
+
+        try {
+            // Get the uploaded file
+            $file = $request->file('file');
+            
+            // Generate unique filename
+            $originalName = $file->getClientOriginalName();
+            $fileName = time() . '_' . $originalName;
+            
+            // Store file in public/dokumen directory
+            $filePath = $file->storeAs('dokumen', $fileName, 'public');
+
+            // Create new dokumen record
+            $dokumen = new DokumenModel();
+            $dokumen->id_kegiatan = $request->id_kegiatan;
+            $dokumen->nama_dokumen = $originalName;
+            $dokumen->file_path = 'dokumen/' . $fileName; // Relative path
+            $dokumen->progress = 0; // Initial progress
+            $dokumen->save();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Upload Dokumen Berhasil',
+                'data' => $dokumen
+            ]);
+        } catch (\Exception $e) {
+            // Log the error
+            Log::error('Document Upload Error: ' . $e->getMessage());
+
+            return response()->json([
+                'status' => false,
+                'message' => 'Gagal Upload Dokumen',
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 }

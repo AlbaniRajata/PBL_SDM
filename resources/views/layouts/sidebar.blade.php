@@ -65,7 +65,7 @@
         @endif
 
         {{-- DOSEN --}}
-        @if(auth()->user()->level == "dosen" && $activeMenu != "kegiatan anggota" && $activeMenu != "statistik anggota" && $activeMenu != "agenda anggota" && $activeMenu != "kegiatan pic" && $activeMenu != "statistik pic" && $activeMenu != "progres kegiatan pic" && $activeMenu != "agenda Kegiatan")
+        @if(auth()->user()->level == "dosen" && $activeMenu != "kegiatan anggota" && $activeMenu != "statistik anggota" && $activeMenu != "agenda anggota" && $activeMenu != "kegiatan pic" && $activeMenu != "statistik pic" && $activeMenu != "progres kegiatan pic" && $activeMenu != "agenda kegiatan")
         <li class="nav-header">Data Kegiatan</li>
           <li class="nav-item">
             <a href="{{ url('dosen/kegiatan')}}" class="nav-link {{($activeMenu == 'kegiatan dosen')? 'active' : ''}}">
@@ -93,6 +93,7 @@
             </a>
           </li>
         @endif
+        
 
         {{-- PIMPINAN --}}
         @if(auth()->user()->level == "pimpinan")
@@ -143,7 +144,7 @@
           @endif
 
           {{-- ANGGOTA --}}
-          @if($activeMenu  == "kegiatan anggota" || $activeMenu == "statistik anggota" || $activeMenu == "agenda") 
+          @if($activeMenu  == "kegiatan anggota" || $activeMenu == "statistik anggota" || $activeMenu == "agenda kegiatan") 
         <li class="nav-header">Data Kegiatan</li>
           <li class="nav-item">
             <a href="{{ url('dosenAnggota/kegiatan')}}" class="nav-link {{($activeMenu == 'kegiatan anggota')? 'active' : ''}}">

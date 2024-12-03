@@ -66,4 +66,6 @@ class KegiatanModel extends Model
     {
         return $this->hasMany(DokumenModel::class, 'id_kegiatan', 'id_kegiatan');
     }
+
+    
 }

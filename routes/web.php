@@ -207,6 +207,9 @@ Route::middleware('auth')->group(function () {
             Route::prefix('agendaAnggota')->group(function () {
                 Route::get('/', [KegiatanController::class, 'agendaAnggota'])->name('agendaAnggota');
                 Route::get('/list', [KegiatanController::class, 'listAgendaAnggota'])->name('dosenPIC.agendaAnggota.listAgendaAnggota');
+                Route::get('/{id}/show_ajax', [KegiatanController::class, 'detailAgendaAnggota'])->name('dosenPIC.agendaAnggota.show_ajax');
+                Route::get('/{id}/create_ajax', [KegiatanController::class, 'createAgendaAnggota']) ->name('agenda.create'); // Route untuk menampilkan form
+                Route::post('/storeAjax', [KegiatanController::class, 'storeAgendaAnggota']) ->name('agenda.store'); // Route untuk menyimpan data
             });
 
             Route::prefix('progresKegiatan')->group(function () {
@@ -225,6 +228,13 @@ Route::middleware('auth')->group(function () {
             Route::get('/', [KegiatanController::class, 'dosenAnggota'])->name('dosenAnggota.kegiatan.dosenA');
             Route::post('/list', [KegiatanController::class, 'listDosenAnggota'])->name('dosenAnggota.kegiatan.list');
             Route::get('/dataDosenA', [KegiatanController::class, 'dataDosenA'])->name('dosenAnggota.kegiatan.dataDosenA');
+
+        });
+        
+        Route::prefix('agenda')->group(function () {
+            Route::get('/', [KegiatanController::class, 'agenda'])->name('agenda');
+            Route::get('/list', [KegiatanController::class, 'listAgendaKegiatan'])->name('agenda.listAgendaKegiatan');
+            Route::post('/kegiatan/upload-dokumen', [KegiatanController::class, 'upload_dokumen'])->name('kegiatan.upload_dokumen');
         });
     });
 });
