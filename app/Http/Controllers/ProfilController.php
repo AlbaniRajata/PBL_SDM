@@ -15,7 +15,7 @@ class ProfilController extends Controller
     {
         $user = UserModel::findOrFail(Auth::id());
         $breadcrumb = (object) [
-            'title' => 'Data Profil',
+            'title' => 'Profil Pengguna',
             'list' => [
                 ['name' => 'Home', 'url' => url('/')],
                 ['name' => 'Profil', 'url' => url('/profil')]

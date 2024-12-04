@@ -1,0 +1,49 @@
+.bg-gradient {
+    background: linear-gradient(90deg, #007bff 0%, #6f42c1 100%);
+}
+
+.profile-img {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    transition: transform 0.3s;
+}
+
+.profile-img:hover {
+    transform: scale(1.1);
+}
+
+.overlay-hover {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    background: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    width: 120px;
+    height: 120px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.3s;
+}
+
+.position-relative:hover .overlay-hover {
+    opacity: 1;
+}
+
+.btn-gradient {
+    background: linear-gradient(90deg, #007bff, #6f42c1);
+    color: #fff;
+    border: none;
+    transition: background 0.3s;
+}
+
+.btn-gradient:hover {
+    background: linear-gradient(90deg, #6f42c1, #007bff);
+}
+
+.form-control {
+    border-radius: 0.5rem;
+}

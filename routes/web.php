@@ -210,6 +210,7 @@ Route::middleware('auth')->group(function () {
                 Route::get('/{id}/show_ajax', [KegiatanController::class, 'detailAgendaAnggota'])->name('dosenPIC.agendaAnggota.show_ajax');
                 Route::get('/{id}/create_ajax', [KegiatanController::class, 'createAgendaAnggota']) ->name('agenda.create'); // Route untuk menampilkan form
                 Route::post('/storeAjax', [KegiatanController::class, 'storeAgendaAnggota']) ->name('agenda.store'); // Route untuk menyimpan data
+                Route::get('/download-dokumen/{id_dokumen}', [KegiatanController::class, 'download_dokumen'])->name('kegiatan.download-dokumenagenda');
             });
 
             Route::prefix('progresKegiatan')->group(function () {

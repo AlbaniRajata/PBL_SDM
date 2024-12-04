@@ -14,7 +14,7 @@ class StatistikController extends Controller
     public function admin()
     {
         $breadcrumb = (object) [
-            'title' => 'Home',
+            'title' => 'Statistik Dosen Jurusan Teknologi Informasi',
             'list' => ['Home', 'Statistik'],
         ];
         $activeMenu = 'statistik admin';
@@ -37,7 +37,7 @@ class StatistikController extends Controller
     public function pimpinan()
     {
         $breadcrumb = (object) [
-            'title' => 'Home',
+            'title' => 'Statistik Dosen Jurusan Teknologi Informasi',
             'list' => ['Home', 'Statistik'],
         ];
         $activeMenu = 'statistik pimpinan';
@@ -60,7 +60,7 @@ class StatistikController extends Controller
     public function dosen()
     {
         $breadcrumb = (object) [
-            'title' => 'Home',
+            'title' => 'Statistik Dosen Jurusan Teknologi Informasi',
             'list' => ['Home', 'Statistik Dosen'],
         ];
         $activeMenu = 'statistik dosen';

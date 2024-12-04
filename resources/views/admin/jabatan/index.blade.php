@@ -2,10 +2,10 @@
 @section('content')
     <div class="card card-outline card-primary">
         <div class="card-header">
-            <h3 class="card-title">Daftar Jabatan Kegiatan</h3>
+            <h3 class="card-title">Jabatan Kegiatan </h3>
             <div class="card-tools">
                 <button onclick="modalAction('{{ url('/admin/jabatan/create_ajax') }}')"
-                    class="btn btn-sm btn-success mt-1">Tambah Ajax</button>
+                    class="btn btn-sm btn-success mt-1"><i class="fa-solid fa-user-gear"></i>Tambah Jabatan</button>
             </div>
         </div>
         <div class="card-body">
