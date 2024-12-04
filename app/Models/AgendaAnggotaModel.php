@@ -20,7 +20,7 @@ class AgendaAnggotaModel extends Model
 
     public function agenda()
     {
-        return $this->belongsTo(AgendaModel::class, 'id_agenda', 'id_agenda');
+        return $this->hasMany(AgendaModel::class, 'id_dokumen', 'id_dokumen');
     }
 
     public function anggota()

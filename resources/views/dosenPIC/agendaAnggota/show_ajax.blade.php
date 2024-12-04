@@ -49,11 +49,25 @@
                     @foreach ($agendaAnggota as $a)
                         <tr>
                             <td class="text-center">{{ $a->nama_agenda }}</td>
+                            
                             <td class="text-center">
-                                <a href="{{ url('storage/' . $a->dokumen) }}" class="btn btn-sm btn-primary" target="_blank">Unduh</a>
+                                @if ($a->file_path == null)
+                                    <a href="{{ storage_path('app/public/' . $a->file_path) }}" 
+                                       class="btn btn-sm btn-primary" 
+                                       target="_blank">Unduh</a>
+                                @else
+                                    <span class="badge badge-warning">Belum Ada Dokumen</span>
+                                @endif
                             </td>
                         </tr>
                     @endforeach
+                    {{-- @if ($a->file_path != null)
+                        <a href="{{ asset('storage/' . $a->file_path) }}" 
+                        class="btn btn-sm btn-primary" 
+                        target="_blank">Unduh</a>
+                    @else
+                        <span class="badge badge-warning">Belum Ada Dokumen</span>
+                    @endif --}}
                 </tbody>
             </table>
         </div>
@@ -77,8 +91,6 @@
         }
     });
 
-    
-
     function modalAction(url) {
     $.ajax({
         url: "{{ route('dosenPIC.agendaAnggota.listAgendaAnggota') }}",
@@ -93,33 +105,5 @@
         }
     });
 }    
-
-
-
-    $(document).ready(function() {
-        var dataKegiatan = $('#table_kegiatan').DataTable({
-            serverSide: true,
-            processing: true,
-            ajax: {
-                url: "{{ route('dosenPIC.agendaAnggota.listAgendaAnggota') }}",
-                type: "POST",
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                data: function (d) {
-                    // Add any additional parameters here if needed
-                }
-            },
-            columns: [
-                { data: 'nama_kegiatan', name: 'nama_kegiatan', className: "text-center", orderable: true, searchable: true },
-                { data: 'jenis_kegiatan', name: 'jenis_kegiatan', className: "text-center", orderable: true, searchable: true },
-                { data: 'tempat_kegiatan', name: 'tempat_kegiatan', className: "text-center", orderable: true, searchable: true },
-                { data: 'tanggal_mulai', name: 'tanggal_mulai', className: "text-center", orderable: true, searchable: true },
-                { data: 'tanggal_selesai', name: 'tanggal_selesai', className: "text-center", orderable: true, searchable: true },
-                { data: 'anggota', name: 'pic', className: "text-center", orderable: true, searchable: true },
-                { data: 'aksi', name: 'aksi', className: "text-center", orderable: false, searchable: false }
-            ],
-        });
-    });
 </script>
 @endpush

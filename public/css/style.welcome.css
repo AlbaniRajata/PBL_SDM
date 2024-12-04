@@ -1,0 +1,47 @@
+body {
+        font-family: 'Roboto', sans-serif;
+    }
+
+    /* Palet Warna dan Efek */
+    .card {
+        border: none;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .card.bg-info {
+        background: linear-gradient(135deg, #1e90ff, #00bfff);
+    }
+
+    .card.bg-success {
+        background: linear-gradient(135deg, #28a745, #57d38c);
+    }
+
+    .card.bg-warning {
+        background: linear-gradient(135deg, #ffc107, #ffcd54);
+    }
+
+    /* Efek pada Card Title */
+    .card-title {
+        font-size: 1.25rem;
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+
+    .card-text {
+        font-size: 2.5rem;
+        font-weight: bold;
+    }
+
+    .icon {
+        font-size: 3rem;
+        margin-right: 15px;
+        color: rgba(255, 255, 255, 0.8);
+    }
+
+    /* Hover Effect */
+    .card:hover {
+        transform: scale(1.03);
+        transition: transform 0.3s ease-in-out;
+    }

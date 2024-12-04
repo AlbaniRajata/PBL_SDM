@@ -20,104 +20,123 @@
     <link rel="icon" href="{{ url('polinema.png') }}" type="image/png">
     <style>
         body {
-        margin: 0;
-        height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-family: 'Source Sans Pro', sans-serif;
-        background: url('img/background.png') no-repeat center center; /* Mengatur gambar sebagai latar */
-        background-size: cover; /* Menyesuaikan gambar agar mencakup seluruh area */
-    }
+            margin: 0;
+            font-family: 'Source Sans Pro', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: url('img/background.png') no-repeat center center;
+            background-size: cover;
+            color: white;
+            overflow: hidden;
+        }
 
-    .content {
-        display: flex;
-        justify-content: space-between;
-        width: 90%;
-        max-width: 1200px;
-        color: white;
-    }
+        .content {
+            display: flex;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            max-width: 1000px;
+            width: 90%;
+        }
 
-    .intro {
-        max-width: 50%;
-        padding: 20px;
-    }
+        .intro {
+            max-width: 50%;
+            padding: 20px;
+            color: white;
+        }
 
-    .intro h1 {
-        font-size: 2.5rem;
-        font-weight: bold;
-    }
+        .intro img {
+            margin-bottom: 15px;
+        }
 
-    .intro p {
-        font-size: 1.2rem;
-        margin-top: 10px;
-    }
+        .intro h1 {
+            font-size: 2.5rem;
+            font-weight: bold;
+        }
 
-    .login-box {
-        width: 400px;
-        background-color: white;
-        border-radius: 15px;
-        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-        overflow: hidden;
-    }
+        .intro p {
+            font-size: 1.2rem;
+            margin-top: 15px;
+            line-height: 1.6;
+        }
 
-    .card-header {
-        background: #3498db;
-        color: white;
-        text-align: center;
-        padding: 15px 0;
-        font-size: 1.5rem;
-    }
+        .login-box {
+            width: 400px;
+            background-color: white;
+            border-radius: 15px;
+            padding: 20px 30px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
 
-    .card-body {
-        padding: 20px;
-    }
+        .login-box .card-header {
+            background: #3498db;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            font-size: 1.5rem;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+        }
 
-    .login-box-msg {
-        text-align: center;
-        margin-bottom: 20px;
-        font-weight: bold;
-        color: #555;
-    }
+        .login-box .card-body {
+            padding: 20px;
+        }
 
-    .input-group .form-control {
-        border-radius: 20px;
-    }
+        .login-box .form-control {
+            border-radius: 30px;
+            padding: 10px 15px;
+        }
 
-    .btn-primary {
-        background-color: #3498db;
-        border: none;
-        border-radius: 20px;
-    }
+        .btn-primary {
+            background: #3498db;
+            border: none;
+            border-radius: 30px;
+            padding: 10px;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
 
-    .btn-primary:hover {
-        background-color: #2980b9;
-    }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #8e44ad, #3498db);
+        }
 
-    .btn-link {
-        text-decoration: none;
-        color: #3498db;
-    }
+        .btn-link {
+            display: block;
+            text-align: center;
+            text-decoration: none;
+            color: #3498db;
+            font-size: 0.9rem;
+        }
 
-    .btn-link:hover {
-        text-decoration: underline;
-        color: #2980b9;
-    }
+        .btn-link:hover {
+            text-decoration: underline;
+            color: #8e44ad;
+        }
     </style>
 </head>
 
 <div class="content">
     <div class="intro">
+        <div class="text mb-3">
+            <img src="{{ asset('/polinema.png') }}" alt="Logo Polinema" style="width: 75px;">
+            <img src="{{ asset('/jti.png') }}" alt="Logo JTI" style="width: 75px;">
+        </div>
         <h1>Selamat datang<br>Dosen Jurusan Teknologi Informasi</h1>
-        <p>di <strong>Sistem Manajemen SDM</strong><br>Silahkan isi formulir yang ada untuk masuk.</p>
+        <p>di <strong>Sistem Manajemen SDM</strong><br>Silahkan isi form login yang untuk masuk.</p>
     </div>
     <div class="login-box">
-        <div class="card card-outline card-primary">
             <div class="card-header text-center">
                 <a href="{{ url('/') }}" class="h1"><b>SI - </b>SDM</a>
             </div>
             <div class="card-body">
-                <p class="login-box-msg">Please Login</p>
+                <p class="text-center text-muted mb-3">Silakan masuk</p>
                 <form action="{{ url('login') }}" method="POST" id="form-login">
                     @csrf
                     <div class="input-group mb-3">
@@ -138,13 +157,12 @@
                         </div>
                         <small id="error-password" class="error-text text-danger"></small>
                     </div>
-                    <div class="row">
-                        <div class="col-6">
+                    <div class="row justify-content-center align-items-center">
+                        <div class="col-6 text-center ">
                             <button type="submit" class="btn btn-primary btn-block">Login</button>
                         </div>
                     </div>
                 </form>
-            </div>
         </div>
     </div>
 </div>

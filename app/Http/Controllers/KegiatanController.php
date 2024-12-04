@@ -163,7 +163,7 @@ class KegiatanController extends Controller
             ->whereHas('anggota', function ($query) use ($dosenId) {
                 // Filter untuk user login dengan id_jabatan_kegiatan antara 2 hingga 6
                 $query->where('id_user', $dosenId)
-                    ->whereBetween('id_jabatan_kegiatan', [2, 6]);
+                ->where('id_jabatan_kegiatan', '!=' , 1);
             });
 
         // Filter berdasarkan jenis kegiatan jika ada
@@ -1282,67 +1282,83 @@ class KegiatanController extends Controller
             ->make(true);
     }
 
-    public function createAgendaAnggota(Request $e, $id_kegiatan)
+    public function createAgendaAnggota(Request $request, $id_kegiatan)
     {
         // Ambil data kegiatan berdasarkan ID kegiatan
         $kegiatan = KegiatanModel::findOrFail($id_kegiatan);
         
-        // Cek apakah id_kegiatan sudah ada di tabel agenda
+        // Cek apakah agenda sudah dibuat sebelumnya
         $agenda = AgendaModel::where('id_kegiatan', $id_kegiatan)->first();
-    
-        if ($agenda) {
-            // Jika agenda sudah ada, return error response dan tampilkan pop-up
-            return response()->json([
-                'status' => false,
-                'message' => 'Kegiatan ini sudah diset ' . $e->getMessage()
-            ]);
+        
+        // Jika belum ada agenda, buat agenda baru
+        if (!$agenda) {
+            $agenda = new AgendaModel();
+            $agenda->id_kegiatan = $id_kegiatan;
+            $agenda->save();
         }
-
+        
         // Ambil semua anggota berdasarkan ID kegiatan
         $anggota = AnggotaModel::with('user:id_user,nama')
             ->where('id_kegiatan', $id_kegiatan)
+            ->where('id_jabatan_kegiatan', '!=', 1)
             ->get();
     
-        // Jika id_kegiatan belum ada di tabel agenda, buat agenda baru
-        $newAgenda = AgendaModel::create([
-            'id_kegiatan' => $id_kegiatan, // ID kegiatan
-            'id_dokumen' => null, // Nilai default
-        ]);
-    
+        // Cek apakah sudah ada agenda untuk setiap anggota
+        $anggotaDenganAgenda = $anggota->map(function ($a) use ($agenda) {
+            $agendaAnggota = AgendaAnggotaModel::where('id_anggota', $a->id_anggota)
+                ->where('id_agenda', $agenda->id_agenda)
+                ->first();
+            
+            $a->setAttribute('agenda_sudah_dibuat', isset($agendaAnggota) ? true : false);
+            return $a;
+        });
+        
         // Kirim data ke view untuk input agenda anggota
         return view('dosenPIC.agendaAnggota.create_ajax', [
             'nama_kegiatan' => $kegiatan->nama_kegiatan,
-            'id_agenda' => $newAgenda->id_agenda, // ID agenda yang baru saja dibuat
-            'anggota' => $anggota // Daftar anggota
+            'id_kegiatan' => $id_kegiatan,
+            'id_agenda' => $agenda->id_agenda,
+            'anggota' => $anggotaDenganAgenda,
+            'agenda_sudah_ada' => $anggotaDenganAgenda->contains('agenda_sudah_dibuat', true)
         ]);
     }
-    
+
     public function storeAgendaAnggota(Request $request)
     {
         // Validasi data yang diterima
         $validated = $request->validate([
-            'id_anggota.*' => 'required|exists:t_anggota,id_anggota', // Validasi anggota
-            'agenda.*' => 'required|string|max:255', // Nama agenda
-            'id_agenda' => 'required|exists:t_agenda,id_agenda', // Validasi id_agenda
+            'id_anggota.*' => 'required|exists:t_anggota,id_anggota',
+            'agenda.*' => 'required|string|max:255',
+            'id_agenda' => 'required|exists:t_agenda,id_agenda',
         ]);
-    
-        // Proses penyimpanan agenda untuk setiap anggota
-        foreach ($validated['agenda'] as $index => $agendaNama) {
-            // Simpan data ke tabel `agenda_anggota`
-            AgendaAnggotaModel::create([
-                'id_anggota' => $validated['id_anggota'][$index], // ID anggota dari request
-                'nama_agenda' => $agendaNama, // Nama agenda
-                'id_agenda' => $validated['id_agenda'], // ID agenda yang sudah ada
+
+        // Cek apakah sudah ada agenda untuk salah satu anggota
+        $existingAgenda = AgendaAnggotaModel::whereIn('id_anggota', $validated['id_anggota'])
+            ->where('id_agenda', $validated['id_agenda'])
+            ->exists();
+
+        if ($existingAgenda) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Agenda untuk beberapa anggota sudah pernah ditambahkan sebelumnya.',
+                'msgField' => []
             ]);
         }
-    
-        // Return JSON response untuk status sukses
+
+        // Proses penyimpanan agenda untuk setiap anggota
+        foreach ($validated['agenda'] as $index => $agendaNama) {
+            AgendaAnggotaModel::create([
+                'id_anggota' => $validated['id_anggota'][$index],
+                'nama_agenda' => $agendaNama,
+                'id_agenda' => $validated['id_agenda'],
+            ]);
+        }
+
         return response()->json([
             'status' => true,
             'message' => 'Agenda anggota berhasil disimpan!',
         ]);
     }
-    
 
 
     public function detailAgendaAnggota($id_kegiatan)
@@ -1351,10 +1367,15 @@ class KegiatanController extends Controller
         $kegiatan = KegiatanModel::with('agenda')->findOrFail($id_kegiatan);
     
         // Ambil data agenda anggota berdasarkan id_kegiatan
-        $agendaAnggota = AgendaAnggotaModel::whereHas('anggota', function ($query) use ($id_kegiatan) {
-            $query->where('id_kegiatan', $id_kegiatan);
-        })->with(['anggota.user:id_user,nama'])->get();
-    
+        $agendaAnggota = AgendaAnggotaModel::select('id_agenda_anggota', 'id_agenda', 'id_anggota', 'nama_agenda')
+        ->whereHas('agenda', function($query) use ($id_kegiatan) {
+            $query->where('id_kegiatan', $id_kegiatan)
+                  ->with('dokumen');
+        })
+        ->with(['agenda.dokumen'])
+        ->get();
+        
+        // dd($agendaAnggota);
         // Breadcrumb dan metadata
         $breadcrumb = (object) [
             'title' => 'Detail Anggota',
@@ -1375,6 +1396,28 @@ class KegiatanController extends Controller
             'activeMenu' => $activeMenu,
         ])->render();
     }
+
+    public function download_dokumen($id_dokumen)
+    {
+        try {
+            // Cari dokumen berdasarkan ID
+            $dokumen = DokumenModel::findOrFail($id_dokumen);
+
+            // Dapatkan path lengkap file
+            $filePath = storage_path('app/public/dokumen/' . $dokumen->file_path);
+
+            // Pastikan file exists
+            if (!file_exists($filePath)) {
+                return back()->with('error', 'File tidak ditemukan.');
+            }
+
+            // Return file download
+            return response()->download($filePath, $dokumen->nama_dokumen);
+        } catch (\Exception $e) {
+            return back()->with('error', 'Gagal mendownload file: ' . $e->getMessage());
+        }
+    }
+
     
 
     public function updateAgendaAnggota(Request $request, $id) {}
@@ -1531,11 +1574,29 @@ class KegiatanController extends Controller
 
     public function getKegiatanEvents()
     {
-        $kegiatan = KegiatanModel::select('id_kegiatan as id', 'nama_kegiatan as title', 'deskripsi_kegiatan as description', 'tanggal_mulai as start', 'tanggal_selesai as end')
+        // Mengambil data kegiatan dengan select kolom yang diperlukan
+        $kegiatan = KegiatanModel::select('id_kegiatan as id', 'nama_kegiatan as title', 'deskripsi_kegiatan as description', 'tanggal_acara as start', 'tanggal_acara as end', 'jenis_kegiatan')
             ->get();
-
+    
+        // Menambahkan warna ke setiap event berdasarkan kategori_kegiatan
+        $kegiatan->map(function ($item) {
+            // Menentukan warna berdasarkan kategori
+            switch ($item->jenis_kegiatan) {
+                case 'Kegiatan JTI':
+                    $item->color = '#6777EF';  // Warna untuk kategori JTI
+                    break;
+                case 'Kegiatan Non-JTI':
+                    $item->color = '#FFAE03';  // Warna untuk kategori Non-JTI
+                    break;
+            }
+    
+            return $item;
+        });
+    
+        // Mengembalikan data kegiatan dalam format JSON, termasuk warna
         return response()->json($kegiatan);
     }
+    
 
     // Proges Kegiatan
     public function ProgresKegiatan()
@@ -1781,7 +1842,7 @@ class KegiatanController extends Controller
                 ->join('t_kegiatan', 't_agenda.id_kegiatan', '=', 't_kegiatan.id_kegiatan') // Join dengan tabel kegiatan
                 ->join('t_anggota', 't_agenda_anggota.id_anggota', '=', 't_anggota.id_anggota') // Join dengan tabel anggota
                 ->where('t_anggota.id_user', $userId) // Filter berdasarkan user yang login
-                ->whereBetween('t_anggota.id_jabatan_kegiatan', [2, 6]) // Filter id_jabatan_kegiatan antara 2 hingga 6
+                ->where('t_anggota.id_jabatan_kegiatan', '!=', 1) // Filter id_jabatan_kegiatan antara 2 hingga 6
                 ->get(); // Ambil hasil query
 
             return DataTables::of($data)
@@ -1806,10 +1867,25 @@ class KegiatanController extends Controller
     public function upload_dokumen(Request $request) {
         // Validator for file upload
         $validator = Validator::make($request->all(), [
-            'id_kegiatan' => 'required|exists:t_kegiatan,id_kegiatan',
+            'id_kegiatan' => [
+                'required',
+                'exists:t_agenda,id_kegiatan', // Pastikan id_kegiatan ada di tabel t_kegiatan
+                function($attribute, $value, $fail) {
+                    // Cek apakah id_kegiatan ada di tabel agenda
+                    $agendaExists = AgendaModel::where('id_kegiatan', $value)->get();
+                    return response()->json([
+                        'status' => false,
+                        'message' => $agendaExists,
+                    ]);
+    
+                    if (!$agendaExists) {
+                        $fail('Agenda untuk kegiatan ini tidak ditemukan.');
+                    }
+                }
+            ],
             'file' => 'required|mimes:jpeg,jpg,pdf|max:2048', // 2MB max
         ]);
-
+    
         // Check validation
         if ($validator->fails()) {
             return response()->json([
@@ -1818,7 +1894,7 @@ class KegiatanController extends Controller
                 'errors' => $validator->errors()
             ], 400);
         }
-
+    
         try {
             // Get the uploaded file
             $file = $request->file('file');
@@ -1829,15 +1905,28 @@ class KegiatanController extends Controller
             
             // Store file in public/dokumen directory
             $filePath = $file->storeAs('dokumen', $fileName, 'public');
-
+    
             // Create new dokumen record
             $dokumen = new DokumenModel();
             $dokumen->id_kegiatan = $request->id_kegiatan;
             $dokumen->nama_dokumen = $originalName;
             $dokumen->file_path = 'dokumen/' . $fileName; // Relative path
             $dokumen->progress = 0; // Initial progress
+    
             $dokumen->save();
-
+    
+            // Update kolom id_dokumen di tabel agenda
+            $updated = AgendaModel::where('id_kegiatan', $request->id_kegiatan)
+                ->update(['id_dokumen' => $dokumen->id_dokumen]);
+    
+            // Jika update gagal, return error
+            if (!$updated) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Gagal memperbarui agenda dengan dokumen'
+                ], 500);
+            }
+    
             return response()->json([
                 'status' => true,
                 'message' => 'Upload Dokumen Berhasil',
@@ -1846,7 +1935,7 @@ class KegiatanController extends Controller
         } catch (\Exception $e) {
             // Log the error
             Log::error('Document Upload Error: ' . $e->getMessage());
-
+    
             return response()->json([
                 'status' => false,
                 'message' => 'Gagal Upload Dokumen',
@@ -1854,4 +1943,5 @@ class KegiatanController extends Controller
             ], 500);
         }
     }
+    
 }
