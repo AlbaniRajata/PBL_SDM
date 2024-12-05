@@ -70,7 +70,7 @@
     function hapusFile(id) {
         if (confirm('Apakah Anda yakin ingin menghapus file ini?')) {
             $.ajax({
-                url: '{{ url("/file") }}/' + id,
+                url: '{{ url("/admin/file") }}/' + id,
                 type: 'DELETE',
                 success: function(response) {
                     if (response.status) {

@@ -104,6 +104,7 @@ Route::middleware('auth')->group(function () {
             Route::prefix('file')->group(function () {
                 Route::get('/', [FileHistoryController::class, 'index'])->name('admin.file.index');
                 Route::get('/download/{id}', [FileHistoryController::class, 'download'])->name('file.download');
+                Route::get('/delete/{id}', [FileHistoryController::class, 'delete'])->name('file.delete');
                 Route::delete('/{id}', [FileHistoryController::class, 'destroy'])->name('file.destroy');
             });
 

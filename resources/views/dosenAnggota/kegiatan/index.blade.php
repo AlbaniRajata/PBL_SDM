@@ -71,7 +71,7 @@
                             });
                             return dokumenHtml;
                         }
-                        return 'Tidak ada dokumen';
+                    return '<button class="btn btn-sm btn-warning"><i class="fas fa-exclamation-triangle"></i> Tidak ada dokumen</button>';
                     }
                 }
             ]
