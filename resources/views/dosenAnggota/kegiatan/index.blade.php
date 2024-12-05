@@ -19,14 +19,13 @@
         <table class="table table-bordered table-striped table-hover table-sm" id="table_kegiatan">
             <thead>
                 <tr>
-                    <th>No</th>
-                    <th>Nama Kegiatan</th>
-                    <th>Tanggal Mulai</th>
-                    <th>Tanggal Selesai</th>
-                    <th>Tempat Kegiatan</th>
-                    <th>PIC</th>
-                    <th>Status</th>
-                    <th>Surat Tugas</th>
+                    <th style="width: 5%;">No</th>
+                    <th style="width: 20%;">Nama Kegiatan</th>
+                    <th style="width: 10%;">Tanggal Mulai</th>
+                    <th style="width: 10%;">Tanggal Selesai</th>
+                    <th style="width: 15%;">Tempat Kegiatan</th>
+                    <th style="width: 10%;">PIC</th>
+                    <th style="width: 10%;">Surat Tugas</th>
                 </tr>
             </thead>
         </table>
@@ -40,6 +39,45 @@
 
 @push('js')
 <script>
+    var dataKegiatan;
+    $(document).ready(function() {
+        dataKegiatan = $('#table_kegiatan').DataTable({
+            serverSide: true,
+            processing: true,
+            ajax: {
+                url: "{{ route('dosenAnggota.kegiatan.dataDosenA') }}",
+                type: "GET",
+                headers: {
+                    'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                }
+            },
+            columns: [
+                { data: "DT_RowIndex", name: "DT_RowIndex", orderable: false, searchable: false },
+                { data: "nama_kegiatan", name: "nama_kegiatan", className: "text-center" },
+                { data: "tanggal_mulai", name: "tanggal_mulai", className: "text-center" },
+                { data: "tanggal_selesai", name: "tanggal_selesai", className: "text-center" },
+                { data: "tempat_acara", name: "tempat_acara", className: "text-center" },
+                { data: "pic", name: "pic", className: "text-center" },
+                {
+                    data: "surat_tugas",
+                    name: "surat_tugas",
+                    className: "text-center",
+                    render: function(data, type, row) {
+                        // If there are documents, create download buttons
+                        if (row.dokumen && row.dokumen.length > 0) {
+                            var dokumenHtml = '';
+                            row.dokumen.forEach(function(dok) {
+                                dokumenHtml += '<a href="' + "{{ route('kegiatan.download-surat', ':id') }}".replace(':id', dok.id_dokumen) + '" class="btn btn-sm btn-primary mr-1"><i class="fas fa-download"></i> Download</a>';
+                            });
+                            return dokumenHtml;
+                        }
+                    return '<button class="btn btn-sm btn-warning"><i class="fas fa-exclamation-triangle"></i> Tidak ada dokumen</button>';
+                    }
+                }
+            ]
+        });
+    });
+
     function modalAction(url = '') {
         $('#myModal').load(url, function() {
             $('#myModal').modal('show');
@@ -65,41 +103,5 @@
             });
         }
     }
-
-    var dataKegiatan;
-        $(document).ready(function() {
-            dataKegiatan = $('#table_kegiatan').DataTable({
-                serverSide: true,
-                processing: true, // Tambahkan ini untuk menampilkan loading
-                ajax: {
-                    url: "{{ route('dosenAnggota.kegiatan.dataDosenA') }}",
-                    type: "GET",
-                    headers: {
-                        'X-CSRF-TOKEN': "{{ csrf_token() }}"
-                    }
-                },
-                columns: [
-                    { data: "DT_RowIndex", name: "DT_RowIndex", orderable: false, searchable: false },
-                    { data: "nama_kegiatan", name: "nama_kegiatan", className: "text-center" },
-                    { data: "tanggal_mulai", name: "tanggal_mulai", className: "text-center" },
-                    { data: "tanggal_selesai", name: "tanggal_selesai", className: "text-center" },
-                    { data: "tempat_acara", name: "tempat_acara", className: "text-center" },
-                    { data: "pic", name: "pic", className: "text-center" },
-                    { data: "progress", name: "progress", className: "text-center" },
-                    {
-                        data: "surat_tugas",
-                        name: "surat_tugas",
-                        className: "text-center",
-                        render: function(data, type, row) {
-                            if (data) {
-                                return `<a href="${data}" class="btn btn-sm btn-info" target="_blank">Download</a>`;
-                            } else {
-                                return '-';
-                            }
-                        }
-                    }
-                ]
-            });
-        });
 </script>
 @endpush

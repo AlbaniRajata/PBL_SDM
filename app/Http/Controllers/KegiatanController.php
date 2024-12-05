@@ -148,8 +148,18 @@ class KegiatanController extends Controller
             'title' => 'Kegiatan',
             'list' => ['Home', 'Kegiatan Anggota'],
         ];
+
+        $user = Auth::id(); // Define the $user variable
+
+        $kegiatan = KegiatanModel::with(['dokumen'])
+        ->whereHas('anggota', function ($query) use ($user) {
+            $query->where('id_user', $user)
+                  ->where('id_jabatan_kegiatan', '!=', 1);
+        })
+        ->get();
+
         $activeMenu = 'kegiatan anggota';
-        return view('dosenAnggota.kegiatan.index', ['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu]);
+        return view('dosenAnggota.kegiatan.index', ['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu, 'kegiatan' => $kegiatan]);
     }
 
     //Function Dosen Anggota
@@ -219,6 +229,7 @@ class KegiatanController extends Controller
             ->rawColumns(['aksi', 'surat_tugas'])
             ->make(true);
     }
+
 
     // function list
     public function listAdmin(Request $request)
@@ -1372,8 +1383,7 @@ class KegiatanController extends Controller
             $query->where('id_kegiatan', $id_kegiatan)
                   ->with('dokumen');
         })
-        ->with(['agenda.dokumen'])
-        ->get();
+        ->with(['agenda.dokumen']);
         
         // dd($agendaAnggota);
         // Breadcrumb dan metadata

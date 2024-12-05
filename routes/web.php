@@ -227,9 +227,9 @@ Route::middleware('auth')->group(function () {
         Route::group(['prefix' => 'dosenAnggota', 'middleware' => ['authorize:dosenAnggota,dosen']], function () {
             Route::prefix('kegiatan')->group(function () {
             Route::get('/', [KegiatanController::class, 'dosenAnggota'])->name('dosenAnggota.kegiatan.dosenA');
-            Route::post('/list', [KegiatanController::class, 'listDosenAnggota'])->name('dosenAnggota.kegiatan.list');
+            // Route::post('/list', [KegiatanController::class, 'listDosenAnggota'])->name('dosenAnggota.kegiatan.list');
             Route::get('/dataDosenA', [KegiatanController::class, 'dataDosenA'])->name('dosenAnggota.kegiatan.dataDosenA');
-
+            Route::get('/download-surat/{id_dokumen}', [KegiatanController::class, 'downloadSurat'])->name('kegiatan.download-surat');
         });
         
         Route::prefix('agenda')->group(function () {
