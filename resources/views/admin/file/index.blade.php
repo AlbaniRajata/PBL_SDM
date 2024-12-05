@@ -12,13 +12,6 @@
             </div>
         </div>
         <div class="card-body">
-            @if (session('error'))
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    {{ session('error') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            @endif
-
             <table class="table table-bordered table-striped">
                 <thead>
                     <tr>
@@ -59,7 +52,12 @@
     </div>
 </div>
 
+@push('css')
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+@endpush
+
 @push('js')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     $.ajaxSetup({
         headers: {
@@ -68,22 +66,47 @@
     });
 
     function hapusFile(id) {
-        if (confirm('Apakah Anda yakin ingin menghapus file ini?')) {
-            $.ajax({
-                url: '{{ url("/admin/file") }}/' + id,
-                type: 'DELETE',
-                success: function(response) {
-                    if (response.status) {
-                        location.reload();
-                    } else {
-                        alert(response.message);
+        Swal.fire({
+            title: 'Konfirmasi Hapus',
+            text: 'Apakah Anda yakin ingin menghapus file ini?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Ya, Hapus!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '{{ url("/admin/file") }}/' + id,
+                    type: 'DELETE',
+                    success: function(response) {
+                        if (response.status) {
+                            Swal.fire({
+                                title: 'Berhasil!',
+                                text: response.message || 'File berhasil dihapus.',
+                                icon: 'success'
+                            }).then(() => {
+                                location.reload();
+                            });
+                        } else {
+                            Swal.fire({
+                                title: 'Gagal!',
+                                text: response.message || 'Gagal menghapus file.',
+                                icon: 'error'
+                            });
+                        }
+                    },
+                    error: function(xhr) {
+                        Swal.fire({
+                            title: 'Kesalahan!',
+                            text: 'Terjadi kesalahan saat menghapus data.',
+                            icon: 'error'
+                        });
                     }
-                },
-                error: function(xhr) {
-                    alert('Terjadi kesalahan saat menghapus data.');
-                }
-            });
-        }
+                });
+            }
+        });
     }
 </script>
 @endpush
