@@ -305,6 +305,7 @@ class UserController extends Controller
         return view('admin.user.import');
     }
 
+
     public function import_ajax(Request $request)
     {
         if ($request->ajax()) {

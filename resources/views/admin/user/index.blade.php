@@ -4,7 +4,8 @@
     <div class="card-header">
         <h3 class="card-title">Daftar Pengguna</h3>
         <div class="card-tools">
-            <a href="{{ url('/admin/user/export_excel') }}" class="btn btn-sm btn-primary mt-1"><<i class="fa-solid fa-file-excel"></i> Export Excel</a>
+            <button onclick="modalAction('{{ url('/admin/user/import') }}')" class="btn btn-sm btn-info mt-1"><i class="fa-solid fa-user"></i>Import User </button>
+            <a href="{{ url('/admin/user/export_excel') }}" class="btn btn-sm btn-primary mt-1"><i class="fa-solid fa-file-excel"></i> Export Excel</a>
             <a href="{{ url('/admin/user/export_pdf') }}" class="btn btn-sm btn-warning mt-1"><i class="fa-solid fa-file-pdf"></i>Export PDF</a>
             <button onclick="modalAction('{{ url('/admin/user/create_ajax') }}')" class="btn btn-sm btn-info mt-1"><i class="fa-solid fa-user"></i>Tambah Pengguna</button>
         </div>
