@@ -235,7 +235,7 @@ Route::middleware('auth')->group(function () {
         Route::prefix('agenda')->group(function () {
             Route::get('/', [KegiatanController::class, 'agenda'])->name('agenda');
             Route::get('/list', [KegiatanController::class, 'listAgendaKegiatan'])->name('agenda.listAgendaKegiatan');
-            Route::post('/kegiatan/upload-dokumen', [KegiatanController::class, 'upload_dokumen'])->name('kegiatan.upload_dokumen');
+            Route::post('/{id}/upload-dokumen', [KegiatanController::class, 'upload_dokumen'])->name('kegiatan.upload_dokumen');
         });
     });
 });
