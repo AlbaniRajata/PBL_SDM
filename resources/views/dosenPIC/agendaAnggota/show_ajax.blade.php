@@ -1,109 +1,154 @@
-<div id="modal-master" class="modal-dialog lg" role="document">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Detail Data Kegiatan</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-        <div class="modal-body">
-            <div class="alert alert-info">
-                <h5><i class="icon fas fa-info"></i> Data Kegiatan</h5>
-                Berikut adalah detail dari data kegiatan
-            </div>
-            <table class="table table-sm table-bordered table-stripped">
-                <tr>
-                    <th class="text-right col-3">Nama Kegiatan : </th>
-                    <td class="col-9">{{ $kegiatan->nama_kegiatan }}</td>
-                </tr>
-                <tr>
-                    <th class="text-right col-3">Jenis Kegiatan : </th>
-                    <td class="col-9">{{ $kegiatan->jenis_kegiatan }}</td>
-                </tr>
-                <tr>
-                    <th class="text-right col-3">Tempat Kegiatan : </th>
-                    <td class="col-9">{{ $kegiatan->tempat_kegiatan }}</td>
-                </tr>
-                <tr>
-                    <th class="text-right col-3">Tanggal Mulai : </th>
-                    <td class="col-9">{{ $kegiatan->tanggal_mulai }}</td>
-                </tr>
-                <tr>
-                    <th class="text-right col-3">Tanggal Selesai : </th>
-                    <td class="col-9">{{ $kegiatan->tanggal_selesai }}</td>
-                </tr>
-            </table>
+@extends('layouts.template')
 
-            <div class="alert alert-info mt-3">
-                <h5><i class="icon fas fa-info"></i> Data Agenda</h5>
-                Berikut adalah agenda terkait kegiatan ini
+@section('content')
+<div class="container-fluid">
+    <div class="card card-outline card-primary">
+        <div class="card-header">
+            <h3 class="card-title">Daftar Kegiatan</h3>
+            <div class="card-tools">
+                <form action="{{ route('kegiatan.upload_dokumen') }}" method="POST" class="form-inline">
+                    <input type="text" name="search" class="form-control" placeholder="Cari kegiatan..." value="{{ request('search') }}">
+                    <button type="submit" class="btn btn-primary ml-2">Cari</button>
+                </form>
             </div>
-            <table class="table table-sm table-bordered table-stripped">
+        </div>
+        <div class="card-body">
+            @if (session('error'))
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    {{ session('error') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
+
+            <table class="table table-bordered table-striped" id="dataTable">
                 <thead>
                     <tr>
-                        <th class="text-center">Nama Agenda</th>
-                        <th class="text-center">Dokumen</th>
+                        <th style="width: 5%" class="text-center">No</th>
+                        <th style="width: 30%" class="text-center">Nama Kegiatan</th>
+                        <th style="width: 50%" class="text-center">Agenda</th>
+                        <th style="width: 15%" class="text-center">Aksi</th>
                     </tr>
                 </thead>
-                <tbody>
-                    @foreach ($agendaAnggota as $a)
-                        <tr>
-                            <td class="text-center">{{ $a->nama_agenda }}</td>
-                            
-                            <td class="text-center">
-                                @if ($a->file_path == null)
-                                    <a href="{{ storage_path('app/public/' . $a->file_path) }}" 
-                                       class="btn btn-sm btn-primary" 
-                                       target="_blank">Unduh</a>
-                                @else
-                                    <span class="badge badge-warning">Belum Ada Dokumen</span>
-                                @endif
-                            </td>
-                        </tr>
-                    @endforeach
-                    {{-- @if ($a->file_path != null)
-                        <a href="{{ asset('storage/' . $a->file_path) }}" 
-                        class="btn btn-sm btn-primary" 
-                        target="_blank">Unduh</a>
-                    @else
-                        <span class="badge badge-warning">Belum Ada Dokumen</span>
-                    @endif --}}
-                </tbody>
             </table>
         </div>
     </div>
 </div>
 
-@push('css')
-@endpush
+<!-- Modal for Upload Kegiatan -->
+<div class="modal fade" id="uploadModal" tabindex="-1" role="dialog" aria-labelledby="uploadModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="uploadModalLabel">Upload Dokumen Kegiatan</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="uploadForm" enctype="multipart/form-data">
+                    @csrf
+                    <input type="hidden" id="id_agenda_anggota" name="id_agenda_anggota">
+                    <div class="form-group">
+                        <label for="file">Pilih Dokumen</label>
+                        <input type="file" class="form-control-file" id="file" name="file" accept=".pdf,.jpg,.jpeg">
+                    </div>
+                    <div id="uploadError" class="text-danger"></div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+                <button type="button" class="btn btn-primary" id="uploadSubmit">Upload</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 @push('js')
 <script>
-    function updateFileName() {
-        var input = document.getElementById('file');
-        var fileName = input.files[0].name;
-        var label = document.getElementById('file_label');
-        label.textContent = fileName;
-    }
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
 
-    function modalAction(url) {
-    $.ajax({
-        url: "{{ route('dosenPIC.agendaAnggota.listAgendaAnggota') }}",
-        type: 'GET',
-        success: function(response) {
-            $('#myModal').html(response);
-            $('#myModal').modal('show');
-        },
-        error: function(xhr) {
-            console.log('hello')
-            alert('Terjadi kesalahan saat mengambil data.');
-        }
+    $(document).ready(function() {
+        $('#dataTable').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: {
+                url: "{{ route('agenda.listAgendaKegiatan') }}",
+                type: 'GET',
+            },
+            columns: [
+                { data: 'DT_RowIndex', name: 'DT_RowIndex', className: "text-center", orderable: false, searchable: false },
+                { data: 'nama_kegiatan', name: 'nama_kegiatan', className: "text-center" },
+                { data: 'agenda', name: 'agenda', className: "text-center" },
+                { data: 'aksi', name: 'aksi', orderable: false, searchable: false, className: "text-center" },
+            ]
+        });
     });
-}    
+
+    function uploadKegiatan(id_agenda_anggota) {
+    // Reset form and error message
+    $('#uploadForm')[0].reset();
+    $('#uploadError').text('');
+    
+    // Set the kegiatan ID in hidden input
+    $('#id_agenda_anggota').val(id_agenda_anggota);
+    
+    // Show modal
+    $('#uploadModal').modal('show');
+}
+
+
+    // Handle upload submission
+    $('#uploadSubmit').on('click', function() {
+        var formData = new FormData($('#uploadForm')[0]);
+
+        $.ajax({
+            url: "{{ route('kegiatan.upload_dokumen') }}", // Ensure you have this route defined
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                if (response.status) {
+                    // Show success message
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil!',
+                        text: response.message
+                    });
+
+                    // Reload DataTable
+                    $('#dataTable').DataTable().ajax.reload();
+
+                    // Close modal
+                    $('#uploadModal').modal('hide');
+                } else {
+                    // Show error message
+                    $('#uploadError').text(response.message);
+                }
+            },
+            error: function(xhr) {
+                // Handle validation errors
+                if (xhr.status === 400) {
+                    var errors = xhr.responseJSON.errors;
+                    var errorMessage = '';
+                    
+                    // Compile error messages
+                    $.each(errors, function(field, messages) {
+                        errorMessage += messages.join('\n') + '\n';
+                    });
+
+                    $('#uploadError').text(errorMessage);
+                } else {
+                    // Generic error
+                    $('#uploadError').text('Terjadi kesalahan saat upload');
+                }
+            }
+        });
+    });
 </script>
 @endpush
+@endsection

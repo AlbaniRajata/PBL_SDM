@@ -24,6 +24,7 @@ use carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
+
 class KegiatanController extends Controller
 {
     // function index
@@ -1371,21 +1372,19 @@ class KegiatanController extends Controller
         ]);
     }
 
-
     public function detailAgendaAnggota($id_kegiatan)
     {
         // Ambil data kegiatan beserta agendanya
         $kegiatan = KegiatanModel::with('agenda')->findOrFail($id_kegiatan);
-    
-        // Ambil data agenda anggota berdasarkan id_kegiatan
-        $agendaAnggota = AgendaAnggotaModel::select('id_agenda_anggota', 'id_agenda', 'id_anggota', 'nama_agenda')
-        ->whereHas('agenda', function($query) use ($id_kegiatan) {
-            $query->where('id_kegiatan', $id_kegiatan)
-                  ->with('dokumen');
-        })
-        ->with(['agenda.dokumen']);
-        
-        // dd($agendaAnggota);
+
+        $agendaAnggota = DB::table('t_agenda_anggota as aa')
+            ->leftJoin('t_agenda as ag', 'ag.id_agenda', '=', 'aa.id_agenda')
+            ->leftJoin('t_kegiatan as ak', 'ak.id_kegiatan', '=', 'ag.id_kegiatan')
+            ->leftJoin('t_dokumen as dkm', 'dkm.id_kegiatan', '=', 'ag.id_kegiatan')
+            ->select('aa.nama_agenda', 'dkm.id_dokumen', 'dkm.nama_dokumen','dkm.file_path', 'ak.nama_kegiatan')
+            ->where('ag.id_kegiatan', $id_kegiatan)
+            ->get();
+           
         // Breadcrumb dan metadata
         $breadcrumb = (object) [
             'title' => 'Detail Anggota',
@@ -1398,6 +1397,7 @@ class KegiatanController extends Controller
     
         $activeMenu = 'agenda anggota';
     
+        // Kirim data ke view
         return view('dosenPIC.agendaAnggota.show_ajax', [
             'kegiatan' => $kegiatan,
             'agendaAnggota' => $agendaAnggota,
@@ -1406,31 +1406,6 @@ class KegiatanController extends Controller
             'activeMenu' => $activeMenu,
         ])->render();
     }
-
-    public function download_dokumen($id_dokumen)
-    {
-        try {
-            // Cari dokumen berdasarkan ID
-            $dokumen = DokumenModel::findOrFail($id_dokumen);
-
-            // Dapatkan path lengkap file
-            $filePath = storage_path('app/public/dokumen/' . $dokumen->file_path);
-
-            // Pastikan file exists
-            if (!file_exists($filePath)) {
-                return back()->with('error', 'File tidak ditemukan.');
-            }
-
-            // Return file download
-            return response()->download($filePath, $dokumen->nama_dokumen);
-        } catch (\Exception $e) {
-            return back()->with('error', 'Gagal mendownload file: ' . $e->getMessage());
-        }
-    }
-
-    
-
-    public function updateAgendaAnggota(Request $request, $id) {}
 
     public function KegiatanJTI(): mixed
     {
@@ -1875,23 +1850,12 @@ class KegiatanController extends Controller
     }
 
     public function upload_dokumen(Request $request) {
+
         // Validator for file upload
         $validator = Validator::make($request->all(), [
-            'id_kegiatan' => [
+            'id_agenda_anggota' => [
                 'required',
-                'exists:t_agenda,id_kegiatan', // Pastikan id_kegiatan ada di tabel t_kegiatan
-                function($attribute, $value, $fail) {
-                    // Cek apakah id_kegiatan ada di tabel agenda
-                    $agendaExists = AgendaModel::where('id_kegiatan', $value)->get();
-                    return response()->json([
-                        'status' => false,
-                        'message' => $agendaExists,
-                    ]);
-    
-                    if (!$agendaExists) {
-                        $fail('Agenda untuk kegiatan ini tidak ditemukan.');
-                    }
-                }
+                'exists:t_agenda_anggota,id_agenda_anggota', // Ensure id_agenda_anggota exists in the table
             ],
             'file' => 'required|mimes:jpeg,jpg,pdf|max:2048', // 2MB max
         ]);
@@ -1916,32 +1880,35 @@ class KegiatanController extends Controller
             // Store file in public/dokumen directory
             $filePath = $file->storeAs('dokumen', $fileName, 'public');
     
-            // Create new dokumen record
+            // Check if the document already exists for this agenda_anggota
+            $agendaAnggota = AgendaAnggota::find($request->id_agenda_anggota);
+    
+            // If the agenda_anggota already has a document, skip file upload and update the id_dokumen
+            if ($agendaAnggota && $agendaAnggota->id_dokumen) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Dokumen sudah ada untuk kegiatan ini.'
+                ]);
+            }
+    
+            // Create a new dokumen record
             $dokumen = new DokumenModel();
-            $dokumen->id_kegiatan = $request->id_kegiatan;
+            $dokumen->id_kegiatan = $agendaAnggota->id_kegiatan;
             $dokumen->nama_dokumen = $originalName;
             $dokumen->file_path = 'dokumen/' . $fileName; // Relative path
             $dokumen->progress = 0; // Initial progress
-    
             $dokumen->save();
     
-            // Update kolom id_dokumen di tabel agenda
-            $updated = AgendaModel::where('id_kegiatan', $request->id_kegiatan)
-                ->update(['id_dokumen' => $dokumen->id_dokumen]);
-    
-            // Jika update gagal, return error
-            if (!$updated) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Gagal memperbarui agenda dengan dokumen'
-                ], 500);
-            }
+            // Update id_dokumen in agenda_anggota
+            $agendaAnggota->id_dokumen = $dokumen->id_dokumen;
+            $agendaAnggota->save();
     
             return response()->json([
                 'status' => true,
                 'message' => 'Upload Dokumen Berhasil',
                 'data' => $dokumen
             ]);
+    
         } catch (\Exception $e) {
             // Log the error
             Log::error('Document Upload Error: ' . $e->getMessage());
@@ -1953,5 +1920,46 @@ class KegiatanController extends Controller
             ], 500);
         }
     }
+    
+
+    public function download_dokumen($id_dokumen)
+{
+    try {
+        // Cari dokumen berdasarkan ID
+        $dokumen = DokumenModel::find($id_dokumen);
+
+        // Periksa apakah dokumen ditemukan
+        if (!$dokumen) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Dokumen tidak ditemukan'
+            ], 404);
+        }
+
+        // Dapatkan path file dari dokumen
+        $filePath = storage_path('app/public/' . $dokumen->file_path);
+
+        // Periksa apakah file ada di server
+        if (!file_exists($filePath)) {
+            return response()->json([
+                'status' => false,
+                'message' => 'File tidak ditemukan pada server'
+            ], 404);
+        }
+
+        // Return file untuk didownload
+        return response()->download($filePath, $dokumen->nama_dokumen);
+    } catch (\Exception $e) {
+        // Log error jika ada masalah
+        Log::error('Download Dokumen Error: ' . $e->getMessage());
+
+        return response()->json([
+            'status' => false,
+            'message' => 'Gagal mendownload dokumen',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
+
     
 }

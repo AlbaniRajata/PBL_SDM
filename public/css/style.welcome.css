@@ -11,11 +11,11 @@ body {
     }
 
     .card.bg-info {
-        background: linear-gradient(135deg, #1e90ff, #00bfff);
+        background: linear-gradient(135deg, #438803, #84f0b5);
     }
 
     .card.bg-success {
-        background: linear-gradient(135deg, #28a745, #57d38c);
+        background: linear-gradient(135deg, #282bec, #9398e2);
     }
 
     .card.bg-warning {
