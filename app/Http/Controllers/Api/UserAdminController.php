@@ -14,7 +14,7 @@ class UserAdminController extends Controller
     {
         try {
             $users = UserModel::select('id_user', 'username', 'nama', 'tanggal_lahir', 
-                                     'email', 'NIP', 'level')->get();
+            'email', 'NIP', 'level')->get();
             return response()->json([
                 'status' => 'success',
                 'data' => $users
@@ -31,8 +31,8 @@ class UserAdminController extends Controller
     {
         try {
             $user = UserModel::select('id_user', 'username', 'nama', 'tanggal_lahir', 
-                                    'email', 'NIP', 'level')
-                            ->findOrFail($id);
+                'email', 'NIP', 'level')
+                ->findOrFail($id);
             return response()->json([
                 'status' => 'success',
                 'data' => $user
