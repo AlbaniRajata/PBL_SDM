@@ -1,67 +1,99 @@
-@extends('layouts.template')
-
-@section('content')
-<div class="container-fluid">
-    <div class="card card-outline card-primary">
-        <div class="card-header">
-            <h3 class="card-title">Daftar Kegiatan</h3>
-            <div class="card-tools">
-                <form action="{{ route('kegiatan.upload_dokumen') }}" method="POST" class="form-inline">
-                    <input type="text" name="search" class="form-control" placeholder="Cari kegiatan..." value="{{ request('search') }}">
-                    <button type="submit" class="btn btn-primary ml-2">Cari</button>
-                </form>
-            </div>
-        </div>
-        <div class="card-body">
-            @if (session('error'))
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    {{ session('error') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            @endif
-
-            <table class="table table-bordered table-striped" id="dataTable">
-                <thead>
-                    <tr>
-                        <th style="width: 5%" class="text-center">No</th>
-                        <th style="width: 30%" class="text-center">Nama Kegiatan</th>
-                        <th style="width: 50%" class="text-center">Agenda</th>
-                        <th style="width: 15%" class="text-center">Aksi</th>
-                    </tr>
-                </thead>
-            </table>
-        </div>
-    </div>
-</div>
-
-<!-- Modal for Upload Kegiatan -->
-<div class="modal fade" id="uploadModal" tabindex="-1" role="dialog" aria-labelledby="uploadModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
+@empty($kegiatan)
+    <div id="modal-master" class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="uploadModalLabel">Upload Dokumen Kegiatan</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Kesalahan</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <form id="uploadForm" enctype="multipart/form-data">
-                    @csrf
-                    <input type="hidden" id="id_agenda_anggota" name="id_agenda_anggota">
-                    <div class="form-group">
-                        <label for="file">Pilih Dokumen</label>
-                        <input type="file" class="form-control-file" id="file" name="file" accept=".pdf,.jpg,.jpeg">
-                    </div>
-                    <div id="uploadError" class="text-danger"></div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
-                <button type="button" class="btn btn-primary" id="uploadSubmit">Upload</button>
+                <div class="alert alert-danger">
+                    <h5><i class="icon fas fa-ban"></i> Kesalahan!!!</h5>
+                    Data yang anda cari tidak ditemukan
+                </div>
+                <a href="{{ url('/kegiatan') }}" class="btn btn-warning">Kembali</a>
             </div>
         </div>
     </div>
-</div>
+@else
+    <div id="modal-master" class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Detail Data Kegiatan</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-info">
+                    <h5><i class="icon fas fa-info"></i> Data Kegiatan</h5>
+                    Berikut adalah detail dari data kegiatan
+                </div>
+                <table class="table table-sm table-bordered table-stripped">
+                    <tr>
+                        <th class="text-right col-3">Judul Kegiatan : </th>
+                        <td class="col-9">{{ $kegiatan->nama_kegiatan }}</td>
+                    </tr>
+                    <tr>
+                        <th class="text-right col-3">Deskripsi Kegiatan : </th>
+                        <td class="col-9">{{ $kegiatan->deskripsi_kegiatan }}</td>
+                    </tr>
+                    <tr>
+                        <th class="text-right col-3">Tanggal Mulai : </th>
+                        <td class="col-9">{{ $kegiatan->tanggal_mulai }}</td>
+                    </tr>
+                    <tr>
+                        <th class="text-right col-3">Tanggal Selesai : </th>
+                        <td class="col-9">{{ $kegiatan->tanggal_selesai }}</td>
+                    </tr>
+                    <tr>
+                        <th class="text-right col-3">Tempat Acara : </th>
+                        <td class="col-9">{{ $kegiatan->tempat_kegiatan }}</td>
+                    </tr>
+                    <tr>
+                        <th class="text-right col-3">Tanggal Acara : </th>
+                        <td class="col-9">{{ $kegiatan->tanggal_acara }}</td>
+                    </tr>
+                    <tr>
+                        <th class="text-right col-3">Jenis Kegiatan : </th>
+                        <td class="col-9">{{ $kegiatan->jenis_kegiatan }}</td>
+                    </tr>
+                    </table>
+                    </table>
+
+                    <div class="alert alert-info mt-3">
+                <h5><i class="icon fas fa-file"></i> Agenda Kegiatan</h5>
+                Agenda terkait kegiatan
+            </div>
+            <table class="table table-sm table-bordered table-stripped">
+                <thead>
+                    <tr>
+                        <th class="text-center">Nama Agenda</th>
+                        <th class="text-center">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse ($kegiatan->dokumen as $dokumen)
+                        <tr>
+                            <td class="text-center">{{ $dokumen->nama_dokumen }}</td>
+                            <td class="text-center">
+                                <a href="{{ route('kegiatan.download-dokumenAgenda', $dokumen->id_dokumen) }}" 
+                                   class="btn btn-sm btn-primary">
+                                    <i class="fas fa-download"></i> Download
+                                </a>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="2" class="text-center">Tidak ada dokumen</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+@endempty
 
 @push('js')
 <script>
@@ -87,19 +119,6 @@
             ]
         });
     });
-
-    function uploadKegiatan(id_agenda_anggota) {
-    // Reset form and error message
-    $('#uploadForm')[0].reset();
-    $('#uploadError').text('');
-    
-    // Set the kegiatan ID in hidden input
-    $('#id_agenda_anggota').val(id_agenda_anggota);
-    
-    // Show modal
-    $('#uploadModal').modal('show');
-}
-
 
     // Handle upload submission
     $('#uploadSubmit').on('click', function() {
@@ -151,4 +170,3 @@
     });
 </script>
 @endpush
-@endsection
