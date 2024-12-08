@@ -321,7 +321,6 @@ class KegiatanController extends Controller
             ->addColumn('aksi', function ($kegiatan) {
                 $btn = '<button onclick="modalAction(\'' . url('/dosenPIC/kegiatan/' . $kegiatan->id_kegiatan . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/dosenPIC/kegiatan/' . $kegiatan->id_kegiatan . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/dosenPIC/kegiatan/' . $kegiatan->id_kegiatan . '/delete_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button> ';
                 return $btn;
             })
             ->rawColumns(['aksi'])
@@ -1881,7 +1880,7 @@ class KegiatanController extends Controller
             $filePath = $file->storeAs('dokumen', $fileName, 'public');
     
             // Check if the document already exists for this agenda_anggota
-            $agendaAnggota = AgendaAnggota::find($request->id_agenda_anggota);
+            $agendaAnggota = AgendaAnggotaModel::find($request->id_agenda_anggota);
     
             // If the agenda_anggota already has a document, skip file upload and update the id_dokumen
             if ($agendaAnggota && $agendaAnggota->id_dokumen) {
