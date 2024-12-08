@@ -27,9 +27,15 @@ class AgendaAnggotaModel extends Model
     {
         return $this->belongsTo(AnggotaModel::class, 'id_anggota', 'id_anggota');
     }
+    
 
     public function user()
     {
         return $this->belongsTo(UserModel::class, 'id_user', 'id_user');
     }
+
+    public function dokumen()
+{
+    return $this->belongsTo(Dokumen::class, 'id_dokumen', 'id_dokumen');
+}
 }

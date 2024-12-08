@@ -1385,13 +1385,10 @@ class KegiatanController extends Controller
         $kegiatan = KegiatanModel::with('agenda')->findOrFail($id_kegiatan);
 
         $agendaAnggota = DB::table('t_agenda_anggota as aa')
-        ->leftJoin('t_agenda as ag', 'ag.id_agenda', '=', 'aa.id_agenda')
-        ->leftJoin('t_kegiatan as ak', 'ak.id_kegiatan', '=', 'ag.id_kegiatan')
-        ->leftJoin('t_dokumen as dkm', function ($join) {
-            $join->on('dkm.id_dokumen', '=', DB::raw('(SELECT MAX(id_dokumen) FROM t_dokumen WHERE t_dokumen.id_kegiatan = ag.id_kegiatan AND t_dokumen.jenis_dokumen = "agenda")'));
-        })
-        ->select('aa.nama_agenda', 'dkm.id_dokumen', 'dkm.nama_dokumen', 'dkm.file_path', 'ak.nama_kegiatan')
-        ->where('ag.id_kegiatan', $id_kegiatan)
+        ->join('t_agenda as ag', 'aa.id_agenda', '=', 'ag.id_agenda')
+        ->leftJoin('t_dokumen as dkm', 'dkm.id_dokumen', '=', 'aa.id_dokumen')
+        ->select('aa.id_agenda', 'aa.id_dokumen', 'dkm.file_path', 'dkm.nama_dokumen', 'aa.nama_agenda')
+        ->where('ag.id_kegiatan', 7)
         ->get();
            
         // Breadcrumb dan metadata
