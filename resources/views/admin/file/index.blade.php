@@ -33,9 +33,6 @@
                             <a href="{{ route('file.download', $file->id_dokumen) }}" class="btn btn-sm btn-primary" title="Download">
                                 <i class="fas fa-download"></i> Unduh
                             </a>
-                            <button class="btn btn-sm btn-danger" onclick="hapusFile({{ $file->id_dokumen }})" title="Hapus">
-                                <i class="fas fa-trash-alt"></i> Hapus
-                            </button>
                         </td>
                     </tr>
                     @endforeach

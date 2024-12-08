@@ -15,6 +15,7 @@ class DokumenModel extends Model
     protected $fillable = [
         'id_kegiatan',
         'nama_dokumen',
+        'jenis_dokumen',
         'file_path',
         'progress',
     ];
@@ -22,5 +23,10 @@ class DokumenModel extends Model
     public function kegiatan()
     {
         return $this->belongsTo(KegiatanModel::class, 'id_kegiatan', 'id_kegiatan');
+    }
+
+    public function agenda()
+    {
+        return $this->hasMany(AgendaModel::class, 'id_dokumen', 'id_dokumen');
     }
 }

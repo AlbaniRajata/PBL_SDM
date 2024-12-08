@@ -96,15 +96,17 @@
                 </thead>
                 <tbody>
                     @forelse ($kegiatan->dokumen as $dokumen)
-                        <tr>
-                            <td class="text-center">{{ $dokumen->nama_dokumen }}</td>
-                            <td class="text-center">
-                                <a href="{{ route('kegiatan.download-surat', $dokumen->id_dokumen) }}" 
-                                   class="btn btn-sm btn-primary">
-                                    <i class="fas fa-download"></i> Download
-                                </a>
-                            </td>
-                        </tr>
+                        @if ($dokumen->jenis_dokumen === 'surat tugas')
+                            <tr>
+                                <td class="text-center">{{ $dokumen->nama_dokumen }}</td>
+                                <td class="text-center">
+                                    <a href="{{ route('kegiatan.download-surat', $dokumen->id_dokumen) }}" 
+                                    class="btn btn-sm btn-primary">
+                                        <i class="fas fa-download"></i> Download
+                                    </a>
+                                </td>
+                            </tr>
+                        @endif
                     @empty
                         <tr>
                             <td colspan="2" class="text-center">Tidak ada dokumen</td>

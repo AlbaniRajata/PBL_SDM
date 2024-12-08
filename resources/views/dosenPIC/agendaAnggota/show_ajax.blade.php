@@ -63,36 +63,40 @@
                     </table>
 
                     <div class="alert alert-info mt-3">
-                <h5><i class="icon fas fa-file"></i> Agenda Kegiatan</h5>
-                Agenda terkait kegiatan
-            </div>
-            <table class="table table-sm table-bordered table-stripped">
-                <thead>
-                    <tr>
-                        <th class="text-center">Nama Agenda</th>
-                        <th class="text-center">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse ($kegiatan->dokumen as $dokumen)
-                        <tr>
-                            <td class="text-center">{{ $dokumen->nama_dokumen }}</td>
-                            <td class="text-center">
-                                <a href="{{ route('kegiatan.download-dokumenAgenda', $dokumen->id_dokumen) }}" 
-                                   class="btn btn-sm btn-primary">
-                                    <i class="fas fa-download"></i> Download
-                                </a>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="2" class="text-center">Tidak ada dokumen</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-    </div>
+                        <h5><i class="icon fas fa-file"></i> Agenda Anggota</h5>
+                        Agenda terkait kegiatan ini
+                    </div>
+                    <table class="table table-sm table-bordered table-stripped">
+                        <thead>
+                            <tr>
+                                <th class="text-center">Nama Agenda</th>
+                                <th class="text-center">Nama Dokumen</th>
+                                <th class="text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse ($agendaAnggota as $agenda)
+                                <tr>
+                                    <td class="text-center">{{ $agenda->nama_agenda }}</td>
+                                    <td class="text-center">{{ $agenda->nama_dokumen ?? 'Tidak ada dokumen' }}</td>
+                                    <td class="text-center">
+                                        @if($agenda->file_path)
+                                            <a href="{{ route('kegiatan.download-dokumenagenda', $agenda->id_dokumen) }}" 
+                                            class="btn btn-sm btn-primary">
+                                                <i class="fas fa-download"></i> Download
+                                            </a>
+                                        @else
+                                            <span class="text-muted">Tidak ada dokumen</span>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="3" class="text-center">Tidak ada agenda</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
 @endempty
 
 @push('js')

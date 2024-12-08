@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id('id_dokumen');
             $table->unsignedBigInteger('id_kegiatan')->nullable();
             $table->string('nama_dokumen');
+            $table->enum('jenis_dokumen', ['surat tugas', 'agenda']);
             $table->string('file_path')->nullable();
             $table->integer('progress')->default(0);
             $table->timestamps();

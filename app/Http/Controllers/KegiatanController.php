@@ -1202,6 +1202,7 @@ class KegiatanController extends Controller
                 $dokumen = DokumenModel::create([
                     'id_kegiatan' => $request->id_kegiatan,
                     'nama_dokumen' => $file->getClientOriginalName(),
+                    'jenis_dokumen' => 'surat tugas',
                     'file_path' => $path,
                     'progress' => 0, // Progress awal
                 ]);
@@ -1223,21 +1224,28 @@ class KegiatanController extends Controller
         try {
             // Cari dokumen berdasarkan ID
             $dokumen = DokumenModel::findOrFail($id_dokumen);
-
+    
+            // Periksa apakah jenis dokumen adalah 'surat tugas'
+            if ($dokumen->jenis_dokumen !== 'surat tugas') {
+                return back()->with('error', 'Dokumen ini bukan surat tugas dan tidak dapat diunduh.');
+            }
+    
             // Dapatkan path lengkap file
             $filePath = storage_path('app/public/' . $dokumen->file_path);
-
-            // Pastikan file exists
+    
+            // Pastikan file ada di server
             if (!file_exists($filePath)) {
-                return back()->with('error', 'File tidak ditemukan.');
+                return back()->with('error', 'File tidak ditemukan di server.');
             }
-
+    
             // Return file download
             return response()->download($filePath, $dokumen->nama_dokumen);
         } catch (\Exception $e) {
+            // Tangani error
             return back()->with('error', 'Gagal mendownload file: ' . $e->getMessage());
         }
     }
+    
 
     // fungsi agenda kegiatan
     public function agendaAnggota()
@@ -1377,12 +1385,14 @@ class KegiatanController extends Controller
         $kegiatan = KegiatanModel::with('agenda')->findOrFail($id_kegiatan);
 
         $agendaAnggota = DB::table('t_agenda_anggota as aa')
-            ->leftJoin('t_agenda as ag', 'ag.id_agenda', '=', 'aa.id_agenda')
-            ->leftJoin('t_kegiatan as ak', 'ak.id_kegiatan', '=', 'ag.id_kegiatan')
-            ->leftJoin('t_dokumen as dkm', 'dkm.id_kegiatan', '=', 'ag.id_kegiatan')
-            ->select('aa.nama_agenda', 'dkm.id_dokumen', 'dkm.nama_dokumen','dkm.file_path', 'ak.nama_kegiatan')
-            ->where('ag.id_kegiatan', $id_kegiatan)
-            ->get();
+        ->leftJoin('t_agenda as ag', 'ag.id_agenda', '=', 'aa.id_agenda')
+        ->leftJoin('t_kegiatan as ak', 'ak.id_kegiatan', '=', 'ag.id_kegiatan')
+        ->leftJoin('t_dokumen as dkm', function ($join) {
+            $join->on('dkm.id_dokumen', '=', DB::raw('(SELECT MAX(id_dokumen) FROM t_dokumen WHERE t_dokumen.id_kegiatan = ag.id_kegiatan AND t_dokumen.jenis_dokumen = "agenda")'));
+        })
+        ->select('aa.nama_agenda', 'dkm.id_dokumen', 'dkm.nama_dokumen', 'dkm.file_path', 'ak.nama_kegiatan')
+        ->where('ag.id_kegiatan', $id_kegiatan)
+        ->get();
            
         // Breadcrumb dan metadata
         $breadcrumb = (object) [
@@ -1880,21 +1890,22 @@ class KegiatanController extends Controller
             $filePath = $file->storeAs('dokumen', $fileName, 'public');
     
             // Check if the document already exists for this agenda_anggota
-            $agendaAnggota = AgendaAnggotaModel::find($request->id_agenda_anggota);
+            $agendaAnggota = AgendaAnggotaModel::with('agenda')->find($request->id_agenda_anggota);
     
-            // If the agenda_anggota already has a document, skip file upload and update the id_dokumen
-            if ($agendaAnggota && $agendaAnggota->id_dokumen) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Dokumen sudah ada untuk kegiatan ini.'
-                ]);
-            }
+            // // If the agenda_anggota already has a document, skip file upload and update the id_dokumen
+            // if ($agendaAnggota && $agendaAnggota->id_dokumen) {
+            //     return response()->json([
+            //         'status' => false,
+            //         'message' => 'Dokumen sudah ada untuk kegiatan ini.'
+            //     ]);
+            // }
     
             // Create a new dokumen record
             $dokumen = new DokumenModel();
-            $dokumen->id_kegiatan = $agendaAnggota->id_kegiatan;
+            $dokumen->id_kegiatan = $agendaAnggota->agenda->id_kegiatan;
             $dokumen->nama_dokumen = $originalName;
             $dokumen->file_path = 'dokumen/' . $fileName; // Relative path
+            $dokumen->jenis_dokumen = 'agenda'; // Set jenis_dokumen
             $dokumen->progress = 0; // Initial progress
             $dokumen->save();
     
@@ -1922,43 +1933,41 @@ class KegiatanController extends Controller
     
 
     public function download_dokumen($id_dokumen)
-{
-    try {
-        // Cari dokumen berdasarkan ID
-        $dokumen = DokumenModel::find($id_dokumen);
+    {
+        try {
+            // Cari dokumen berdasarkan ID
+            $dokumen = DokumenModel::find($id_dokumen);
 
-        // Periksa apakah dokumen ditemukan
-        if (!$dokumen) {
+            // Periksa apakah dokumen ditemukan
+            if (!$dokumen) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Dokumen tidak ditemukan'
+                ], 404);
+            }
+
+            // Dapatkan path file dari dokumen
+            $filePath = storage_path('app/public/' . $dokumen->file_path);
+
+            // Periksa apakah file ada di server
+            if (!file_exists($filePath)) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'File tidak ditemukan pada server'
+                ], 404);
+            }
+
+            // Return file untuk didownload
+            return response()->download($filePath, $dokumen->nama_dokumen);
+        } catch (\Exception $e) {
+            // Log error jika ada masalah
+            Log::error('Download Dokumen Error: ' . $e->getMessage());
+
             return response()->json([
                 'status' => false,
-                'message' => 'Dokumen tidak ditemukan'
-            ], 404);
+                'message' => 'Gagal mendownload dokumen',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        // Dapatkan path file dari dokumen
-        $filePath = storage_path('app/public/' . $dokumen->file_path);
-
-        // Periksa apakah file ada di server
-        if (!file_exists($filePath)) {
-            return response()->json([
-                'status' => false,
-                'message' => 'File tidak ditemukan pada server'
-            ], 404);
-        }
-
-        // Return file untuk didownload
-        return response()->download($filePath, $dokumen->nama_dokumen);
-    } catch (\Exception $e) {
-        // Log error jika ada masalah
-        Log::error('Download Dokumen Error: ' . $e->getMessage());
-
-        return response()->json([
-            'status' => false,
-            'message' => 'Gagal mendownload dokumen',
-            'error' => $e->getMessage()
-        ], 500);
     }
-}
-
-    
 }
