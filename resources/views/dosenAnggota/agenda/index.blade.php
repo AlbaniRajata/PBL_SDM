@@ -47,7 +47,7 @@
             <div class="modal-body">
                 <form id="uploadForm" enctype="multipart/form-data">
                     @csrf
-                    <input type="hidden" id="id_kegiatan" name="id_kegiatan">
+                    <input type="hidden" id="id_agenda_anggota" name="id_agenda_anggota">
                     <div class="form-group">
                         <label for="file">Pilih Dokumen</label>
                         <input type="file" class="form-control-file" id="file" name="file" accept=".pdf,.jpg,.jpeg">
@@ -83,18 +83,27 @@
                 { data: 'DT_RowIndex', name: 'DT_RowIndex', className: "text-center", orderable: false, searchable: false },
                 { data: 'nama_kegiatan', name: 'nama_kegiatan', className: "text-center" },
                 { data: 'agenda', name: 'agenda', className: "text-center" },
-                { data: 'aksi', name: 'aksi', orderable: false, searchable: false, className: "text-center" },
+                { 
+                    data: 'aksi', 
+                    name: 'aksi', 
+                    orderable: false, 
+                    searchable: false, 
+                    className: "text-center",
+                    render: function(data, type, row) {
+                        return `<button onclick="uploadKegiatan(${row.id_agenda_anggota})" class="btn btn-primary btn-sm">Upload</button>`;
+                    }
+                },
             ]
         });
     });
 
-    function uploadKegiatan(id_kegiatan) {
+    function uploadKegiatan(id_agenda_anggota) {
         // Reset form and error message
         $('#uploadForm')[0].reset();
         $('#uploadError').text('');
         
-        // Set the kegiatan ID in hidden input
-        $('#id_kegiatan').val(id_kegiatan);
+        // Set the agenda anggota ID in hidden input
+        $('#id_agenda_anggota').val(id_agenda_anggota);
         
         // Show modal
         $('#uploadModal').modal('show');
@@ -105,14 +114,13 @@
         var formData = new FormData($('#uploadForm')[0]);
 
         $.ajax({
-            url: "{{ route('kegiatan.upload_dokumen') }}", // Ensure you have this route defined
+            url: "{{ route('kegiatan.upload_dokumen') }}",
             type: 'POST',
             data: formData,
             processData: false,
             contentType: false,
             success: function(response) {
                 if (response.status) {
-                    // Show success message
                     Swal.fire({
                         icon: 'success',
                         title: 'Berhasil!',
@@ -130,19 +138,16 @@
                 }
             },
             error: function(xhr) {
-                // Handle validation errors
                 if (xhr.status === 400) {
                     var errors = xhr.responseJSON.errors;
                     var errorMessage = '';
                     
-                    // Compile error messages
                     $.each(errors, function(field, messages) {
                         errorMessage += messages.join('\n') + '\n';
                     });
 
                     $('#uploadError').text(errorMessage);
                 } else {
-                    // Generic error
                     $('#uploadError').text('Terjadi kesalahan saat upload');
                 }
             }
