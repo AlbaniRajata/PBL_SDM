@@ -16,12 +16,10 @@
                 </div>
                 <div class="form-group">
                     <label>Jenis Kegiatan</label>
-                    <select name="jenis_kegiatan" id="jenis_kegiatan" class="form-control" required>
-                        <option value="">- Pilih Jenis Kegiatan -</option>
-                        <option value="Kegiatan Non-JTI">Kegiatan Non-JTI</option>
-                    </select>
+                    <!-- Readonly Input Field with Static Value -->
+                    <input type="text" name="jenis_kegiatan" id="jenis_kegiatan" class="form-control" value="Kegiatan Non-JTI" readonly required>
                     <small id="error-jenis_kegiatan" class="error-text form-text text-danger"></small>
-                </div>
+                </div>                                                             
                 <div class="form-group">
                     <label>Deskripsi</label>
                     <textarea name="deskripsi" id="deskripsi" class="form-control" required></textarea>
