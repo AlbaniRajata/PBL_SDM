@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\DB;
 use carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 
 
 class KegiatanController extends Controller
@@ -1181,23 +1182,46 @@ class KegiatanController extends Controller
     // function upload surat tugas
     public function uploadSurat(Request $request)
     {
-        // Validasi file yang diupload
-        $request->validate([
-            'file' => 'required|mimes:pdf,doc,docx,xls,xlsx|max:2048', // Batasi tipe dan ukuran file
-            'id_kegiatan' => 'required|exists:t_kegiatan,id_kegiatan', // Pastikan id kegiatan valid
-        ]);
-
-        // Periksa apakah file ada
-        if ($request->hasFile('file')) {
-            $file = $request->file('file');
-            
-            // Buat nama file unik
-            $filename = time() . '_' . $file->getClientOriginalName();
-            
-            // Simpan file di direktori 'public/dokumen'
-            $path = $file->storeAs('dokumen', $filename, 'public');
-            
-            try {
+        try {
+            // Validasi file yang diupload dengan pesan error khusus
+            $validator = Validator::make($request->all(), [
+                'file' => [
+                    'required',
+                    'file',
+                    function ($attribute, $value, $fail) {
+                        // Cek ekstensi file
+                        $allowedExtensions = ['pdf', 'doc', 'docx', 'xls', 'xlsx'];
+                        $extension = $value->getClientOriginalExtension();
+                        if (!in_array(strtolower($extension), $allowedExtensions)) {
+                            $fail('Tipe file tidak diizinkan. Hanya file PDF, DOC, DOCX, XLS, dan XLSX yang diperbolehkan.');
+                        }
+        
+                        // Cek ukuran file (2MB = 2048 KB)
+                        $maxFileSize = 2048; // dalam KB
+                        $fileSize = $value->getSize() / 1024; // konversi ke KB
+                        if ($fileSize > $maxFileSize) {
+                            $fail('Ukuran file terlalu besar. Maksimal 2 MB.');
+                        }
+                    },
+                ],
+                'id_kegiatan' => 'required|exists:t_kegiatan,id_kegiatan',
+            ]);
+        
+            // Jika validasi gagal, lempar exception
+            if ($validator->fails()) {
+                throw new ValidationException($validator);
+            }
+        
+            // Periksa apakah file ada
+            if ($request->hasFile('file')) {
+                $file = $request->file('file');
+                
+                // Buat nama file unik
+                $filename = time() . '_' . $file->getClientOriginalName();
+                
+                // Simpan file di direktori 'public/dokumen'
+                $path = $file->storeAs('dokumen', $filename, 'public');
+                
                 // Buat record dokumen di database
                 $dokumen = DokumenModel::create([
                     'id_kegiatan' => $request->id_kegiatan,
@@ -1206,17 +1230,38 @@ class KegiatanController extends Controller
                     'file_path' => $path,
                     'progress' => 0, // Progress awal
                 ]);
-
-                // Kembalikan respon sukses
-                return back()->with('success', 'File berhasil diupload.');
-            } catch (\Exception $e) {
-                // Tangani kesalahan jika penyimpanan gagal
-                return back()->with('error', 'Gagal mengupload file: ' . $e->getMessage());
+        
+                // Kembalikan respon sukses dengan SweetAlert
+                return back()->with('swal', [
+                    'title' => 'Berhasil!',
+                    'text' => 'File berhasil diupload.',
+                    'icon' => 'success'
+                ]);
             }
+        
+            // Jika tidak ada file
+            return back()->with('swal', [
+                'title' => 'Gagal!',
+                'text' => 'Tidak ada file yang diupload.',
+                'icon' => 'error'
+            ]);
+        
+        } catch (ValidationException $e) {
+            // Tangani kesalahan validasi dengan SweetAlert
+            $errors = $e->validator->errors()->all();
+            return back()->with('swal', [
+                'title' => 'Validasi Gagal!',
+                'text' => implode('\n', $errors),
+                'icon' => 'error'
+            ]);
+        } catch (\Exception $e) {
+            // Tangani kesalahan umum dengan SweetAlert
+            return back()->with('swal', [
+                'title' => 'Gagal!',
+                'text' => 'Gagal mengupload file: ' . $e->getMessage(),
+                'icon' => 'error'
+            ]);
         }
-
-        // Jika tidak ada file
-        return back()->with('error', 'Tidak ada file yang diupload.');
     }
 
     public function downloadSurat($id_dokumen)

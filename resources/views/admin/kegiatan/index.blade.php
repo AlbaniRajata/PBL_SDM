@@ -61,6 +61,13 @@
         
         @push('js')
         <script>
+                @if(session('swal'))
+                    Swal.fire({
+                        title: "{{ session('swal')['title'] }}",
+                        text: "{{ session('swal')['text'] }}",
+                        icon: "{{ session('swal')['icon'] }}"
+                    });
+                @endif
             $.ajaxSetup({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
