@@ -12,6 +12,9 @@ use App\Http\Controllers\Api\KegiatanPimpinanController;
 use App\Http\Controllers\Api\DashboardDosenController;
 use App\Http\Controllers\Api\KegiatanDosenController;
 use App\Http\Controllers\API\StatistikDosenController;
+use App\Http\Controllers\Api\AgendaPICController;
+use App\Http\Controllers\Api\DosenController;
+use App\Http\Controllers\Api\AgendaAnggotaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -64,6 +67,10 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/total-kegiatan-non-jti', [DashboardAdminController::class, 'getTotalKegiatanNonJTI']);
         Route::get('/kalender', [DashboardAdminController::class, 'getKalender']);
     });
+    //Route untuk kalender admin
+    Route::prefix('kalender-admin')->group(function () {
+        Route::get('/kegiatan', [KegiatanAdminController::class, 'getKegiatanKalender']);
+    });
 });
 
 Route::middleware('auth:api')->group(function () {
@@ -84,23 +91,68 @@ Route::middleware('auth:api')->group(function () {
     Route::prefix('statistik-pimpinan')->group(function () {
         Route::get('/', [StatistikAdminController::class, 'index']);
     });
+    //Route untuk kalender pimpinan
+    Route::prefix('kalender-pimpinan')->group(function () {
+        Route::get('/kegiatan', [KegiatanPimpinanController::class, 'getKegiatanKalender']);
+    });
 });
 
 Route::middleware('auth:api')->group(function () {
     //Routes untuk Kegiatan Dosen
     Route::prefix('kegiatan-dosen')->group(function () {
+        Route::get('/anggota', [KegiatanDosenController::class, 'indexAnggota']);
         Route::get('/jti', [KegiatanDosenController::class, 'indexJTI']);
         Route::get('/non-jti', [KegiatanDosenController::class, 'indexNonJTI']);
         Route::get('/', [KegiatanDosenController::class, 'index']);
         Route::get('/{id}', [KegiatanDosenController::class, 'show']);
     });
-
-    //Routes untuk Dashboard Dosen
+    //Routes untuk Dashboard Dosen, PIC
     Route::prefix('dashboard-dosen')->group(function () {
         Route::get('/total-kegiatan', [DashboardDosenController::class, 'getTotalKegiatan']);
+        Route::get('/pic', [DashboardDosenController::class, 'indexPIC']);
+        Route::get('/anggota', [DashboardDosenController::class, 'indexAnggota']);
     });
-
+    //Routes untuk Statistik Dosen
     Route::prefix('statistik-dosen')->group(function () {
         Route::get('/', [StatistikDosenController::class, 'index']);
+    });
+    //Routes untuk Jabatan Kegiatan
+    Route::prefix('dosen-jabatan')->group(function () {
+        Route::post('/', [DosenController::class, 'getJabatanKegiatan']);
+    });
+    //Routes untuk Kalender Dosen
+    Route::prefix('kalender-dosen')->group(function () {
+        Route::get('/kegiatan', [KegiatanDosenController::class, 'getKegiatanKalenderDosen']);
+    });
+
+    //Routes untuk Kegiatan PIC
+    Route::prefix('pic-kegiatan')->group(function () {
+        Route::get('/', [KegiatanDosenController::class, 'indexPIC']);
+        Route::get('/{id}', [KegiatanDosenController::class, 'show']);
+    });
+    //Routes untuk Agenda Kegiatan PIC
+    Route::prefix('agenda-kegiatan')->group(function () {
+        Route::get('/', [AgendaPICController::class, 'index']);
+        Route::get('/upcoming', [AgendaPICController::class, 'upcoming']);
+        Route::get('/{id_kegiatan}', [AgendaPICController::class, 'show']);
+    });
+    //Routes untuk Kalender PIC
+    Route::prefix('kalender-pic')->group(function () {
+        Route::get('/kegiatan', [KegiatanDosenController::class, 'getKegiatanKalenderPIC']);
+    });
+
+    //Routes untuk Kegiatan Anggota
+    Route::prefix('anggota-kegiatan')->group(function () {
+        Route::get('/', [KegiatanDosenController::class, 'indexAnggota']);
+        Route::get('/{id}', [KegiatanDosenController::class, 'showAnggota']);
+    });
+    //Routes untuk Agenda Kegiatan Anggota
+    Route::prefix('anggota-agenda')->group(function () {
+        Route::get('/', [AgendaAnggotaController::class, 'index']);
+        Route::get('/{id_kegiatan}', [AgendaAnggotaController::class, 'show']);
+    });
+    //Routes untuk Kalender Anggota
+    Route::prefix('kalender-anggota')->group(function () {
+        Route::get('/kegiatan', [KegiatanDosenController::class, 'getKegiatanKalenderAnggota']);
     });
 });

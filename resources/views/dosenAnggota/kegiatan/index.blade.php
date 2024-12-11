@@ -24,6 +24,7 @@
                     <th style="width: 10%;">Tanggal Mulai</th>
                     <th style="width: 10%;">Tanggal Selesai</th>
                     <th style="width: 15%;">Tempat Kegiatan</th>
+                    <th style="width: 10%;">Status (%)</th>
                     <th style="width: 10%;">PIC</th>
                     <th style="width: 10%;">Surat Tugas</th>
                 </tr>
@@ -57,6 +58,7 @@
                 { data: "tanggal_mulai", name: "tanggal_mulai", className: "text-center" },
                 { data: "tanggal_selesai", name: "tanggal_selesai", className: "text-center" },
                 { data: "tempat_acara", name: "tempat_acara", className: "text-center" },
+                { data: "progress", name: "progress", className: "text-center" },
                 { data: "pic", name: "pic", className: "text-center" },
                 {
                     data: "surat_tugas",

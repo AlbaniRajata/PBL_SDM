@@ -11,6 +11,7 @@ use App\Models\AgendaAnggotaModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class KegiatanAdminController extends Controller
 {
@@ -225,6 +226,41 @@ class KegiatanAdminController extends Controller
             return response()->json([
                 'status' => false,
                 'message' => 'Gagal mengambil data jabatan: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function getKegiatanKalender()
+    {
+        try {
+            $kegiatan = KegiatanModel::select(
+                'id_kegiatan',
+                'nama_kegiatan',
+                'tanggal_acara'
+            )
+            ->whereNotNull('tanggal_acara')
+            ->orderBy('tanggal_acara')
+            ->get();
+            
+            $formattedKegiatan = $kegiatan->map(function ($item) {
+                $tanggalAcara = Carbon::parse($item->tanggal_acara)->format('d-m-Y');
+                
+                return [
+                    'id_kegiatan' => $item->id_kegiatan,
+                    'nama_kegiatan' => $item->nama_kegiatan,
+                    'tanggal_acara' => $tanggalAcara,
+                ];
+            });
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Data kegiatan kalender berhasil diambil',
+                'data' => $formattedKegiatan
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Gagal mengambil data kegiatan kalender: ' . $e->getMessage()
             ], 500);
         }
     }

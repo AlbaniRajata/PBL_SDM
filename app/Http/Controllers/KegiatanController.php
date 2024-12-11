@@ -942,20 +942,64 @@ class KegiatanController extends Controller
         return response()->download($filePath)->deleteFileAfterSend(true);
     }
 
-    // function export dosen
     public function exportPdf_dosen()
     {
-        $kegiatan = KegiatanModel::select('id_kegiatan', 'nama_kegiatan', 'deskripsi_kegiatan', 'tanggal_mulai', 'tanggal_selesai', 'tanggal_acara', 'tempat_kegiatan', 'jenis_kegiatan')->get();
+                // Ambil ID pengguna yang sedang login
+                $userId = Auth::id();
+    
+                $kegiatan = DB::table('t_anggota AS anggota')
+                    ->join('t_kegiatan AS k', 'anggota.id_kegiatan', '=', 'k.id_kegiatan')
+                    ->join('t_jabatan_kegiatan AS jk', 'anggota.id_jabatan_kegiatan', '=', 'jk.id_jabatan_kegiatan')
+                    ->select(
+                        'k.nama_kegiatan',
+                        'k.deskripsi_kegiatan', 
+                        'k.tanggal_acara', 
+                        'k.tanggal_mulai',
+                        'k.tanggal_selesai',
+                        'k.tempat_kegiatan', 
+                        'k.jenis_kegiatan', 
+                    )
+                    ->where('anggota.id_user', $userId)
+                    ->get();
+
+        // Load the PDF view with the filtered data
         $pdf = Pdf::loadView('dosen.kegiatan.export_pdf', ['kegiatan' => $kegiatan]);
+
+        // Set PDF paper size and orientation
         $pdf->setPaper('a4', 'portrait');
         $pdf->setOption("isRemoteEnabled", true);
+
+        // Render the PDF
         $pdf->render();
+
+        // Return the generated PDF
         return $pdf->stream('Data Kegiatan ' . date('Y-m-d H:i:s') . '.pdf');
     }
 
+
     public function exportExcel_dosen()
     {
-        $kegiatan = DB::table('t_kegiatan')->get();
+                        // Ambil ID pengguna yang sedang login
+                        $userId = Auth::id();
+
+                         // Ambil nama dosen dari tabel users berdasarkan user_id
+    $user = DB::table('t_user')->where('id_user', $userId)->first();
+    $userName = $user->username; // Assuming 'name' is the column storing the user's name
+    
+                        $kegiatan = DB::table('t_anggota AS anggota')
+                            ->join('t_kegiatan AS k', 'anggota.id_kegiatan', '=', 'k.id_kegiatan')
+                            ->join('t_jabatan_kegiatan AS jk', 'anggota.id_jabatan_kegiatan', '=', 'jk.id_jabatan_kegiatan')
+                            ->select(
+                                'k.nama_kegiatan',
+                                'k.deskripsi_kegiatan', 
+                                'k.tanggal_acara', 
+                                'k.tanggal_mulai',
+                                'k.tanggal_selesai',
+                                'k.tempat_kegiatan', 
+                                'k.jenis_kegiatan', 
+                            )
+                            ->where('anggota.id_user', $userId)
+                            ->get();
 
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
@@ -998,7 +1042,7 @@ class KegiatanController extends Controller
 
         // Write the file
         $writer = new Xlsx($spreadsheet);
-        $fileName = 'Daftar_Kegiatan_' . date('Y-m-d_H:i:s') . '.xlsx';
+        $fileName = 'daftar_kegiatan_dosen' . strtolower(str_replace(' ', '_', $userName)) . '.xlsx';
 
         // Redirect output to a client’s web browser (Excel2007)
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
