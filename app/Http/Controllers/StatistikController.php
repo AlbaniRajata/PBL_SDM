@@ -18,20 +18,42 @@ class StatistikController extends Controller
             'list' => ['Home', 'Statistik'],
         ];
         $activeMenu = 'statistik admin';
-
+    
         $poinDosen = DB::table('t_user')
             ->leftJoin('t_anggota', 't_user.id_user', '=', 't_anggota.id_user')
+            ->leftJoin('t_kegiatan', 't_anggota.id_kegiatan', '=', 't_kegiatan.id_kegiatan')
             ->leftJoin('t_jabatan_kegiatan', 't_anggota.id_jabatan_kegiatan', '=', 't_jabatan_kegiatan.id_jabatan_kegiatan')
             ->select(
                 't_user.nama',
-                DB::raw('COUNT(t_anggota.id_kegiatan) as total_kegiatan'),
+                't_user.id_user',
+                DB::raw('COUNT(DISTINCT t_anggota.id_kegiatan) as total_kegiatan'),
                 DB::raw('COALESCE(SUM(t_jabatan_kegiatan.poin), 0) as total_poin')
             )
             ->where('t_user.level', 'dosen')
-            ->groupBy('t_user.nama')
+            ->groupBy('t_user.id_user', 't_user.nama')
             ->get();
-
-        return view('admin.statistik.index', compact('breadcrumb', 'activeMenu', 'poinDosen'));
+    
+        // Fetch detailed activities for each lecturer
+        $dosenKegiatan = DB::table('t_user')
+            ->leftJoin('t_anggota', 't_user.id_user', '=', 't_anggota.id_user')
+            ->leftJoin('t_kegiatan', 't_anggota.id_kegiatan', '=', 't_kegiatan.id_kegiatan')
+            ->leftJoin('t_jabatan_kegiatan', 't_anggota.id_jabatan_kegiatan', '=', 't_jabatan_kegiatan.id_jabatan_kegiatan')
+            ->select(
+                't_user.id_user',
+                't_user.nama',
+                't_kegiatan.nama_kegiatan',
+                't_kegiatan.tanggal_acara',
+                't_kegiatan.jenis_kegiatan',
+                't_jabatan_kegiatan.jabatan_nama',
+                't_jabatan_kegiatan.poin'
+            )
+            ->where('t_user.level', 'dosen')
+            ->orderBy('t_user.nama')
+            ->orderBy('t_kegiatan.tanggal_acara')
+            ->get()
+            ->groupBy('id_user');
+    
+        return view('admin.statistik.index', compact('breadcrumb', 'activeMenu', 'poinDosen', 'dosenKegiatan'));
     }
 
     public function pimpinan()
@@ -41,20 +63,42 @@ class StatistikController extends Controller
             'list' => ['Home', 'Statistik'],
         ];
         $activeMenu = 'statistik pimpinan';
-
+    
         $poinDosen = DB::table('t_user')
             ->leftJoin('t_anggota', 't_user.id_user', '=', 't_anggota.id_user')
+            ->leftJoin('t_kegiatan', 't_anggota.id_kegiatan', '=', 't_kegiatan.id_kegiatan')
             ->leftJoin('t_jabatan_kegiatan', 't_anggota.id_jabatan_kegiatan', '=', 't_jabatan_kegiatan.id_jabatan_kegiatan')
             ->select(
                 't_user.nama',
-                DB::raw('COUNT(t_anggota.id_kegiatan) as total_kegiatan'),
+                't_user.id_user',
+                DB::raw('COUNT(DISTINCT t_anggota.id_kegiatan) as total_kegiatan'),
                 DB::raw('COALESCE(SUM(t_jabatan_kegiatan.poin), 0) as total_poin')
             )
             ->where('t_user.level', 'dosen')
-            ->groupBy('t_user.nama')
+            ->groupBy('t_user.id_user', 't_user.nama')
             ->get();
-
-        return view('pimpinan.statistik.index', compact('breadcrumb', 'activeMenu', 'poinDosen'));
+    
+        // Fetch detailed activities for each lecturer
+        $dosenKegiatan = DB::table('t_user')
+            ->leftJoin('t_anggota', 't_user.id_user', '=', 't_anggota.id_user')
+            ->leftJoin('t_kegiatan', 't_anggota.id_kegiatan', '=', 't_kegiatan.id_kegiatan')
+            ->leftJoin('t_jabatan_kegiatan', 't_anggota.id_jabatan_kegiatan', '=', 't_jabatan_kegiatan.id_jabatan_kegiatan')
+            ->select(
+                't_user.id_user',
+                't_user.nama',
+                't_kegiatan.nama_kegiatan',
+                't_kegiatan.tanggal_acara',
+                't_kegiatan.jenis_kegiatan',
+                't_jabatan_kegiatan.jabatan_nama',
+                't_jabatan_kegiatan.poin'
+            )
+            ->where('t_user.level', 'dosen')
+            ->orderBy('t_user.nama')
+            ->orderBy('t_kegiatan.tanggal_acara')
+            ->get()
+            ->groupBy('id_user');
+    
+        return view('pimpinan.statistik.index', compact('breadcrumb', 'activeMenu', 'poinDosen', 'dosenKegiatan'));
     }
 
     public function dosen()
@@ -84,68 +128,148 @@ class StatistikController extends Controller
     }
 
     public function exportPdf()
-    {
-        // Dapatkan level pengguna yang sedang login
-        $userLevel = Auth::user()->level;
+{
+    // Dapatkan level pengguna yang sedang login
+    $userLevel = Auth::user()->level;
 
-        // Siapkan data berdasarkan level pengguna
-        if ($userLevel === 'admin') {
-            $data = DB::table('t_user')
-                ->leftJoin('t_anggota', 't_user.id_user', '=', 't_anggota.id_user')
-                ->leftJoin('t_jabatan_kegiatan', 't_anggota.id_jabatan_kegiatan', '=', 't_jabatan_kegiatan.id_jabatan_kegiatan')
-                ->select(
-                    't_user.nama',
-                    DB::raw('COUNT(t_anggota.id_kegiatan) as total_kegiatan'),
-                    DB::raw('COALESCE(SUM(t_jabatan_kegiatan.poin), 0) as total_poin')
-                )
-                ->where('t_user.level', 'dosen')
-                ->groupBy('t_user.nama')
-                ->get();
+    // Siapkan data berdasarkan level pengguna
+    if ($userLevel === 'admin' || $userLevel === 'pimpinan') {
+        $poinDosen = DB::table('t_user')
+            ->leftJoin('t_anggota', 't_user.id_user', '=', 't_anggota.id_user')
+            ->leftJoin('t_kegiatan', 't_anggota.id_kegiatan', '=', 't_kegiatan.id_kegiatan')
+            ->leftJoin('t_jabatan_kegiatan', 't_anggota.id_jabatan_kegiatan', '=', 't_jabatan_kegiatan.id_jabatan_kegiatan')
+            ->select(
+                't_user.nama',
+                't_user.id_user',
+                DB::raw('COUNT(DISTINCT t_anggota.id_kegiatan) as total_kegiatan'),
+                DB::raw('COALESCE(SUM(t_jabatan_kegiatan.poin), 0) as total_poin')
+            )
+            ->where('t_user.level', 'dosen')
+            ->groupBy('t_user.id_user', 't_user.nama')
+            ->get();
 
-            $view = 'admin.statistik.export_pdf';
-            $totalPoin = $data->sum('total_poin');
+        $dosenKegiatan = DB::table('t_user')
+            ->leftJoin('t_anggota', 't_user.id_user', '=', 't_anggota.id_user')
+            ->leftJoin('t_kegiatan', 't_anggota.id_kegiatan', '=', 't_kegiatan.id_kegiatan')
+            ->leftJoin('t_jabatan_kegiatan', 't_anggota.id_jabatan_kegiatan', '=', 't_jabatan_kegiatan.id_jabatan_kegiatan')
+            ->select(
+                't_user.id_user',
+                't_user.nama',
+                't_kegiatan.nama_kegiatan',
+                't_kegiatan.tanggal_acara',
+                't_kegiatan.jenis_kegiatan',
+                't_jabatan_kegiatan.jabatan_nama',
+                't_jabatan_kegiatan.poin'
+            )
+            ->where('t_user.level', 'dosen')
+            ->orderBy('t_user.nama')
+            ->orderBy('t_kegiatan.tanggal_acara')
+            ->get()
+            ->groupBy('id_user');
+
+
+        // Tentukan view berdasarkan user level
+        $view = $userLevel === 'admin' ? 'admin.statistik.export_pdf' : 'pimpinan.statistik.export_pdf';
+
+        // Render PDF
+        $pdf = PDF::loadView($view, [   
+            'poinDosen' => $poinDosen,
+            'dosenKegiatan' => $dosenKegiatan
+        ]);
         } elseif ($userLevel === 'pimpinan') {
-            $data = DB::table('t_user')
-                ->leftJoin('t_anggota', 't_user.id_user', '=', 't_anggota.id_user')
-                ->leftJoin('t_jabatan_kegiatan', 't_anggota.id_jabatan_kegiatan', '=', 't_jabatan_kegiatan.id_jabatan_kegiatan')
-                ->select(
-                    't_user.nama',
-                    DB::raw('COUNT(t_anggota.id_kegiatan) as total_kegiatan'),
-                    DB::raw('COALESCE(SUM(t_jabatan_kegiatan.poin), 0) as total_poin')
-                )
-                ->where('t_user.level', 'dosen')
-                ->groupBy('t_user.nama')
-                ->get();
-            $totalPoin = $data->sum('total_poin');
-            $view = 'pimpinan.statistik.export_pdf';
+            // Similar logic to admin
+            $poinDosen = DB::table('t_user')
+            ->leftJoin('t_anggota', 't_user.id_user', '=', 't_anggota.id_user')
+            ->leftJoin('t_kegiatan', 't_anggota.id_kegiatan', '=', 't_kegiatan.id_kegiatan')
+            ->leftJoin('t_jabatan_kegiatan', 't_anggota.id_jabatan_kegiatan', '=', 't_jabatan_kegiatan.id_jabatan_kegiatan')
+            ->select(
+                't_user.nama',
+                't_user.id_user',
+                DB::raw('COUNT(DISTINCT t_anggota.id_kegiatan) as total_kegiatan'),
+                DB::raw('COALESCE(SUM(t_jabatan_kegiatan.poin), 0) as total_poin')
+            )
+            ->where('t_user.level', 'dosen')
+            ->groupBy('t_user.id_user', 't_user.nama')
+            ->get();
+
+        $dosenKegiatan = DB::table('t_user')
+            ->leftJoin('t_anggota', 't_user.id_user', '=', 't_anggota.id_user')
+            ->leftJoin('t_kegiatan', 't_anggota.id_kegiatan', '=', 't_kegiatan.id_kegiatan')
+            ->leftJoin('t_jabatan_kegiatan', 't_anggota.id_jabatan_kegiatan', '=', 't_jabatan_kegiatan.id_jabatan_kegiatan')
+            ->select(
+                't_user.id_user',
+                't_user.nama',
+                't_kegiatan.nama_kegiatan',
+                't_kegiatan.tanggal_acara',
+                't_kegiatan.jenis_kegiatan',
+                't_jabatan_kegiatan.jabatan_nama',
+                't_jabatan_kegiatan.poin'
+            )
+            ->where('t_user.level', 'dosen')
+            ->orderBy('t_user.nama')
+            ->orderBy('t_kegiatan.tanggal_acara')
+            ->get()
+            ->groupBy('id_user');
+
+
+        // Tentukan view berdasarkan user level
+        $view = $userLevel === 'pimpinan' ? 'admin.statistik.export_pdf' : 'pimpinan.statistik.export_pdf';
+
+        // Render PDF
+        $pdf = PDF::loadView($view, [   
+            'poinDosen' => $poinDosen,
+            'dosenKegiatan' => $dosenKegiatan
+        ]);
+
         } elseif ($userLevel === 'dosen') {
             $userId = Auth::id();
-
-            $data = DB::table('t_user')
-                ->join('t_anggota', 't_user.id_user', '=', 't_anggota.id_user')
-                ->join('t_jabatan_kegiatan', 't_anggota.id_jabatan_kegiatan', '=', 't_jabatan_kegiatan.id_jabatan_kegiatan')
-                ->join('t_kegiatan', 't_anggota.id_kegiatan', '=', 't_kegiatan.id_kegiatan')
+    
+            $poinDosen = DB::table('t_user')
+                ->leftJoin('t_anggota', 't_user.id_user', '=', 't_anggota.id_user')
+                ->leftJoin('t_kegiatan', 't_anggota.id_kegiatan', '=', 't_kegiatan.id_kegiatan')
+                ->leftJoin('t_jabatan_kegiatan', 't_anggota.id_jabatan_kegiatan', '=', 't_jabatan_kegiatan.id_jabatan_kegiatan')
                 ->select(
                     't_user.nama',
-                    't_jabatan_kegiatan.jabatan_nama as jabatan',
-                    't_kegiatan.nama_kegiatan as judul_kegiatan',
+                    't_user.id_user',
+                    DB::raw('COUNT(DISTINCT t_anggota.id_kegiatan) as total_kegiatan'),
+                    DB::raw('COALESCE(SUM(t_jabatan_kegiatan.poin), 0) as total_poin')
+                )
+                ->where('t_user.level', 'dosen')
+                ->where('t_user.id_user', $userId)
+                ->groupBy('t_user.id_user', 't_user.nama')
+                ->get();
+    
+            $dosenKegiatan = DB::table('t_user')
+                ->leftJoin('t_anggota', 't_user.id_user', '=', 't_anggota.id_user')
+                ->leftJoin('t_kegiatan', 't_anggota.id_kegiatan', '=', 't_kegiatan.id_kegiatan')
+                ->leftJoin('t_jabatan_kegiatan', 't_anggota.id_jabatan_kegiatan', '=', 't_jabatan_kegiatan.id_jabatan_kegiatan')
+                ->select(
+                    't_user.id_user',
+                    't_user.nama',
+                    't_kegiatan.nama_kegiatan',
+                    't_kegiatan.tanggal_acara',
+                    't_kegiatan.jenis_kegiatan',
+                    't_jabatan_kegiatan.jabatan_nama',
                     't_jabatan_kegiatan.poin'
                 )
+                ->where('t_user.level', 'dosen')
                 ->where('t_user.id_user', $userId)
-                ->get();
-
-            $totalPoin = $data->sum('poin'); // Calculate total points for dosen
+                ->orderBy('t_kegiatan.tanggal_acara')
+                ->get()
+                ->groupBy('id_user');
+    
             $view = 'dosen.statistik.export_pdf';
+            $totalPoin = $poinDosen->sum('total_poin');
         } else {
             return redirect()->back()->with('error', 'Level pengguna tidak dikenali.');
         }
-
+    
         // Generate PDF
-        $pdf = Pdf::loadView($view, compact('data', 'totalPoin'));
+        $pdf = Pdf::loadView($view, compact('poinDosen', 'dosenKegiatan'));
         $pdf->setPaper('a4', 'portrait');
         $pdf->setOption("isRemoteEnabled", true);
         $pdf->render();
-
+    
         // Pratinjau file PDF di browser
         return $pdf->stream('Statistik_' . ucfirst($userLevel) . '_' . date('Y-m-d_H:i:s') . '.pdf');
     }
@@ -154,98 +278,175 @@ class StatistikController extends Controller
     {
         // Dapatkan level pengguna yang sedang login
         $userLevel = Auth::user()->level;
-
+    
         // Siapkan data berdasarkan level pengguna
         if ($userLevel === 'admin' || $userLevel === 'pimpinan') {
-            $data = DB::table('t_user')
+            $poinDosen = DB::table('t_user')
                 ->leftJoin('t_anggota', 't_user.id_user', '=', 't_anggota.id_user')
+                ->leftJoin('t_kegiatan', 't_anggota.id_kegiatan', '=', 't_kegiatan.id_kegiatan')
                 ->leftJoin('t_jabatan_kegiatan', 't_anggota.id_jabatan_kegiatan', '=', 't_jabatan_kegiatan.id_jabatan_kegiatan')
                 ->select(
                     't_user.nama',
-                    DB::raw('COUNT(t_anggota.id_kegiatan) as total_kegiatan'),
+                    't_user.id_user',
+                    DB::raw('COUNT(DISTINCT t_anggota.id_kegiatan) as total_kegiatan'),
                     DB::raw('COALESCE(SUM(t_jabatan_kegiatan.poin), 0) as total_poin')
                 )
                 ->where('t_user.level', 'dosen')
-                ->groupBy('t_user.nama')
+                ->groupBy('t_user.id_user', 't_user.nama')
                 ->get();
-        } elseif ($userLevel === 'dosen') {
-            $userId = Auth::id();
-
-            $data = DB::table('t_user')
-                ->join('t_anggota', 't_user.id_user', '=', 't_anggota.id_user')
-                ->join('t_jabatan_kegiatan', 't_anggota.id_jabatan_kegiatan', '=', 't_jabatan_kegiatan.id_jabatan_kegiatan')
-                ->join('t_kegiatan', 't_anggota.id_kegiatan', '=', 't_kegiatan.id_kegiatan')
+    
+            $dosenKegiatan = DB::table('t_user')
+                ->leftJoin('t_anggota', 't_user.id_user', '=', 't_anggota.id_user')
+                ->leftJoin('t_kegiatan', 't_anggota.id_kegiatan', '=', 't_kegiatan.id_kegiatan')
+                ->leftJoin('t_jabatan_kegiatan', 't_anggota.id_jabatan_kegiatan', '=', 't_jabatan_kegiatan.id_jabatan_kegiatan')
                 ->select(
+                    't_user.id_user',
                     't_user.nama',
-                    't_jabatan_kegiatan.jabatan_nama as jabatan',
-                    't_kegiatan.nama_kegiatan as judul_kegiatan',
+                    't_kegiatan.nama_kegiatan',
+                    't_kegiatan.tanggal_acara',
+                    't_kegiatan.jenis_kegiatan',
+                    't_jabatan_kegiatan.jabatan_nama',
                     't_jabatan_kegiatan.poin'
                 )
+                ->where('t_user.level', 'dosen')
+                ->orderBy('t_user.nama')
+                ->orderBy('t_kegiatan.tanggal_acara')
+                ->get()
+                ->groupBy('id_user');
+        } elseif ($userLevel === 'dosen') {
+            $userId = Auth::id();
+    
+            $poinDosen = DB::table('t_user')
+                ->leftJoin('t_anggota', 't_user.id_user', '=', 't_anggota.id_user')
+                ->leftJoin('t_kegiatan', 't_anggota.id_kegiatan', '=', 't_kegiatan.id_kegiatan')
+                ->leftJoin('t_jabatan_kegiatan', 't_anggota.id_jabatan_kegiatan', '=', 't_jabatan_kegiatan.id_jabatan_kegiatan')
+                ->select(
+                    't_user.nama',
+                    't_user.id_user',
+                    DB::raw('COUNT(DISTINCT t_anggota.id_kegiatan) as total_kegiatan'),
+                    DB::raw('COALESCE(SUM(t_jabatan_kegiatan.poin), 0) as total_poin')
+                )
+                ->where('t_user.level', 'dosen')
                 ->where('t_user.id_user', $userId)
+                ->groupBy('t_user.id_user', 't_user.nama')
                 ->get();
+    
+            $dosenKegiatan = DB::table('t_user')
+                ->leftJoin('t_anggota', 't_user.id_user', '=', 't_anggota.id_user')
+                ->leftJoin('t_kegiatan', 't_anggota.id_kegiatan', '=', 't_kegiatan.id_kegiatan')
+                ->leftJoin('t_jabatan_kegiatan', 't_anggota.id_jabatan_kegiatan', '=', 't_jabatan_kegiatan.id_jabatan_kegiatan')
+                ->select(
+                    't_user.id_user',
+                    't_user.nama',
+                    't_kegiatan.nama_kegiatan',
+                    't_kegiatan.tanggal_acara',
+                    't_kegiatan.jenis_kegiatan',
+                    't_jabatan_kegiatan.jabatan_nama',
+                    't_jabatan_kegiatan.poin'
+                )
+                ->where('t_user.level', 'dosen')
+                ->where('t_user.id_user', $userId)
+                ->orderBy('t_kegiatan.tanggal_acara')
+                ->get()
+                ->groupBy('id_user');
         } else {
             return redirect()->back()->with('error', 'Level pengguna tidak dikenali.');
         }
-
+    
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet(); // Get the active sheet
-
+    
         // Set Header Columns
         if ($userLevel === 'admin' || $userLevel === 'pimpinan') {
             $sheet->setCellValue('A1', 'No');
             $sheet->setCellValue('B1', 'Nama');
             $sheet->setCellValue('C1', 'Total Kegiatan');
             $sheet->setCellValue('D1', 'Total Poin');
+            $sheet->setCellValue('E1', 'Detail Kegiatan');
+        
+            // Make header bold
+            $sheet->getStyle('A1:E1')->getFont()->setBold(true);
+        
+            $no = 1;
+            $row = 2;
+            $grandTotalPoin = 0;
+        
+            foreach ($poinDosen as $dosen) {
+                // Calculate total points for this specific user
+                $userTotalPoin = 0;
+                $activitiesDetail = '';
+        
+                if (isset($dosenKegiatan[$dosen->id_user])) {
+                    foreach ($dosenKegiatan[$dosen->id_user] as $kegiatan) {
+                        $activitiesDetail .= sprintf(
+                            "%s (%s) - %s [%s poin]\n",
+                            $kegiatan->nama_kegiatan,
+                            $kegiatan->jenis_kegiatan,
+                            $kegiatan->tanggal_acara,
+                            $kegiatan->poin
+                        );
+                        
+                        // Sum points for this specific user
+                        $userTotalPoin += $kegiatan->poin;
+                    }
+                }
+        
+                $sheet->setCellValue('A' . $row, $no);
+                $sheet->setCellValue('B' . $row, $dosen->nama);
+                $sheet->setCellValue('C' . $row, $dosen->total_kegiatan);
+                $sheet->setCellValue('D' . $row, $userTotalPoin); // Use calculated user points
+                $sheet->setCellValue('E' . $row, $activitiesDetail);
+        
+                $grandTotalPoin += $userTotalPoin;
+                $row++;
+                $no++;
+            }
         } elseif ($userLevel === 'dosen') {
             $sheet->setCellValue('A1', 'No');
-            $sheet->setCellValue('B1', 'Nama');
-            $sheet->setCellValue('C1', 'Jabatan');
-            $sheet->setCellValue('D1', 'Nama Kegiatan');
-            $sheet->setCellValue('E1', 'Poin');
-        }
-
-        // Make header bold
-        $sheet->getStyle('A1:E1')->getFont()->setBold(true);
-
-        $no = 1;
-        $row = 2;
-        $totalPoin = 0;
-
-        foreach ($data as $item) {
-            $sheet->setCellValue('A' . $row, $no);
-            $sheet->setCellValue('B' . $row, $item->nama);
-            if ($userLevel === 'admin' || $userLevel === 'pimpinan') {
-                $sheet->setCellValue('C' . $row, $item->total_kegiatan);
-                $sheet->setCellValue('D' . $row, $item->total_poin);
-            } elseif ($userLevel === 'dosen') {
-                $sheet->setCellValue('C' . $row, $item->jabatan);
-                $sheet->setCellValue('D' . $row, $item->judul_kegiatan);
-                $sheet->setCellValue('E' . $row, $item->poin);
-                $totalPoin += $item->poin;
+            $sheet->setCellValue('B1', 'Nama Kegiatan');
+            $sheet->setCellValue('C1', 'Jenis Kegiatan');
+            $sheet->setCellValue('D1', 'Tanggal Acara');
+            $sheet->setCellValue('E1', 'Jabatan');
+            $sheet->setCellValue('F1', 'Poin');
+    
+            // Make header bold
+            $sheet->getStyle('A1:F1')->getFont()->setBold(true);
+    
+            $no = 1;
+            $row = 2;
+            $totalPoin = 0;
+    
+            foreach ($dosenKegiatan[$userId] as $kegiatan) {
+                $sheet->setCellValue('A' . $row, $no);
+                $sheet->setCellValue('B' . $row, $kegiatan->nama_kegiatan);
+                $sheet->setCellValue('C' . $row, $kegiatan->jenis_kegiatan);
+                $sheet->setCellValue('D' . $row, $kegiatan->tanggal_acara);
+                $sheet->setCellValue('E' . $row, $kegiatan->jabatan_nama);
+                $sheet->setCellValue('F' . $row, $kegiatan->poin);
+    
+                $totalPoin += $kegiatan->poin;
+                $row++;
+                $no++;
             }
-            $row++;
-            $no++;
+    
+            // Add total points row
+            $sheet->setCellValue('E' . $row, 'Total Poin');
+            $sheet->setCellValue('F' . $row, $totalPoin);
+            $sheet->getStyle('E' . $row . ':F' . $row)->getFont()->setBold(true);
         }
-
-        // Add total points row for dosen level
-        if ($userLevel === 'dosen') {
-            $sheet->setCellValue('D' . $row, 'Total Poin');
-            $sheet->setCellValue('E' . $row, $totalPoin);
-            $sheet->getStyle('D' . $row . ':E' . $row)->getFont()->setBold(true);
-        }
-
+    
         // Set auto column width for all columns
-        foreach (range('A', 'E') as $columnID) {
+        foreach (range('A', 'F') as $columnID) {
             $sheet->getColumnDimension($columnID)->setAutoSize(true);
         }
-
+    
         // Set sheet title
         $sheet->setTitle('Data Statistik');
-
+    
         // Create writer
         $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
-        $filename = 'Statistik_' . ucfirst($userLevel) . '_' . date('Y-m-d_H-i-s') . '.xlsx';
-
+        $filename = 'Data_Statistik_' . ucfirst($userLevel) . '_' . date('Y-m-d_H-i-s') . '.xlsx';
+    
         // Set headers for download
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment;filename="' . $filename . '"');
@@ -255,7 +456,7 @@ class StatistikController extends Controller
         header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
         header('Cache-Control: cache, must-revalidate');
         header('Pragma: public');
-
+    
         // Save file to output
         $writer->save('php://output');
         exit;

@@ -40,10 +40,11 @@
                 <tr>
                     <th style="width: 5%;" class="text-center">No</th>
                     <th style="width: 15%;" class="text-center">Nama Kegiatan</th>
-                    <th style="width: 15%;" class="text-center">Deskripsi Kegiatan</th>
+                    <th style="width: 30%;" class="text-center">Deskripsi Kegiatan</th>
                     <th style="width: 10%;" class="text-center">Tanggal Acara</th>
-                    <th style="width: 10%;" class="text-center">Tempat Kegiatan</th>
+                    <th style="width: 20%;" class="text-center">Tempat Kegiatan</th>
                     <th style="width: 10%;" class="text-center">Jenis Kegiatan</th>
+                    <th style="width: 10%;" class="text-center">Jabatan</th>
                 </tr>
             </thead>
             <tbody>
@@ -65,12 +66,20 @@ $(document).ready(function() {
             }
         },
         columns: [
-            { data: 'DT_RowIndex', name: 'DT_RowIndex',className: "text-center", orderable: false, searchable: false },
-            { data: 'nama_kegiatan', name: 'nama_kegiatan',className: "text-center" },
-            { data: 'deskripsi_kegiatan', name: 'deskripsi_kegiatan',className: "text-center" },
-            { data: 'tanggal_acara', name: 'tanggal_acara',className: "text-center" },
-            { data: 'tempat_kegiatan', name: 'tempat_kegiatan',className: "text-center" },
-            { data: 'jenis_kegiatan', name: 'jenis_kegiatan',className: "text-center" }
+            { data: 'DT_RowIndex', name: 'DT_RowIndex', className: "text-center", orderable: false, searchable: false },
+            { data: 'nama_kegiatan', name: 'nama_kegiatan', className: "text-center" },
+            { data: 'deskripsi_kegiatan', name: 'deskripsi_kegiatan', className: "text-center" },
+            { data: 'tanggal_acara', name: 'tanggal_acara', className: "text-center" },
+            { data: 'tempat_kegiatan', name: 'tempat_kegiatan', className: "text-center" },
+            { data: 'jenis_kegiatan', name: 'jenis_kegiatan', className: "text-center" },
+            { 
+                data: 'jabatan_nama', 
+                name: 'jabatan_nama', 
+                className: "text-center",
+                render: function(data, type, row) {
+                    return data || '-';
+                }
+            }
         ]
     });
 

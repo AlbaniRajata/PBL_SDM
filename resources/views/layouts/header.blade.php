@@ -72,7 +72,7 @@
                     <a href="{{ url('dosenAnggota/kegiatan') }}" class="dropdown-item">
                         <i class="fas fa-users mr-2"></i> Masuk sebagai Anggota
                     </a>
-                    @if ($activeMenu == 'kegiatan pic' || $activeMenu == 'kegiatan anggota' || $activeMenu == 'statistik pic' || $activeMenu == 'statistik anggota' || $activeMenu == 'progres kegiatan pic' || $activeMenu == 'agenda Kegiatan' || $activeMenu == 'agenda anggota')
+                    @if ($activeMenu == 'kegiatan pic' || $activeMenu == 'kegiatan anggota' || $activeMenu == 'statistik pic' || $activeMenu == 'statistik anggota' || $activeMenu == 'progres kegiatan pic' || $activeMenu == 'agenda kegiatan' || $activeMenu == 'agenda anggota')
                         <div class="dropdown-divider"></div>
                         <a href="{{ url('dosen/kegiatan/jti') }}" class="dropdown-item">
                             <i class="fas fa-arrow-left mr-2"></i> Kembali ke Dosen

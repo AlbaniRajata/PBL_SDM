@@ -111,6 +111,7 @@
               <p>Kegiatan</p>
             </a>
           </li>
+          <li class="nav-header">Statistik</li>
           <li class="nav-item">
             <a href="{{ url('pimpinan/statistik')}}" class="nav-link {{($activeMenu == 'statistik pimpinan')? 'active' : ''}}">
               <i class="nav-icon fas fa-chart-simple"></i>

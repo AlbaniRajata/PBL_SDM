@@ -114,23 +114,30 @@ class KegiatanController extends Controller
 
     public function data(Request $request)
     {
-        if ($request->ajax()) {
-            // Ambil ID pengguna yang sedang login
-            $userId = Auth::id();
-
-            // Ambil data kegiatan yang terkait dengan pengguna yang sedang login
-            $query = KegiatanModel::whereHas('anggota', function ($query) use ($userId) {
-                $query->where('id_user', $userId);
-            });
-
-            if ($request->has('jenis_kegiatan') && $request->jenis_kegiatan != '') {
-                $query->where('jenis_kegiatan', $request->jenis_kegiatan);
-            }
-
-            return DataTables::of($query)
-                ->addIndexColumn()
-                ->make(true);
+        // Ambil ID pengguna yang sedang login
+        $userId = Auth::id();
+    
+        $query = DB::table('t_anggota AS anggota')
+            ->join('t_kegiatan AS k', 'anggota.id_kegiatan', '=', 'k.id_kegiatan')
+            ->join('t_jabatan_kegiatan AS jk', 'anggota.id_jabatan_kegiatan', '=', 'jk.id_jabatan_kegiatan')
+            ->select(
+                'k.nama_kegiatan',
+                'k.deskripsi_kegiatan', 
+                'k.tanggal_acara', 
+                'k.tempat_kegiatan', 
+                'k.jenis_kegiatan', 
+                'jk.jabatan_nama'
+            )
+            ->where('anggota.id_user', $userId);
+    
+        // Filter by jenis_kegiatan if provided
+        if ($request->has('jenis_kegiatan') && $request->jenis_kegiatan != '') {
+            $query->where('k.jenis_kegiatan', $request->jenis_kegiatan);
         }
+    
+        return DataTables::of($query)
+            ->addIndexColumn()
+            ->make(true);
     }
 
     public function dosenPIC()
@@ -278,23 +285,6 @@ class KegiatanController extends Controller
             ->addIndexColumn()
             ->addColumn('aksi', function ($kegiatan) {
                 $btn = '<button onclick="modalAction(\'' . url('/pimpinan/kegiatan/' . $kegiatan->id_kegiatan . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
-                return $btn;
-            })
-            ->rawColumns(['aksi'])
-            ->make(true);
-    }
-
-    public function listDosen(Request $request)
-    {
-        $kegiatan = KegiatanModel::select('id_kegiatan', 'nama_kegiatan', 'deskripsi_kegiatan', 'tanggal_mulai', 'tanggal_selesai', 'tanggal_acara', 'tempat_kegiatan', 'jenis_kegiatan');
-
-        if ($request->jenis_kegiatan) {
-            $kegiatan->where('jenis_kegiatan', $request->jenis_kegiatan);
-        }
-        return DataTables::of($kegiatan)
-            ->addIndexColumn()
-            ->addColumn('aksi', function ($kegiatan) {
-                $btn = '<button onclick="modalAction(\'' . url('/dosen/kegiatan/' . $kegiatan->id_kegiatan . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
                 return $btn;
             })
             ->rawColumns(['aksi'])
@@ -928,7 +918,7 @@ class KegiatanController extends Controller
 
         // Add kegiatan details in a paragraph
         $section->addTextBreak();
-        $section->addText("Untuk menjadi narasumber kegiatan " . $kegiatan->nama_kegiatan . " yang diselenggarakan oleh " . $kegiatan->deskripsi_kegiatan . " pada tanggal " . date('d F Y', strtotime($kegiatan->tanggal_acara)) . " bertempat di " . $kegiatan->tempat_kegiatan . ".", ['size' => 12]);
+        $section->addText("Untuk menjadi panitia dalam " . $kegiatan->nama_kegiatan . " yang diselenggarakan oleh " . $kegiatan->deskripsi_kegiatan . " pada tanggal " . date('d F Y', strtotime($kegiatan->tanggal_acara)) . " bertempat di " . $kegiatan->tempat_kegiatan . ".", ['size' => 12]);
 
         $section->addText("Selesai melaksanakan tugas harap melaporkan hasilnya kepada Wakil Direktur I.", ['size' => 12]);
         $section->addText("Demikian untuk dilaksanakan sebaik-baiknya.", ['size' => 12]);
@@ -939,9 +929,9 @@ class KegiatanController extends Controller
         $signatureTable->addRow();
         $signatureCell = $signatureTable->addCell(10000, ['border' => 0]);
         $signatureCell->addText("28 Oktober 2024", null, ['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::RIGHT]);
-        $signatureCell->addText("Direktur,", null, ['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::RIGHT]);
+        $signatureCell->addText("Ketua Jurusan Teknologi Informasi,", null, ['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::RIGHT]);
         $signatureCell->addTextBreak(3);
-        $signatureCell->addText("Dr. Kurnia Ekasari, SE., M.M., Ak.", ['bold' => true], ['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::RIGHT]);
+        $signatureCell->addText("Dr. Eng Rosa Andrie Asmara, S.T., M.T.", ['bold' => true], ['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::RIGHT]);
         $signatureCell->addText("NIP. 196602141990032002", null, ['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::RIGHT]);
 
         // Save the document
@@ -1433,7 +1423,7 @@ class KegiatanController extends Controller
         ->join('t_agenda as ag', 'aa.id_agenda', '=', 'ag.id_agenda')
         ->leftJoin('t_dokumen as dkm', 'dkm.id_dokumen', '=', 'aa.id_dokumen')
         ->select('aa.id_agenda', 'aa.id_dokumen', 'dkm.file_path', 'dkm.nama_dokumen', 'aa.nama_agenda')
-        ->where('ag.id_kegiatan', 7)
+        ->where('ag.id_kegiatan', $id_kegiatan)
         ->get();
            
         // Breadcrumb dan metadata
