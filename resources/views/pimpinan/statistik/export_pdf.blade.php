@@ -70,29 +70,54 @@
 
 <body>
     <h2 class="text-center font-bold">Laporan Poin Dosen</h2>
-    <table>
+    <table class="border-all">
         <thead>
             <tr>
-                <th>No</th>
                 <th>Nama Dosen</th>
-                <th>Jumlah Kegiatan</th>
-                <th>Total Poin</th>
+                <th class="text-center">Jumlah Kegiatan</th>
+                <th class="text-center">Poin</th>
+                <th class="text-center">Detail Kegiatan</th>
             </tr>
         </thead>
         <tbody>
-            @forelse ($data as $index => $item)
+            @php 
+                $totalKegiatan = 0; 
+                $totalPoin = 0; 
+            @endphp
+            @foreach ($poinDosen as $dosen)
                 <tr>
-                    <td>{{ $index + 1 }}</td>
-                    <td>{{ $item->nama }}</td>
-                    <td>{{ $item->total_kegiatan }}</td>
-                    <td>{{ $item->total_poin }}</td>
+                    <td>{{ $dosen->nama }}</td>
+                    <td class="text-center">{{ $dosen->total_kegiatan }}</td>
+                    <td class="text-center">{{ $dosen->total_poin }}</td>
+                    <td>
+                        @if (isset($dosenKegiatan[$dosen->id_user]))
+                            <div class="detail-activities">
+                                @foreach ($dosenKegiatan[$dosen->id_user] as $kegiatan)
+                                    <div>
+                                        {{ $kegiatan->nama_kegiatan }} 
+                                        ({{ $kegiatan->jenis_kegiatan }}) - 
+                                        {{ $kegiatan->tanggal_acara }} 
+                                        [{{ $kegiatan->poin }} poin]
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
+                    </td>
                 </tr>
-            @empty
-                <tr>
-                    <td colspan="4" style="text-align: center;">Tidak ada data statistik</td>
-                </tr>
-            @endforelse
+                @php 
+                    $totalKegiatan += $dosen->total_kegiatan; 
+                    $totalPoin += $dosen->total_poin; 
+                @endphp
+            @endforeach
         </tbody>
+        <tfoot>
+            <tr>
+                <th class="text-center">Total</th>
+                <th class="text-center">{{ $totalKegiatan }}</th>
+                <th class="text-center">{{ $totalPoin }}</th>
+                <th></th>
+            </tr>
+        </tfoot>
     </table>
 </body>
 </html>

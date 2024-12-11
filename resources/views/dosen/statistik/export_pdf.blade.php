@@ -58,51 +58,61 @@
         .border-all td {
             border: 1px solid;
         }
+        .font-bold {
+            font-weight: bold;
+        }
+        .mb-1 {
+            margin-bottom: 5px;
+        }
     </style>
 </head>
 <body>
     <table class="border-bottom-header">
         <tr>
-            <td width="15%" class="text-center"><img class="image" id="image" src="{{ asset('polinema.png') }}"></td>
+            <td width="15%" class="text-center">
+                <img class="image" src="{{ asset('polinema.png') }}"></td>
             <td width="85%">
-                <span class="text-center d-block font-11 font-bold mb-1">KEMENTERIAN
-                    PENDIDIKAN, KEBUDAYAAN, RISET, DAN TEKNOLOGI</span>
-                <span class="text-center d-block font-13 font-bold mb-1">POLITEKNIK NEGERI
-                    MALANG</span>
-                <span class="text-center d-block font-10">Jl. Soekarno-Hatta No. 9 Malang
-                    65141</span>
-                <span class="text-center d-block font-10">Telepon (0341) 404424 Pes. 101-
-                    105, 0341-404420, Fax. (0341) 404420</span>
+                <span class="text-center d-block font-11 font-bold mb-1">KEMENTERIAN PENDIDIKAN, KEBUDAYAAN, RISET, DAN TEKNOLOGI</span>
+                <span class="text-center d-block font-13 font-bold mb-1">POLITEKNIK NEGERI MALANG</span>
+                <span class="text-center d-block font-10">Jl. Soekarno-Hatta No. 9 Malang 65141</span>
+                <span class="text-center d-block font-10">Telepon (0341) 404424 Pes. 101-105, 0341-404420, Fax. (0341) 404420</span>
                 <span class="text-center d-block font-10">Laman: www.polinema.ac.id</span>
             </td>
         </tr>
     </table>
-    <h2 class="text-center">LAPORAN POIN DOSEN</h2>
+
+    <h2 class="text-center">LAPORAN POIN KEGIATAN YANG DIIKUTI</h2>
+    
+    <p><strong>Nama Dosen:</strong> {{ $poinDosen->first()->nama ?? '-' }}</p>
     <table class="border-all">
         <thead>
             <tr>
                 <th>No</th>
                 <th>Nama Kegiatan</th>
+                <th>Tanggal Acara</th>
+                <th>Jenis Kegiatan</th>
                 <th>Jabatan</th>
                 <th>Poin</th>
             </tr>
         </thead>
         <tbody>
-            @forelse ($data as $index => $item)
+            @forelse ($dosenKegiatan->first() as $index => $item)
                 <tr>
                     <td>{{ $index + 1 }}</td>
-                    <td>{{ $item->judul_kegiatan }}</td>
-                    <td>{{ $item->jabatan }}</td>
+                    <td>{{ $item->nama_kegiatan }}</td>
+                    <td>{{ $item->tanggal_acara }}</td>
+                    <td>{{ $item->jenis_kegiatan }}</td>
+                    <td>{{ $item->jabatan_nama }}</td>
                     <td>{{ $item->poin }}</td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="4" class="text-center">Tidak ada data kegiatan</td>
+                    <td colspan="6" class="text-center">Tidak ada data kegiatan</td>
                 </tr>
             @endforelse
             <tr>
-                <td colspan="3" class="font-bold text-right">Total Poin</td>
-                <td class="font-bold">{{ $totalPoin }}</td>
+                <td colspan="5" class="font-bold text-right">Total Poin</td>
+                <td class="font-bold">{{ $poinDosen->sum('total_poin') }}</td>
             </tr>
         </tbody>
     </table>

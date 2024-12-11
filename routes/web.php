@@ -42,6 +42,18 @@ Route::middleware('auth')->group(function () {
             Route::get('/dashboard-dosen', [DashboardController::class, 'indexDosen'])->name('dashboard.dosen');
         });
 
+        // Route::group(['prefix' => 'profil'], function () {
+        //     Route::get('/', [ProfilController::class, 'index'])->name('profil.index');
+        //     Route::patch('/{id}', [ProfilController::class, 'update'])->name('profil.update');
+        // });
+
+        Route::middleware(['auth'])->group(function () {
+            Route::get('/profil', [ProfilController::class, 'index'])->name('profil.index');
+            Route::patch('/profil/{id}', [ProfilController::class, 'update'])->name('profil.update');
+            Route::post('/profil/upload', [ProfilController::class, 'uploadProfileImage'])->name('profil.upload');
+            Route::get('/profil', [ProfilController::class, 'index'])->name('profil.index')->middleware('auth');
+        });
+
         Route::group(['prefix' => 'admin', 'middleware' => ['authorize:admin']], function () {
             Route::prefix('user')->group(function () {
                 Route::get('/', [UserController::class, 'admin']);
@@ -108,19 +120,6 @@ Route::middleware('auth')->group(function () {
             });
 
         });
-
-        Route::group(['prefix' => 'profil'], function () {
-            Route::get('/', [ProfilController::class, 'index'])->name('profil.index');
-            Route::patch('/{id}', [ProfilController::class, 'update'])->name('profil.update');
-        });
-
-        Route::middleware(['auth'])->group(function () {
-            Route::get('/profil', [ProfilController::class, 'index'])->name('profil.index');
-            Route::patch('/profil/{id}', [ProfilController::class, 'update'])->name('profil.update');
-            Route::post('/profil/upload', [ProfilController::class, 'uploadProfileImage'])->name('profil.upload');
-            Route::get('/profil', [ProfilController::class, 'index'])->name('profil.index')->middleware('auth');
-        });
-
 
         Route::group(['prefix' => 'pimpinan', 'middleware' => ['authorize:pimpinan']], function () {
             Route::prefix('user')->group(function () {
