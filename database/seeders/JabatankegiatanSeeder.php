@@ -29,7 +29,8 @@ class JabatanKegiatanSeeder extends Seeder
             [
                 'jabatan_nama' => 'anggota1',
                 'poin' => 0.5,
-            ],[
+            ],
+            [
                 'jabatan_nama' => 'anggota2',
                 'poin' => 0.5,
             ],

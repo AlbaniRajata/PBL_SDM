@@ -36,7 +36,7 @@
                 </div>
                 <div class="form-group">
                     <label for="NIP">NIP</label>
-                    <input type="text" class="form-control" id="NIP" name="NIP" required>
+                    <input type="number" class="form-control" id="NIP" name="NIP" inputmode="numeric">
                     <small id="error-NIP" class="error-text form-text text-danger"></small>
                 </div>
                 <div class="form-group">
