@@ -146,4 +146,63 @@ class UserAdminController extends Controller
             ], 404);
         }
     }
+
+    public function updateProfile(Request $request, $id)
+    {
+        try {
+            $user = UserModel::findOrFail($id);
+
+            $validator = Validator::make($request->all(), [
+                'nama' => 'required',
+                'email' => 'required|email|unique:t_user,email,'.$id.',id_user',
+                'NIP' => 'required|unique:t_user,NIP,'.$id.',id_user',
+                'old_password' => 'required_with:new_password',
+                'new_password' => 'nullable|min:3',
+                'confirm_password' => 'same:new_password'
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => $validator->errors()
+                ], 422);
+            }
+
+            // Check if password update is requested
+            if ($request->filled('old_password')) {
+                if (!Hash::check($request->old_password, $user->password)) {
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => 'Password lama tidak sesuai'
+                    ], 422);
+                }
+
+                $updateData = [
+                    'nama' => $request->nama,
+                    'email' => $request->email,
+                    'NIP' => $request->NIP,
+                    'password' => Hash::make($request->new_password)
+                ];
+            } else {
+                $updateData = [
+                    'nama' => $request->nama,
+                    'email' => $request->email,
+                    'NIP' => $request->NIP
+                ];
+            }
+
+            $user->update($updateData);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Profile updated successfully',
+                'data' => $user
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ], 404);
+        }
+    }
 }

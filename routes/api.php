@@ -37,6 +37,7 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/users', [UserAdminController::class, 'store']);
         Route::put('/users/{id}', [UserAdminController::class, 'update']);
         Route::delete('/users/{id}', [UserAdminController::class, 'destroy']);
+        Route::put('/users/{id}/profile', [UserAdminController::class, 'updateProfile']);
     });
     // Routes untuk Jabatan Kegiatan
     Route::prefix('jabatan-kegiatan')->group(function () {
