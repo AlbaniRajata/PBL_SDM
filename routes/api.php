@@ -124,6 +124,10 @@ Route::middleware('auth:api')->group(function () {
     Route::prefix('kalender-dosen')->group(function () {
         Route::get('/kegiatan', [KegiatanDosenController::class, 'getKegiatanKalenderDosen']);
     });
+    //Routes untuk notifikasi
+    Route::prefix('notifikasi-dosen')->group(function () {
+        Route::get('/', [DosenController::class, 'getNotifikasi']);
+    });
 
     //Routes untuk Kegiatan PIC
     Route::prefix('pic-kegiatan')->group(function () {
@@ -155,4 +159,9 @@ Route::middleware('auth:api')->group(function () {
     Route::prefix('kalender-anggota')->group(function () {
         Route::get('/kegiatan', [KegiatanDosenController::class, 'getKegiatanKalenderAnggota']);
     });
+
+    //Routes untuk Download Dokumen
+    // Route::prefix('download-dokumen')->group(function () {
+    //     Route::get('/{idKegiatan}', [KegiatanDosenController::class, 'downloadDokumen']);
+    // });
 });

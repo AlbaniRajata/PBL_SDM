@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 
 class StatistikDosenController extends Controller
 {
+
     public function index()
     {
         try {
@@ -33,6 +34,7 @@ class StatistikDosenController extends Controller
                 't_jabatan_kegiatan.poin',
                 't_kegiatan.tanggal_acara'
             )
+            ->where('t_anggota.id_user', $userId)
             ->get();
 
             $totalPoin = $kegiatan->sum('poin');

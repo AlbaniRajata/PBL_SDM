@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\KegiatanModel;
 use App\Models\AnggotaModel;
+use App\Models\AgendaAnggotaModel;
+use App\Models\DokumenModel;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
@@ -173,7 +175,7 @@ class KegiatanDosenController extends Controller
             if (!is_numeric($id)) {
                 return response()->json([
                     'status' => false,
-                    'message' => 'ID kegiatan tidak valid'
+                    'message' => 'ID tidak valid'
                 ], 400);
             }
 
@@ -185,28 +187,37 @@ class KegiatanDosenController extends Controller
                 ], 401);
             }
 
-            $kegiatan = KegiatanModel::whereHas('anggota', function($query) use ($userId) {
-                $query->where('id_user', $userId);
-            })
-            ->where('id_kegiatan', $id)
-            ->with(['anggota.user:id_user,nama', 'anggota.jabatan:id_jabatan_kegiatan,jabatan_nama,poin'])
-            ->select(
-                'id_kegiatan',
-                'nama_kegiatan',
-                'deskripsi_kegiatan',
-                'tanggal_mulai',
-                'tanggal_selesai',
-                'tanggal_acara',
-                'tempat_kegiatan',
-                'jenis_kegiatan',
-                'progress'
-            )
-            ->first();
+            // Ambil id_kegiatan dari AnggotaModel terlebih dahulu
+            $anggota = AnggotaModel::where('id_anggota', $id)
+                ->where('id_user', $userId)
+                ->first();
+
+            if (!$anggota) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Data anggota tidak ditemukan'
+                ], 404);
+            }
+
+            $kegiatan = KegiatanModel::where('id_kegiatan', $anggota->id_kegiatan)
+                ->with(['anggota.user:id_user,nama', 'anggota.jabatan:id_jabatan_kegiatan,jabatan_nama,poin'])
+                ->select(
+                    'id_kegiatan',
+                    'nama_kegiatan',
+                    'deskripsi_kegiatan',
+                    'tanggal_mulai',
+                    'tanggal_selesai',
+                    'tanggal_acara',
+                    'tempat_kegiatan',
+                    'jenis_kegiatan',
+                    'progress'
+                )
+                ->first();
 
             if (!$kegiatan) {
                 return response()->json([
                     'status' => false,
-                    'message' => 'Data kegiatan tidak ditemukan atau Anda tidak memiliki akses'
+                    'message' => 'Data kegiatan tidak ditemukan'
                 ], 404);
             }
 
