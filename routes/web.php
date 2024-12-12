@@ -9,6 +9,7 @@ use App\Http\Controllers\JabatanKegiatanController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProfilController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\DokumenController;
 use App\Http\Controllers\FileHistoryController;
 
 /*
@@ -28,9 +29,6 @@ Route::get('logout', [AuthController::class, 'logout'])->middleware('auth');
 
 Route::get('/api/kegiatan/events', [KegiatanController::class, 'getKegiatanEvents'])->name('api.kegiatan.events');
 
-
-
-// Route::get('/', [DashboardController::class, 'index']);
 Route::middleware('auth')->group(function () {
         Route::get('/contact', [ContactController::class, 'index'])->name('contact.index');
 
@@ -80,7 +78,7 @@ Route::middleware('auth')->group(function () {
                 Route::get('/{id}/edit_ajax', [KegiatanController::class, 'editAjaxAdmin'])->name('admin.kegiatan.edit_ajax');
                 Route::put('/{id}/update_ajax', [KegiatanController::class, 'updateAjaxAdmin'])->name('admin.kegiatan.update_ajax');
                 Route::get('/export_pdf', [KegiatanController::class, 'exportPdf'])->name('admin.kegiatan.export_pdf');
-                Route::get('/{id}/export_word', [KegiatanController::class, 'exportWord'])->name('admin.kegiatan.export_word');
+                Route::get('/{id}/export_word', [DokumenController::class, 'exportWord'])->name('admin.kegiatan.export_word');
                 Route::delete('/{id}/delete_ajax', [KegiatanController::class, 'delete_ajaxAdmin'])->name('admin.kegiatan.confirm_ajax');
                 Route::get('/{id}/delete_ajax', [KegiatanController::class, 'confirm_ajaxAdmin'])->name('admin.kegiatan.confirm_ajax');
                 Route::delete('/{id}/confirm_ajax', [KegiatanController::class, 'delete_ajaxAdmin'])->name('admin.kegiatan.confirm_ajax');
@@ -158,7 +156,7 @@ Route::middleware('auth')->group(function () {
                 Route::put('/{id}/update_ajax', [KegiatanController::class, 'updateAjaxDosen'])->name('dosen.kegiatan.update_ajax');
                 Route::get('/{id}/delete_ajax', [KegiatanController::class, 'confirmAjaxDosen'])->name('dosen.kegiatan.confirm_ajax');
                 Route::delete('/{id}/delete_ajax', [KegiatanController::class, 'deleteAjaxDosen'])->name('dosen.kegiatan.delete_ajax');
-                Route::get('/{id}/export_word', [KegiatanController::class, 'exportWordDosen'])->name('dosen.kegiatan.export_word');
+                Route::get('/{id}/export_word', [DokumenController::class, 'exportWord'])->name('dosen.kegiatan.export_word');
                 Route::post('/{id}/upload_surat_tugas', [KegiatanController::class, 'uploadSuratTugas'])->name('dosen.kegiatan.upload_surat_tugas');
                 Route::get('/data', [KegiatanController::class, 'data'])->name('dosen.kegiatan.data');
                 Route::get('/export_pdf', [KegiatanController::class, 'exportPdf_dosen'])->name('dosen.kegiatan.export_pdf');
