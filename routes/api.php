@@ -11,7 +11,7 @@ use App\Http\Controllers\Api\UserPimpinanController;
 use App\Http\Controllers\Api\KegiatanPimpinanController;
 use App\Http\Controllers\Api\DashboardDosenController;
 use App\Http\Controllers\Api\KegiatanDosenController;
-use App\Http\Controllers\API\StatistikDosenController;
+use App\Http\Controllers\Api\StatistikDosenController;
 use App\Http\Controllers\Api\AgendaPICController;
 use App\Http\Controllers\Api\DosenController;
 use App\Http\Controllers\Api\AgendaAnggotaController;
@@ -161,8 +161,8 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/kegiatan', [KegiatanDosenController::class, 'getKegiatanKalenderAnggota']);
     });
 
-    //Routes untuk Download Dokumen
-    // Route::prefix('download-dokumen')->group(function () {
-    //     Route::get('/{idKegiatan}', [KegiatanDosenController::class, 'downloadDokumen']);
-    // });
+    // Routes untuk Download Dokumen
+    Route::prefix('download-dokumen')->group(function () {
+        Route::get('/{id_dokumen}', [KegiatanDosenController::class, 'downloadDokumen']);
+    });
 });

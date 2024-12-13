@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\API;
+namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -10,6 +10,8 @@ use App\Models\AgendaAnggotaModel;
 use App\Models\DokumenModel;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class KegiatanDosenController extends Controller
 {
@@ -200,7 +202,7 @@ class KegiatanDosenController extends Controller
             }
 
             $kegiatan = KegiatanModel::where('id_kegiatan', $anggota->id_kegiatan)
-                ->with(['anggota.user:id_user,nama', 'anggota.jabatan:id_jabatan_kegiatan,jabatan_nama,poin'])
+                ->with(['anggota.user:id_user,nama', 'anggota.jabatan:id_jabatan_kegiatan,jabatan_nama,poin', 'dokumen'])
                 ->select(
                     'id_kegiatan',
                     'nama_kegiatan',
@@ -524,6 +526,56 @@ class KegiatanDosenController extends Controller
             return response()->json([
                 'status' => false,
                 'message' => 'Gagal mengambil data kegiatan kalender: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function downloadDokumen($id_dokumen)
+    {
+        try {
+            $userId = Auth::id();
+            if (!$userId) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'User tidak terautentikasi'
+                ], 401);
+            }
+    
+            // Cari dokumen
+            $dokumen = DokumenModel::findOrFail($id_dokumen);
+            
+            // Cek keberadaan file
+            $filePath = storage_path('app/public/' . $dokumen->file_path);
+            if (!file_exists($filePath)) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'File tidak ditemukan di server'
+                ], 404);
+            }
+    
+            // Set content type yang tepat untuk file docx
+            $contentType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+            
+            $headers = [
+                'Content-Type' => $contentType,
+                'Content-Disposition' => 'attachment; filename="' . $dokumen->nama_dokumen . '"',
+                // Header tambahan untuk menangani caching
+                'Cache-Control' => 'no-cache, no-store, must-revalidate',
+                'Pragma' => 'no-cache',
+                'Expires' => '0'
+            ];
+    
+            return response()->download($filePath, $dokumen->nama_dokumen, $headers);
+    
+        } catch (\Exception $e) {
+            Log::error('Download error', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return response()->json([
+                'status' => false,
+                'message' => 'Gagal mengunduh dokumen: ' . $e->getMessage()
             ], 500);
         }
     }

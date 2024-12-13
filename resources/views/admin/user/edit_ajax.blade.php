@@ -1,3 +1,4 @@
+//edit ajax user
 <form action="{{ route('admin.user.update_ajax', $user->id_user) }}" method="POST" id="form-edit">
     @csrf
     @method('PUT')
@@ -32,7 +33,7 @@
                 </div>
                 <div class="form-group">
                     <label for="NIP">NIP</label>
-                    <input type="text" class="form-control" id="NIP" name="NIP" value="{{ $user->NIP }}" required>
+                    <input type="number" class="form-control" id="NIP" name="NIP" value="{{ $user->NIP }}" required>
                     <small id="error-NIP" class="error-text form-text text-danger"></small>
                 </div>
                 <div class="form-group">
