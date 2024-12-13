@@ -61,28 +61,4 @@ class AgendaPICController extends Controller
             'data' => $kegiatan
         ]);
     }
-
-    public function upcoming()
-    {
-        $user_id = Auth::id();
-        
-        $kegiatan = KegiatanModel::whereHas('anggota', function($query) use ($user_id) {
-            $query->where('id_user', $user_id)
-                  ->whereHas('jabatan', function($q) {$q->where('jabatan_nama', 'pic');});
-        })
-        ->where('tanggal_acara', '>=', now())
-        ->with([
-            'anggota.user:id_user,nama',
-            'anggota.jabatan',
-            'agenda.agendaAnggota',
-            'dokumen'
-        ])
-        ->orderBy('tanggal_acara', 'asc')
-        ->get();
-
-        return response()->json([
-            'status' => 'success',
-            'data' => $kegiatan
-        ]);
-    }
 }

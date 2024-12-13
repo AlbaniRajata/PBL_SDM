@@ -40,14 +40,16 @@ class DosenController extends Controller
 
             $data = [];
             foreach ($notifikasi as $item) {
-                $data[] = [
-                    'id_anggota' => $item->id_anggota,
-                    'nama_kegiatan' => $item->kegiatan->nama_kegiatan,
-                    'jabatan' => $item->jabatan->jabatan_nama,
-                    'tanggal_acara' => $item->kegiatan->tanggal_acara,
-                    'created_at' => $item->created_at,
-                    'id_kegiatan' => $item->kegiatan->id_kegiatan
-                ];
+                if ($item->kegiatan) {
+                    $data[] = [
+                        'id_anggota' => $item->id_anggota,
+                        'id_kegiatan' => $item->kegiatan->id_kegiatan,
+                        'nama_kegiatan' => $item->kegiatan->nama_kegiatan,
+                        'jabatan' => $item->jabatan->jabatan_nama,
+                        'tanggal_acara' => $item->kegiatan->tanggal_acara,
+                        'created_at' => $item->created_at
+                    ];
+                }
             }
 
             return response()->json([

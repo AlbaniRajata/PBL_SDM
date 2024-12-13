@@ -138,7 +138,6 @@ Route::middleware('auth:api')->group(function () {
     //Routes untuk Agenda Kegiatan PIC
     Route::prefix('agenda-kegiatan')->group(function () {
         Route::get('/', [AgendaPICController::class, 'index']);
-        Route::get('/upcoming', [AgendaPICController::class, 'upcoming']);
         Route::get('/{id_kegiatan}', [AgendaPICController::class, 'show']);
     });
     //Routes untuk Kalender PIC
