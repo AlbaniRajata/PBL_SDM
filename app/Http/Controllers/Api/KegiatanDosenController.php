@@ -177,7 +177,7 @@ class KegiatanDosenController extends Controller
             if (!is_numeric($id)) {
                 return response()->json([
                     'status' => false,
-                    'message' => 'ID tidak valid'
+                    'message' => 'ID kegiatan tidak valid'
                 ], 400);
             }
 
@@ -189,37 +189,31 @@ class KegiatanDosenController extends Controller
                 ], 401);
             }
 
-            // Ambil id_kegiatan dari AnggotaModel terlebih dahulu
-            $anggota = AnggotaModel::where('id_anggota', $id)
-                ->where('id_user', $userId)
-                ->first();
-
-            if (!$anggota) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Data anggota tidak ditemukan'
-                ], 404);
-            }
-
-            $kegiatan = KegiatanModel::where('id_kegiatan', $anggota->id_kegiatan)
-                ->with(['anggota.user:id_user,nama', 'anggota.jabatan:id_jabatan_kegiatan,jabatan_nama,poin', 'dokumen'])
-                ->select(
-                    'id_kegiatan',
-                    'nama_kegiatan',
-                    'deskripsi_kegiatan',
-                    'tanggal_mulai',
-                    'tanggal_selesai',
-                    'tanggal_acara',
-                    'tempat_kegiatan',
-                    'jenis_kegiatan',
-                    'progress'
-                )
-                ->first();
+            $kegiatan = KegiatanModel::whereHas('anggota', function($query) use ($userId) {
+                $query->where('id_user', $userId);
+            })
+            ->where('id_kegiatan', $id)
+            ->with([
+                'anggota.user:id_user,nama', 
+                'anggota.jabatan:id_jabatan_kegiatan,jabatan_nama,poin'
+            ])
+            ->select(
+                'id_kegiatan',
+                'nama_kegiatan',
+                'deskripsi_kegiatan',
+                'tanggal_mulai',
+                'tanggal_selesai',
+                'tanggal_acara',
+                'tempat_kegiatan',
+                'jenis_kegiatan',
+                'progress'
+            )
+            ->first();
 
             if (!$kegiatan) {
                 return response()->json([
                     'status' => false,
-                    'message' => 'Data kegiatan tidak ditemukan'
+                    'message' => 'Data kegiatan tidak ditemukan atau Anda tidak memiliki akses'
                 ], 404);
             }
 
@@ -374,7 +368,8 @@ class KegiatanDosenController extends Controller
             ->where('id_kegiatan', $id)
             ->with([
                 'anggota.user:id_user,nama', 
-                'anggota.jabatan:id_jabatan_kegiatan,jabatan_nama,poin'
+                'anggota.jabatan:id_jabatan_kegiatan,jabatan_nama,poin',
+                'dokumen:id_dokumen,id_kegiatan,nama_dokumen,jenis_dokumen,file_path'
             ])
             ->select(
                 'id_kegiatan',
@@ -408,6 +403,105 @@ class KegiatanDosenController extends Controller
                     'nama' => $anggota->user->nama,
                     'jabatan' => $anggota->jabatan->jabatan_nama,
                     'poin' => $anggota->jabatan->poin
+                ];
+            })->values()->toArray();
+
+            // Tambahkan data dokumen ke response
+            $result['dokumen'] = $kegiatan->dokumen->map(function($dokumen) {
+                return [
+                    'id_dokumen' => $dokumen->id_dokumen,
+                    'nama_dokumen' => $dokumen->nama_dokumen,
+                    'jenis_dokumen' => $dokumen->jenis_dokumen,
+                    'file_path' => $dokumen->file_path
+                ];
+            })->values()->toArray();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Detail kegiatan berhasil diambil',
+                'data' => $result
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Gagal mengambil detail kegiatan: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function showPIC($id)
+    {
+        try {
+            if (!is_numeric($id)) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'ID kegiatan tidak valid'
+                ], 400);
+            }
+
+            $userId = Auth::id();
+            if (!$userId) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'User tidak terautentikasi'
+                ], 401);
+            }
+
+            $kegiatan = KegiatanModel::whereHas('anggota', function($query) use ($userId) {
+                $query->where('id_user', $userId)
+                    ->whereHas('jabatan', function($q) {
+                        $q->where('jabatan_nama', 'pic');
+                    });
+            })
+            ->where('id_kegiatan', $id)
+            ->with([
+                'anggota.user:id_user,nama', 
+                'anggota.jabatan:id_jabatan_kegiatan,jabatan_nama,poin',
+                'dokumen:id_dokumen,id_kegiatan,nama_dokumen,jenis_dokumen,file_path'
+            ])
+            ->select(
+                'id_kegiatan',
+                'nama_kegiatan',
+                'deskripsi_kegiatan',
+                'tanggal_mulai',
+                'tanggal_selesai',
+                'tanggal_acara',
+                'tempat_kegiatan',
+                'jenis_kegiatan',
+                'progress'
+            )
+            ->first();
+
+            if (!$kegiatan) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Data kegiatan tidak ditemukan atau Anda tidak memiliki akses'
+                ], 404);
+            }
+
+            $result = $kegiatan->toArray();
+            
+            $userAnggota = $kegiatan->anggota->where('id_user', $userId)->first();
+            $result['jabatan'] = $userAnggota ? $userAnggota->jabatan->jabatan_nama : '';
+
+            $result['anggota'] = $kegiatan->anggota->map(function($anggota) {
+                return [
+                    'id_anggota' => $anggota->id_anggota,
+                    'id_user' => $anggota->id_user,
+                    'nama' => $anggota->user->nama,
+                    'jabatan' => $anggota->jabatan->jabatan_nama,
+                    'poin' => $anggota->jabatan->poin
+                ];
+            })->values()->toArray();
+
+            // Tambahkan data dokumen ke response
+            $result['dokumen'] = $kegiatan->dokumen->map(function($dokumen) {
+                return [
+                    'id_dokumen' => $dokumen->id_dokumen,
+                    'nama_dokumen' => $dokumen->nama_dokumen,
+                    'jenis_dokumen' => $dokumen->jenis_dokumen,
+                    'file_path' => $dokumen->file_path
                 ];
             })->values()->toArray();
 
@@ -540,42 +634,38 @@ class KegiatanDosenController extends Controller
                     'message' => 'User tidak terautentikasi'
                 ], 401);
             }
-    
+
             // Cari dokumen
-            $dokumen = DokumenModel::findOrFail($id_dokumen);
+            $dokumen = DokumenModel::with('kegiatan.anggota')->findOrFail($id_dokumen);
+
+            // Cek apakah user adalah anggota dari kegiatan ini
+            $isAnggota = $dokumen->kegiatan->anggota->where('id_user', $userId)->isNotEmpty();
             
-            // Cek keberadaan file
-            $filePath = storage_path('app/public/' . $dokumen->file_path);
-            if (!file_exists($filePath)) {
+            if (!$isAnggota) {
                 return response()->json([
                     'status' => false,
-                    'message' => 'File tidak ditemukan di server'
+                    'message' => 'Anda tidak memiliki akses ke dokumen ini'
+                ], 403);
+            }
+
+            // Dapatkan path lengkap file
+            $filePath = storage_path('app/public/' . $dokumen->file_path);
+
+            // Cek keberadaan file
+            if (!Storage::exists('public/' . $dokumen->file_path)) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'File tidak ditemukan'
                 ], 404);
             }
-    
-            // Set content type yang tepat untuk file docx
-            $contentType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
-            
-            $headers = [
-                'Content-Type' => $contentType,
-                'Content-Disposition' => 'attachment; filename="' . $dokumen->nama_dokumen . '"',
-                // Header tambahan untuk menangani caching
-                'Cache-Control' => 'no-cache, no-store, must-revalidate',
-                'Pragma' => 'no-cache',
-                'Expires' => '0'
-            ];
-    
-            return response()->download($filePath, $dokumen->nama_dokumen, $headers);
-    
+
+            // Return file untuk didownload
+            return response()->download($filePath, $dokumen->nama_dokumen);
+
         } catch (\Exception $e) {
-            Log::error('Download error', [
-                'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
-            
             return response()->json([
                 'status' => false,
-                'message' => 'Gagal mengunduh dokumen: ' . $e->getMessage()
+                'message' => 'Gagal mendownload dokumen: ' . $e->getMessage()
             ], 500);
         }
     }

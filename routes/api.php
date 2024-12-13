@@ -133,7 +133,7 @@ Route::middleware('auth:api')->group(function () {
     //Routes untuk Kegiatan PIC
     Route::prefix('pic-kegiatan')->group(function () {
         Route::get('/', [KegiatanDosenController::class, 'indexPIC']);
-        Route::get('/{id}', [KegiatanDosenController::class, 'show']);
+        Route::get('/{id}', [KegiatanDosenController::class, 'showPIC']);
     });
     //Routes untuk Agenda Kegiatan PIC
     Route::prefix('agenda-kegiatan')->group(function () {
