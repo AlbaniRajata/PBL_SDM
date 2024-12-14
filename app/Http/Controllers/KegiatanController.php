@@ -33,8 +33,8 @@ class KegiatanController extends Controller
     public function admin()
     {
         $breadcrumb = (object) [
-            'title' => 'Kegiatan',
-            'list' => ['Home', 'Kegiatan Admin'],
+            'title' => 'Data Kegiatan',
+            'list' => ['Home', 'Kegiatan (Admin)'],
         ];
         $activeMenu = 'kegiatan admin'; // Ambil tahun unik dari tabel kegiatan
 
@@ -54,7 +54,7 @@ class KegiatanController extends Controller
     public function pimpinan()
     {
         $breadcrumb = (object) [
-            'title' => 'Kegiatan',
+            'title' => 'Data Kegiatan',
             'list' => ['Home', 'Kegiatan Pimpinan'],
         ];
         $activeMenu = 'kegiatan pimpinan';
@@ -84,7 +84,7 @@ class KegiatanController extends Controller
     public function dosen(): mixed
     {
         $breadcrumb = (object) [
-            'title' => 'Kegiatan',
+            'title' => 'Data Kegiatan',
             'list' => ['Home', 'Kegiatan Dosen'],
         ];
         $activeMenu = 'kegiatan dosen';
@@ -139,7 +139,7 @@ class KegiatanController extends Controller
     public function dosenPIC()
     {
         $breadcrumb = (object) [
-            'title' => 'Kegiatan',
+            'title' => 'DataKegiatan',
             'list' => ['Home', 'Kegiatan PIC'],
         ];
         $activeMenu = 'kegiatan pic';
@@ -150,7 +150,7 @@ class KegiatanController extends Controller
     public function dosenAnggota()
     {
         $breadcrumb = (object) [
-            'title' => 'Kegiatan',
+            'title' => 'Data Kegiatan',
             'list' => ['Home', 'Kegiatan Anggota'],
         ];
 

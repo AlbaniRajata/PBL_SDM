@@ -2,11 +2,10 @@
 @section('content')
 <div class="card card-outline card-primary">
     <div class="card-header">
-        <h3 class="card-title">Daftar Kegiatan</h3>
         <div class="card-tools">
-            <a href="{{ url('/admin/kegiatan/export_excel') }}" class="btn btn-sm btn-primary mt-1"><i class="fa-solid fa-file-excel"></i> Export Excel</a>
-            <a href="{{ url('/admin/kegiatan/export_pdf') }}" class="btn btn-sm btn-warning mt-1"><i class="fa-solid fa-file-pdf"></i> Export PDF</a>
-            <button onclick="modalAction('{{ url('/admin/kegiatan/create_ajax') }}')" class="btn btn-sm btn-success mt-1"><i class="fa-solid fa-users-gear"></i>Tambah Kegiatan</button>
+            <a href="{{ url('/admin/kegiatan/export_excel') }}" class="btn btn-sm btn-outline-success btn-hover"><i class="fa-solid fa-file-excel"></i> Export Excel</a>
+            <a href="{{ url('/admin/kegiatan/export_pdf') }}" class="btn btn-sm btn-outline-warning btn-hover"><i class="fa-solid fa-file-pdf"></i> Export PDF</a>
+            <button onclick="modalAction('{{ url('/admin/kegiatan/create_ajax') }}')" class="btn btn-sm btn-outline-secondary btn-hover"><i class="fa-solid fa-users-gear"></i>Tambah Kegiatan</button>
         </div>
     </div>
     <div class="card-body">
@@ -24,7 +23,7 @@
             <div class="col-md-3">
                 <label for="jenis_kegiatan">Jenis Kegiatan:</label>
                 <select class="form-control" id="jenis_kegiatan" name="jenis_kegiatan">
-                    <option value="">- Pilih Jenis Kegiatan -</option>
+                    <option value="">Pilih Jenis Kegiatan</option>
                     <option value="Kegiatan JTI">Kegiatan JTI</option>
                     <option value="Kegiatan Non-JTI">Kegiatan Non-JTI</option>
                 </select>

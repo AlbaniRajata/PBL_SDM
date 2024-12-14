@@ -16,7 +16,7 @@ class UserController extends Controller
     public function admin()
     {
         $breadcrumb = (object) [
-            'title' => 'Pengguna',
+            'title' => 'Data Pengguna SI-SDM',
             'list' => ['Home', 'Data Pengguna'],
         ];
         $activeMenu = 'user admin';
@@ -36,7 +36,7 @@ class UserController extends Controller
     public function levelAdmin()
     {
         $breadcrumb = (object) [
-            'title' => 'Jenis Pengguna',
+            'title' => 'Data Jenis Pengguna',
             'list' => ['Home', 'Data Jenis Pengguna'],
         ];
         $activeMenu = 'user jenis';

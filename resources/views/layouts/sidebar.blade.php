@@ -43,7 +43,7 @@
               <p>Jenis Pengguna</p>
             </a>
           </li>
-          <li class="nav-header">Data Kegiatan</li>
+          <li class="nav-header">Manage Kegiatan</li>
           <li class="nav-item">
             <a href="{{ url('admin/kegiatan')}}" class="nav-link {{($activeMenu == 'kegiatan admin')? 'active' : ''}}">
               <i class="nav-icon fa-regular fa-calendar-check"></i>
@@ -63,7 +63,7 @@
               <p>Statistik </p>
             </a>
           </li>
-          <li class="nav-header">Repository</li>
+          <li class="nav-header">Repositori</li>
           <li class="nav-item">
             <a href="{{ url('admin/file')}}" class="nav-link {{($activeMenu == 'file')? 'active' : ''}}">
               <i class="nav-icon fa-solid fa-cloud"></i>

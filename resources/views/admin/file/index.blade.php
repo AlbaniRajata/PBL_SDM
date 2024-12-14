@@ -3,7 +3,7 @@
 <div class="container-fluid">
     <div class="card card-outline card-primary">
         <div class="card-header">
-            <h3 class="card-title">Daftar Dokumen</h3>
+            
             <div class="card-tools">
                 <form action="{{ route('admin.file.index') }}" method="GET" class="form-inline">
                     <input type="text" name="search" class="form-control" placeholder="Cari dokumen..." value="{{ request('search') }}">

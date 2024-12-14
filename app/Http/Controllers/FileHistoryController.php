@@ -13,7 +13,7 @@ class FileHistoryController extends Controller
     public function index(Request $request)
     {
         $breadcrumb = (object) [
-            'title' => 'File',
+            'title' => 'Daftar Dokumen',
             'list' => ['Home', 'File History'],
         ];
         $activeMenu = 'file';

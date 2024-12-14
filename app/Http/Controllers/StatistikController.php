@@ -14,7 +14,7 @@ class StatistikController extends Controller
     public function admin()
     {
         $breadcrumb = (object) [
-            'title' => 'Statistik Dosen Jurusan Teknologi Informasi',
+            'title' => 'Poin Dosen Jurusan Teknologi Informasi',
             'list' => ['Home', 'Statistik'],
         ];
         $activeMenu = 'statistik admin';
