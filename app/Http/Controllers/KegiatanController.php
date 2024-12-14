@@ -790,10 +790,12 @@ class KegiatanController extends Controller
 
     public function exportExcel()
     {
+        // Retrieve all kegiatan with their members and user details
         $kegiatan = KegiatanModel::with(['anggota.user', 'anggota.jabatan'])->get();
+    
         $spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet(); // Get the active sheet
-
+        $sheet = $spreadsheet->getActiveSheet(); 
+    
         // Set Header Columns
         $sheet->setCellValue('A1', 'No');
         $sheet->setCellValue('B1', 'ID Kegiatan');
@@ -802,38 +804,59 @@ class KegiatanController extends Controller
         $sheet->setCellValue('E1', 'Tanggal Selesai');
         $sheet->setCellValue('F1', 'Nama Anggota');
         $sheet->setCellValue('G1', 'Jabatan');
-
+    
         // Make header bold
         $sheet->getStyle('A1:G1')->getFont()->setBold(true);
-
+    
         $no = 1; // Data number starts from 1
         $row = 2; // Data row starts from row 2
+    
+        // Iterate through all kegiatan
         foreach ($kegiatan as $keg) {
-            foreach ($keg->anggota as $anggota) {
+            // Check if there are members for this kegiatan
+            if ($keg->anggota->count() > 0) {
+                // Iterate through members of each kegiatan
+                foreach ($keg->anggota as $anggota) {
+                    $sheet->setCellValue('A' . $row, $no);
+                    $sheet->setCellValue('B' . $row, $keg->id_kegiatan);
+                    $sheet->setCellValue('C' . $row, $keg->nama_kegiatan);
+                    $sheet->setCellValue('D' . $row, $keg->tanggal_mulai ? $keg->tanggal_mulai : '-');
+                    $sheet->setCellValue('E' . $row, $keg->tanggal_selesai ? $keg->tanggal_selesai : '-');
+                    
+                    // Check if user and jabatan exist to prevent potential errors
+                    $sheet->setCellValue('F' . $row, $anggota->user ? $anggota->user->nama : 'N/A');
+                    $sheet->setCellValue('G' . $row, $anggota->jabatan ? $anggota->jabatan->jabatan : 'N/A');
+                    
+                    $row++;
+                    $no++;
+                }
+            } else {
+                // If no members, still show the kegiatan details
                 $sheet->setCellValue('A' . $row, $no);
                 $sheet->setCellValue('B' . $row, $keg->id_kegiatan);
                 $sheet->setCellValue('C' . $row, $keg->nama_kegiatan);
                 $sheet->setCellValue('D' . $row, $keg->tanggal_mulai ? $keg->tanggal_mulai : '-');
                 $sheet->setCellValue('E' . $row, $keg->tanggal_selesai ? $keg->tanggal_selesai : '-');
-                $sheet->setCellValue('F' . $row, $anggota->user->nama);
-                $sheet->setCellValue('G' . $row, $anggota->jabatan->jabatan);
+                $sheet->setCellValue('F' . $row, 'Tidak ada anggota');
+                $sheet->setCellValue('G' . $row, '-');
+                
                 $row++;
                 $no++;
             }
         }
-
+    
         // Set auto column width for all columns
         foreach (range('A', 'G') as $columnID) {
             $sheet->getColumnDimension($columnID)->setAutoSize(true);
         }
-
+    
         // Set sheet title
-        $sheet->setTitle('Data Kegiatan');
-
+        $sheet->setTitle('Data Semua Kegiatan');
+    
         // Create writer
         $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
-        $filename = 'Data_Kegiatan_' . date('Y-m-d_H-i-s') . '.xlsx';
-
+        $filename = 'Data_Semua_Kegiatan_' . date('Y-m-d_H-i-s') . '.xlsx';
+    
         // Set headers for download
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment;filename="' . $filename . '"');
@@ -843,7 +866,7 @@ class KegiatanController extends Controller
         header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
         header('Cache-Control: cache, must-revalidate');
         header('Pragma: public');
-
+    
         // Save file to output
         $writer->save('php://output');
         exit;
@@ -1576,7 +1599,7 @@ class KegiatanController extends Controller
 
         $progresKegiatan = KegiatanModel::select('id_kegiatan', 'nama_kegiatan', 'progress');
 
-        return view('dosenPIC.ProgresKegiatan.index', compact('breadcrumb', 'activeMenu', 'progresKegiatan'));
+        return view('dosenPIC.progresKegiatan.index', compact('breadcrumb', 'activeMenu', 'progresKegiatan'));
     }
 
     public function listProgresKegiatan(Request $request)
