@@ -83,14 +83,15 @@ class KegiatanController extends Controller
 
     public function dosen(): mixed
     {
+        $user = Auth::user();  // Mengambil data pengguna yang sedang login
         $breadcrumb = (object) [
-            'title' => 'Data Kegiatan',
+            'title' => 'Data Kegiatan Dosen ' . $user->nama,  // Menggunakan nama pengguna untuk title
             'list' => ['Home', 'Kegiatan Dosen'],
         ];
         $activeMenu = 'kegiatan dosen';
-
-        $userId = Auth::id();
-
+    
+        $userId = $user->id;
+    
         $kegiatanAkanDatang = KegiatanModel::whereHas('anggota', function ($query) use ($userId) {
             $query->where('id_user', $userId);
         })
@@ -100,13 +101,14 @@ class KegiatanController extends Controller
                 $kegiatan->tanggal_mulai = Carbon::parse($kegiatan->tanggal_mulai);
                 return $kegiatan;
             });
-
+    
         return view('dosen.kegiatan.index', [
             'breadcrumb' => $breadcrumb,
             'activeMenu' => $activeMenu,
             'kegiatanAkanDatang' => $kegiatanAkanDatang
         ]);
     }
+    
 
     public function data(Request $request)
     {
@@ -139,7 +141,7 @@ class KegiatanController extends Controller
     public function dosenPIC()
     {
         $breadcrumb = (object) [
-            'title' => 'DataKegiatan',
+            'title' => 'Data Kegiatan',
             'list' => ['Home', 'Kegiatan PIC'],
         ];
         $activeMenu = 'kegiatan pic';
@@ -1459,11 +1461,14 @@ class KegiatanController extends Controller
 
     public function KegiatanNonJTI(): mixed
     {
+        $user = Auth::user();
+
         $breadcrumb = (object) [
-            'title' => 'Kegiatan',
+            'title' => 'Daftar Kegiatan Non-JTI Dosen ' . $user->nama,
             'list' => ['Home', 'Kegiatan Dosen Non JTI'],
         ];
         $activeMenu = 'kegiatan non jti';
+        $userId = $user->id;
         return view('dosen.kegiatan.nonjti.index', ['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu]);
     }
 

@@ -74,7 +74,7 @@
 
         {{-- DOSEN --}}
         @if(auth()->user()->level == "dosen" && $activeMenu != "kegiatan anggota" && $activeMenu != "statistik anggota" && $activeMenu != "agenda anggota" && $activeMenu != "kegiatan pic" && $activeMenu != "statistik pic" && $activeMenu != "progres kegiatan pic" && $activeMenu != "agenda kegiatan")
-        <li class="nav-header">Data Kegiatan</li>
+        <li class="nav-header">Manage Kegiatan</li>
           <li class="nav-item">
             <a href="{{ url('dosen/kegiatan')}}" class="nav-link {{($activeMenu == 'kegiatan dosen')? 'active' : ''}}">
               <i class="nav-icon fa-regular fa-calendar-check"></i>

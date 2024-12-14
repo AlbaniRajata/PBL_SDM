@@ -103,12 +103,13 @@ class StatistikController extends Controller
 
     public function dosen()
     {
+        $user = Auth::user();
         $breadcrumb = (object) [
-            'title' => 'Statistik Dosen Jurusan Teknologi Informasi',
+            'title' => 'Poin Pencapaian Dosen '. $user->nama,
             'list' => ['Home', 'Statistik Dosen'],
         ];
         $activeMenu = 'statistik dosen';
-
+        $userId = $user->id;
         $userId = Auth::id();
 
         $poinDosen = DB::table('t_user')

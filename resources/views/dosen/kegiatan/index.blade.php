@@ -2,10 +2,9 @@
 @section('content')
 <div class="card card-outline card-primary">
     <div class="card-header">
-        <h3 class="card-title">Daftar Kegiatan</h3>
         <div class="card-tools">
-            <a href="{{ url('/dosen/kegiatan/export_excel') }}" class="btn btn-sm btn-success mt-1"><i class="fa fa-file-excel"></i> Ekspor Kegiatan (Excel)</a>
-            <a href="{{ url('/dosen/kegiatan/export_pdf') }}" class="btn btn-sm btn-warning mt-1"><i class="fa fa-file-pdf"></i> Ekspor Kegiatan (PDF)</a>
+            <a href="{{ url('/dosen/kegiatan/export_excel') }}" class="btn btn-sm btn-outline-success btn-hover"><i class="fa fa-file-excel"></i> Ekspor Kegiatan (Excel)</a>
+            <a href="{{ url('/dosen/kegiatan/export_pdf') }}" class="btn btn-sm btn-outline-warning btn-hover"><i class="fa fa-file-pdf"></i> Ekspor Kegiatan (PDF)</a>
         </div>
     </div>
     <div class="card-body">

@@ -2,9 +2,8 @@
 @section('content')
 <div class="card card-outline card-primary">
     <div class="card-header">
-        <h3 class="card-title">Daftar Kegiatan Non JTI</h3>
         <div class="card-tools">
-            <button onclick="modalAction('{{ url('/dosen/kegiatan/create_ajax') }}')" class="btn btn-sm btn-success mt-1">Tambah Kegiatan Non-JTI</button>
+            <button onclick="modalAction('{{ url('/dosen/kegiatan/create_ajax') }}')" class="btn btn-sm btn-outline-secondary btn-hover"><i class="fa-solid fa-users-gear"></i>Tambah Kegiatan Non-JTI</button>
         </div>
     </div>
     <div class="card-body">

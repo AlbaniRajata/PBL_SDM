@@ -19,6 +19,16 @@
             font-size: 3rem;
             margin-right: 10px;
         }
+            #calendar {
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .fc-daygrid-day:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
     </style>
     <!-- Notifikasi Kegiatan Akan Datang -->
     @if ($kegiatanAkanDatang->count() > 0)
@@ -34,10 +44,10 @@
     </div>
 @endif
 
-       <!-- Kalender Kegiatan -->
+        <!-- Kalender Kegiatan -->
         <div class="card bg-light shadow-sm mt-4">
-            <div class="card-header">
-                <h3 class="card-title">Kalender Kegiatan</h3>
+            <div class="card-header bg-dark text-white">
+                <h3 class="card-title m-0 fw-bold">Kalender Kegiatan Jurusan Teknologi Informasi 2024</h3>
             </div>
             <div class="card-body">
                 <div id="calendar"></div>
@@ -50,25 +60,27 @@
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.js"></script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Render FullCalendar
+        document.addEventListener('DOMContentLoaded', function () {
             var calendarEl = document.getElementById('calendar');
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
                 height: 'auto',
-                events: '/api/kegiatan/events',  // Ensure this API returns event data
+                locale: 'id', // Set locale to Indonesian
                 headerToolbar: {
                     left: 'prev,next today',
                     center: 'title',
-                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                    right: 'dayGridMonth,timeGridWeek'
                 },
                 buttonText: {
                     today: 'Hari Ini',
                     month: 'Bulan',
                     week: 'Minggu',
-                    day: 'Hari'
                 },
-                locale: 'id'  // Set locale to Indonesian
+                events: '/api/kegiatan/events', // API untuk data event
+                eventColor: '#FFAE03', // Warna default event
+                eventBorderColor: '#FFA303', // Border event
+                eventTextColor: '#ffffff', // Warna teks event
+                themeSystem: 'bootstrap' // Jika Anda menggunakan Bootstrap
             });
             calendar.render();
         });
