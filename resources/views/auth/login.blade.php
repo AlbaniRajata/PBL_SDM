@@ -202,12 +202,12 @@
                 messages: {
                     username: {
                         required: "Username wajib diisi",  // Pesan jika kolom username kosong
-                        minlength: "Username minimal harus 4 karakter",
+                        minlength: "Masukkan username dengan benar",
                         maxlength: "Username maksimal 20 karakter"
                     },
                     password: {
                         required: "Password wajib diisi",  // Pesan jika kolom password kosong
-                        minlength: "Password minimal harus 5 karakter"
+                        minlength: "Isikan password dengan benar"
                     }
                 },
                 errorPlacement: function(error, element) {
