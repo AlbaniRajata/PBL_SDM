@@ -1,0 +1,118 @@
+/* Sidebar */
+.main-sidebar {
+    background: #1B95F5; /* Gradien warna ungu */
+    box-shadow: none !important; /* Hilangkan shadow */
+    border-radius: 0 20px 0 0; /* Tambahkan sudut melengkung pada sisi kanan */
+}
+
+.nav-sidebar .nav-link {
+    color: #ffffff !important; /* Warna teks sidebar */
+    font-weight: 600; /* Teks lebih bold */
+    transition: all 0.3s ease-in-out; /* Transisi halus */
+    border-radius: 10px; /* Tambahkan sudut melengkung */
+}
+.brand-link logo-switch {
+    color: #ffffff;
+    padding: 10px 20px;
+  }
+
+.nav-sidebar .nav-link.active {
+    background: linear-gradient(90deg, #FFAE03, #FF7B00); /* Gradien warna orange */
+    color: #ffffff !important;
+    box-shadow: 0 4px 6px rgba(255, 174, 3, 0.3); /* Tambahkan shadow aktif */
+}
+
+.nav-sidebar .nav-link:hover {
+    background-color: rgba(255, 174, 3, 0.8) !important; /* Hover lebih terang */
+    transform: translateX(5px); /* Efek geser saat hover */
+    color: #ffffff !important;
+}
+
+.nav-sidebar .nav-link:focus {
+    outline: none !important;
+    box-shadow: 0 0 10px rgba(255, 174, 3, 0.6); /* Efek glow saat focus */
+}
+
+.nav-header {
+    color: #FFDDEE !important; /* Warna header sidebar */
+    text-transform: uppercase; /* Huruf kapital */
+    font-size: 12px; /* Ukuran lebih kecil */
+    letter-spacing: 1px; /* Jarak antar huruf */
+}
+
+/* Input Form Sidebar */
+.sidebar .form-control-sidebar {
+    border: none;
+    color: #ffffff;
+    padding: 10px 15px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    border-radius: 15px;
+    transition: all 0.3s ease-in-out;
+}
+
+.sidebar .form-control-sidebar:focus {
+    background-color: rgba(255, 255, 255, 0.3);
+    color: #ffffff;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+    outline: none;
+}
+
+.sidebar .input-group {
+    border-radius: 20px;
+    color: #ffffff;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+/* Sidebar Scrollbar */
+.main-sidebar::-webkit-scrollbar {
+    width: 8px;
+}
+
+.main-sidebar::-webkit-scrollbar-thumb {
+    background-color: #FFAE03; /* Warna scrollbar */
+    border-radius: 10px;
+}
+
+.main-sidebar::-webkit-scrollbar-track {
+    background: transparent; /* Transparan */
+}
+
+.main-sidebar.collapsed {
+    width: 70px; /* Lebar sidebar saat collapsed */
+}
+
+.main-sidebar.collapsed .brand-link {
+    text-align: center; /* Centered logo saat collapsed */
+}
+
+.main-sidebar.collapsed .nav-link span,
+.main-sidebar.collapsed .nav-header {
+    display: none; /* Hilangkan teks di sidebar */
+}
+
+.main-sidebar .brand-link img {
+    transition: all 0.3s ease; /* Efek smooth untuk logo */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); /* Shadow pada logo */
+}
+
+.main-sidebar.collapsed .brand-link img {
+    transform: scale(1.1); /* Perbesar sedikit logo */
+}
+
+.main-sidebar.collapsed .nav-link {
+    text-align: center; /* Posisi ikon center saat collapsed */
+    padding: 10px 0; /* Padding lebih kecil */
+}
+
+.main-sidebar .nav-link {
+    transition: all 0.3s ease; /* Smooth hover */
+}
+
+.main-sidebar .nav-link:hover {
+    background-color: #4f46e5; /* Warna hover */
+    color: #ffffff !important;
+    border-radius: 8px; /* Sudut membulat saat hover */
+}

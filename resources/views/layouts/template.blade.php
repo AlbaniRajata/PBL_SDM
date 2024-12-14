@@ -13,6 +13,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="{{ url('plugins/fontawesome-free/css/all.min.css') }}">
     <script src="https://kit.fontawesome.com/f2110b96b9.js" crossorigin="anonymous"></script>
@@ -43,6 +44,77 @@
     <link rel="stylesheet" href="{{ url('dist/css/adminlte.min.css') }}">
 
 </head>
+<style>
+:root {
+  --primary-color: #6777EF;
+  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+body, html {
+  font-family: var(--font-family);
+  font-size: 14px;
+  line-height: 1.6;
+  color: #333;
+  font-weight: 400;
+}
+
+/* Typography Consistency */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-family);
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+h1 { font-size: 2rem; }
+h2 { font-size: 1.75rem; }
+h3 { font-size: 1.5rem; }
+h4 { font-size: 1.25rem; }
+h5 { font-size: 1.1rem; }
+h6 { font-size: 1rem; }
+
+/* Form Elements */
+input, 
+button, 
+select, 
+textarea {
+  font-family: var(--font-family);
+  font-size: 14px;
+}
+
+/* Tables */
+table {
+  font-family: var(--font-family);
+  font-size: 14px;
+}
+
+/* Sidebar Specific */
+.sidebar {
+  font-family: var(--font-family);
+}
+
+.nav-link p {
+  font-weight: 500;
+  margin-bottom: 0;
+}
+
+.nav-header {
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 0.75rem;
+}
+
+/* Buttons */
+.btn {
+  font-family: var(--font-family);
+  font-weight: 500;
+}
+
+/* Optional: Improve readability */
+p {
+  margin-bottom: 1rem;
+}
+</style>
 
 <body class="hold-transition sidebar-mini">
     <!-- Site wrapper -->
@@ -52,14 +124,8 @@
         <!-- /.navbar -->
 
         <!-- Main Sidebar Container -->
-        <aside class="main-sidebar sidebar-dark-primary elevation-4">
-            <!-- Brand Logo -->
-            <a href="{{ url('/') }}" class="brand-link"
-                style="display: flex; align-items: center; justify-content: center; text-align: center;">
-                <img src="{{ url('polinema.png') }}" alt="Logo" class="brand-image img-cube"
-                    style="margin-right: 10px; margin-left:-10px;">
-                <span class="brand-text font-weight-light"><b>SI</b>-SDM</span>
-            </a>
+        <aside class="main-sidebar sidebar-light-primary elevation-4">
+
 
             <!-- Sidebar -->
             @include('layouts.sidebar')

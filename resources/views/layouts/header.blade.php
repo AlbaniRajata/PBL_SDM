@@ -13,7 +13,7 @@
         <li class="nav-item d-none d-sm-inline-block">
             <!-- Using PHP strtoupper function -->
             <span class="nav-link border border-primary text-primary rounded px-3 py-2">
-                {{ strtoupper(auth()->user()->level) }}/{{ auth()->user()->username }}
+            Anda masuk sebagai {{ auth()->user()->level }} ({{ auth()->user()->username }})
             </span>
             <!-- Using CSS text-transform property -->
             <!-- <span class="nav-link border border-primary text-primary rounded px-3 py-2 text-uppercase">
@@ -60,7 +60,7 @@
                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Edit Profil">
                     <i class="fas fa-user"></i>
                 </a>
-                <div class="dropdown-menu dropdown-menu-right animate__animated animate__fadeIn"
+                <div class="dropdown-menu dropdown-menu-right animate_animated animate_fadeIn"
                     aria-labelledby="profileDropdown">
                     <a href="{{ route('profil.index') }}" class="dropdown-item">
                         <i class="fas fa-edit mr-2"></i> Edit Profil
