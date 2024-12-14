@@ -27,17 +27,17 @@
                 </div>
                 <div class="form-group">
                     <label for="tanggal_mulai">Tanggal Mulai</label>
-                    <input type="datetime-local" class="form-control" id="tanggal_mulai" name="tanggal_mulai" value="{{ $kegiatan->tanggal_mulai }}" required>
+                    <input type="datetime-local" class="form-control" id="tanggal_mulai" name="tanggal_mulai" value="{{ \Carbon\Carbon::parse($kegiatan->tanggal_mulai)->format('Y-m-d\TH:i') }}" required>
                     <small id="error-tanggal_mulai" class="error-text form-text text-danger"></small>
                 </div>
                 <div class="form-group">
                     <label for="tanggal_selesai">Tanggal Selesai</label>
-                    <input type="datetime-local" class="form-control" id="tanggal_selesai" name="tanggal_selesai" value="{{ $kegiatan->tanggal_selesai }}" required>
+                    <input type="datetime-local" class="form-control" id="tanggal_selesai" name="tanggal_selesai" value="{{ \Carbon\Carbon::parse($kegiatan->tanggal_selesai)->format('Y-m-d\TH:i') }}" required>
                     <small id="error-tanggal_selesai" class="error-text form-text text-danger"></small>
                 </div>
                 <div class="form-group">
                     <label for="tanggal_acara">Tanggal Acara</label>
-                    <input type="datetime-local" class="form-control" id="tanggal_acara" name="tanggal_acara" value="{{ $kegiatan->tanggal_acara }}" required>
+                    <input type="datetime-local" class="form-control" id="tanggal_acara" name="tanggal_acara" value="{{ \Carbon\Carbon::parse($kegiatan->tanggal_acara)->format('Y-m-d\TH:i') }}" required>
                     <small id="error-tanggal_acara" class="error-text form-text text-danger"></small>
                 </div>
                 <div class="form-group">
@@ -127,7 +127,7 @@
                     data: $(form).serialize(),
                     success: function(response) {
                         if (response.status) {
-                            $('#modal-master').modal('hide');
+                            $('#myModal').modal('hide');
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Berhasil',
