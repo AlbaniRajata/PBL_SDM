@@ -3,23 +3,19 @@
 <div class="container-fluid">
     <div class="card card-outline card-primary">
         <div class="card-header">
-            
             <div class="card-tools">
-                <form action="{{ route('admin.file.index') }}" method="GET" class="form-inline">
-                    <input type="text" name="search" class="form-control" placeholder="Cari dokumen..." value="{{ request('search') }}">
-                    <button type="submit" class="btn btn-primary ml-2">Cari</button>
-                </form>
+                <form action="{{ route('admin.file.index') }}" method="GET" class="form-inline"></form>
             </div>
         </div>
         <div class="card-body">
-            <table class="table table-bordered table-striped">
+            <table class="table table-bordered table-striped table-hover table-sm" id="file-table">
                 <thead>
                     <tr>
-                        <th class="text-center">No</th>
-                        <th class="text-center">Nama Kegiatan</th>
-                        <th class="text-center">Nama Dokumen</th>
-                        <th class="text-center">Tanggal Upload</th>
-                        <th class="text-center">Aksi</th>
+                        <th class="text-center" style="width: 5%">No</th>
+                        <th class="text-center" style="width: 25%">Nama Kegiatan</th>
+                        <th class="text-center" style="width: 25%">Nama Dokumen</th>
+                        <th class="text-center" style="width: 25%">Tanggal Upload</th>
+                        <th class="text-center" style="width: 20%">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -38,67 +34,77 @@
                     @endforeach
                 </tbody>
             </table>
-            {{ $dokumen->links() }} <!-- Pagination -->
         </div>
     </div>
 </div>
 
 @push('css')
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 @endpush
 
 @push('js')
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        }
-    });
+    $(document).ready(function() {
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
 
-    function hapusFile(id) {
-        Swal.fire({
-            title: 'Konfirmasi Hapus',
-            text: 'Apakah Anda yakin ingin menghapus file ini?',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Ya, Hapus!',
-            cancelButtonText: 'Batal'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $.ajax({
-                    url: '{{ url("/admin/file") }}/' + id,
-                    type: 'DELETE',
-                    success: function(response) {
-                        if (response.status) {
+        function hapusFile(id) {
+            Swal.fire({
+                title: 'Konfirmasi Hapus',
+                text: 'Apakah Anda yakin ingin menghapus file ini?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Ya, Hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '{{ url("/admin/file") }}/' + id,
+                        type: 'DELETE',
+                        success: function(response) {
+                            if (response.status) {
+                                Swal.fire({
+                                    title: 'Berhasil!',
+                                    text: response.message || 'File berhasil dihapus.',
+                                    icon: 'success'
+                                }).then(() => {
+                                    location.reload();
+                                });
+                            } else {
+                                Swal.fire({
+                                    title: 'Gagal!',
+                                    text: response.message || 'Gagal menghapus file.',
+                                    icon: 'error'
+                                });
+                            }
+                        },
+                        error: function(xhr) {
                             Swal.fire({
-                                title: 'Berhasil!',
-                                text: response.message || 'File berhasil dihapus.',
-                                icon: 'success'
-                            }).then(() => {
-                                location.reload();
-                            });
-                        } else {
-                            Swal.fire({
-                                title: 'Gagal!',
-                                text: response.message || 'Gagal menghapus file.',
+                                title: 'Kesalahan!',
+                                text: 'Terjadi kesalahan saat menghapus data.',
                                 icon: 'error'
                             });
                         }
-                    },
-                    error: function(xhr) {
-                        Swal.fire({
-                            title: 'Kesalahan!',
-                            text: 'Terjadi kesalahan saat menghapus data.',
-                            icon: 'error'
-                        });
+                    });
+                }
+            });
+        }
+
+        var dataUser = $('#file-table').DataTable({
+            columnDefs: [
+                {
+                    targets: 0,
+                    render: function (data, type, row, meta) {
+                        return meta.row + 1;
                     }
-                });
-            }
+                }
+            ]
         });
-    }
+    });
 </script>
 @endpush
 @endsection

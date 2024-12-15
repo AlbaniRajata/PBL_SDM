@@ -28,7 +28,7 @@ class FileHistoryController extends Controller
                   });
         }
 
-        $dokumen = $query->paginate(10);
+        $dokumen = $query->paginate(100);
 
         return view('admin.file.index', [
             'breadcrumb' => $breadcrumb,
