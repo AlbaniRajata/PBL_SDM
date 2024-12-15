@@ -1,10 +1,11 @@
 @extends('layouts.template')
 
 @section('content')
-<div class="card card-outline card-primary">
-    <div class="card-header">
-        <h3 class="card-title">Daftar Kegiatan</h3>
-    </div>
+<div class="container-fluid">
+    <div class="card card-outline card-primary">
+        <div class="card-header">
+            <h3 class="card-title">Daftar Kegiatan</h3>
+        </div>
     <div class="card-body">
         @if (session('success'))
             <div class="alert alert-success">
