@@ -131,7 +131,7 @@ Route::middleware('auth')->group(function () {
                 Route::get('/', [KegiatanController::class, 'pimpinan']);
                 Route::post('/list', [KegiatanController::class, 'listPimpinan'])->name('pimpinan.kegiatan.list');
                 Route::get('/{id}/show_ajax', [KegiatanController::class, 'show_ajaxPimpinan'])->name('pimpinan.kegiatan.show_ajax');
-                Route::get('/{id}/export_word', [KegiatanController::class, 'exportWord'])->name('pimpinan.kegiatan.export_word');
+                Route::get('/{id}/export_word', [DokumenController::class, 'exportWord'])->name('pimpinan.kegiatan.export_word');
                 Route::get('/export_pdf', [KegiatanController::class, 'exportPdf'])->name('pimpinan.kegiatan.export_pdf');
                 Route::get('/export_excel', [KegiatanController::class, 'exportExcel'])->name('pimpinan.kegiatan.export_excel');
                 Route::get('/kegiatan', [KegiatanController::class, 'getPeriodeKegiatan'])->name('pimpinan.kegiatan.index');
