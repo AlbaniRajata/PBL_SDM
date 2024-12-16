@@ -2,7 +2,7 @@
 
 <div class="sidebar">
 
-<a href="{{ url('/') }}" class="brand-link logo-switch" style="align-items: center; justify-content: center; text-align: center;">
+<a href="{{ url('/') }}" class="brand-link logo-switch" style="align-items: center; text-align: center;">
   <img src="{{ url('logo.png') }}" alt="SI-SDM" class="brand-image img-cube" style="margin-right: 10px; margin-left: -10px;">
   <span class="brand-text font-weight-bold" style="color: #ffffff;"><b>SI</b>-SDM</span>
 </a>

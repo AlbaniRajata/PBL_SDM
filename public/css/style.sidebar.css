@@ -9,11 +9,17 @@
     width: 100px; /* Lebar saat collapsed */
 }
 
+body:not(.layout-fixed) .main-sidebar {
+    height: 100vh;
+    min-height: 100%;
+    position: absolute;
+    top: 0;
+}
+
 /* Logo Sidebar */
 .brand-link {
     display: flex;
     align-items: center;
-    justify-content: center;
     transition: all 0.3s ease;
 }
 
@@ -27,6 +33,10 @@
     height: 50px; /* Tetap full size */
     width: auto;
     transform: none; /* Hapus transformasi */
+}
+
+.sidebar.collapsed>a.brand-link.logo-switch {
+    justify-content: left !important; /* Geser logo ke kiri */
 }
 
 .brand-text {
