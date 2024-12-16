@@ -47,6 +47,7 @@
 
         $(document).ready(function() {
             $('#dataTable').DataTable({
+                searching: false,
                 processing: true,
                 serverSide: true,
                 ajax: {
