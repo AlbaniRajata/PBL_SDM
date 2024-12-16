@@ -124,7 +124,7 @@ Route::middleware('auth')->group(function () {
                 Route::get('/', [UserController::class, 'pimpinan']);
                 Route::post('/list', [UserController::class, 'listPimpinan'])->name('pimpinan.user.list');
                 Route::get('/{id}/show_ajax', [UserController::class, 'show_ajaxPimpinan'])->name('pimpinan.user.show_ajax');
-                Route::get('/export_pdf', [UserController::class, 'exportPdf'])->name('pimpinan.user.export_pdf');
+                Route::get('/export_pdf', [UserController::class, 'exportPdf'])->name('admin.user.export_pdf');
             });
 
             Route::prefix('kegiatan')->group(function () {
@@ -132,8 +132,8 @@ Route::middleware('auth')->group(function () {
                 Route::post('/list', [KegiatanController::class, 'listPimpinan'])->name('pimpinan.kegiatan.list');
                 Route::get('/{id}/show_ajax', [KegiatanController::class, 'show_ajaxPimpinan'])->name('pimpinan.kegiatan.show_ajax');
                 Route::get('/{id}/export_word', [DokumenController::class, 'exportWord'])->name('pimpinan.kegiatan.export_word');
-                Route::get('/export_pdf', [KegiatanController::class, 'exportPdf'])->name('pimpinan.kegiatan.export_pdf');
-                Route::get('/export_excel', [KegiatanController::class, 'exportExcel'])->name('pimpinan.kegiatan.export_excel');
+                Route::get('/export_pdf', [KegiatanController::class, 'exportPdf'])->name('admin.kegiatan.export_pdf');
+                Route::get('/export_excel', [KegiatanController::class, 'exportExcel'])->name('admin.kegiatan.export_excel');
                 Route::get('/kegiatan', [KegiatanController::class, 'getPeriodeKegiatan'])->name('pimpinan.kegiatan.index');
             });
 
