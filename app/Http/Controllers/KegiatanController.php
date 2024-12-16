@@ -162,8 +162,7 @@ class KegiatanController extends Controller
         ->whereHas('anggota', function ($query) use ($user) {
             $query->where('id_user', $user)
                   ->where('id_jabatan_kegiatan', '!=', 1);
-        })
-        ->get();
+        });
 
         $activeMenu = 'kegiatan anggota';
         return view('dosenAnggota.kegiatan.index', ['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu, 'kegiatan' => $kegiatan]);

@@ -6,10 +6,7 @@
         <div class="card-header">
             <h3 class="card-title">Daftar Kegiatan</h3>
             <div class="card-tools">
-                <form action="{{ route('kegiatan.upload_dokumen') }}" method="POST" class="form-inline">
-                    <input type="text" name="search" class="form-control" placeholder="Cari kegiatan..." value="{{ request('search') }}">
-                    <button type="submit" class="btn btn-primary ml-2">Cari</button>
-                </form>
+                <form action="{{ route('kegiatan.upload_dokumen') }}" method="POST" class="form-inline"></form>
             </div>
         </div>
         <div class="card-body">
