@@ -41,7 +41,7 @@ class AgendaAnggotaController extends Controller
                 ], 403);
             }
 
-            // Ambil agenda dari t_agenda_anggota
+            // Ambil agenda dari m_agenda_anggota
             $agendaList = AgendaAnggotaModel::where('id_anggota', function($query) use ($user_id, $id_kegiatan) {
                 $query->select('id_anggota')
                     ->from('t_anggota')
