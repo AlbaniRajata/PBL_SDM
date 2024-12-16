@@ -14,14 +14,14 @@ class UserPimpinanController extends Controller
     {
         try {
             $dosen = UserModel::where('level', 'dosen')
-            ->select('t_user.id_user', 't_user.username', 't_user.nama', 
-                    't_user.email', 't_user.NIP', 't_user.tanggal_lahir',
+            ->select('m_user.id_user', 'm_user.username', 'm_user.nama', 
+                    'm_user.email', 'm_user.NIP', 'm_user.tanggal_lahir',
                     DB::raw('COUNT(t_anggota.id_kegiatan) as total_kegiatan'),
                     DB::raw('COALESCE(SUM(t_jabatan_kegiatan.poin), 0) as total_poin'))
-            ->leftJoin('t_anggota', 't_user.id_user', '=', 't_anggota.id_user')
+            ->leftJoin('t_anggota', 'm_user.id_user', '=', 't_anggota.id_user')
             ->leftJoin('t_jabatan_kegiatan', 't_anggota.id_jabatan_kegiatan', '=', 't_jabatan_kegiatan.id_jabatan_kegiatan')
-            ->groupBy('t_user.id_user', 't_user.username', 't_user.nama', 
-                    't_user.email', 't_user.NIP', 't_user.tanggal_lahir')
+            ->groupBy('m_user.id_user', 'm_user.username', 'm_user.nama', 
+                    'm_user.email', 'm_user.NIP', 'm_user.tanggal_lahir')
             ->get();
 
             if ($dosen->isEmpty()) {
@@ -49,15 +49,15 @@ class UserPimpinanController extends Controller
     public function getDosenDetail($id)
     {
         try {
-            $dosen = UserModel::where('t_user.level', 'dosen')
-            ->where('t_user.id_user', $id)
-            ->select('t_user.id_user', 't_user.username', 't_user.nama', 
-                    't_user.email', 't_user.NIP', 't_user.tanggal_lahir',
+            $dosen = UserModel::where('m_user.level', 'dosen')
+            ->where('m_user.id_user', $id)
+            ->select('m_user.id_user', 'm_user.username', 'm_user.nama', 
+                    'm_user.email', 'm_user.NIP', 'm_user.tanggal_lahir',
                     DB::raw('COUNT(DISTINCT t_anggota.id_kegiatan) as total_kegiatan'),
                     DB::raw('COALESCE(SUM(t_jabatan_kegiatan.poin), 0) as total_poin'))
-            ->leftJoin('t_anggota', 't_user.id_user', '=', 't_anggota.id_user')
+            ->leftJoin('t_anggota', 'm_user.id_user', '=', 't_anggota.id_user')
             ->leftJoin('t_jabatan_kegiatan', 't_anggota.id_jabatan_kegiatan', '=', 't_jabatan_kegiatan.id_jabatan_kegiatan')
-            ->groupBy('t_user.id_user', 't_user.username', 't_user.nama', 't_user.email', 't_user.NIP', 't_user.tanggal_lahir')
+            ->groupBy('m_user.id_user', 'm_user.username', 'm_user.nama', 'm_user.email', 'm_user.NIP', 'm_user.tanggal_lahir')
             ->first();
 
             if (!$dosen) {
@@ -115,14 +115,14 @@ class UserPimpinanController extends Controller
                 $query->where('nama', 'LIKE', "%{$keyword}%")
                         ->orWhere('NIP', 'LIKE', "%{$keyword}%");
             })
-            ->select('t_user.id_user', 't_user.username', 't_user.nama', 
-                    't_user.email', 't_user.NIP', 't_user.tanggal_lahir',
+            ->select('m_user.id_user', 'm_user.username', 'm_user.nama', 
+                    'm_user.email', 'm_user.NIP', 'm_user.tanggal_lahir',
                     DB::raw('COUNT(t_anggota.id_kegiatan) as total_kegiatan'),
                     DB::raw('COALESCE(SUM(t_jabatan_kegiatan.poin), 0) as total_poin'))
-            ->leftJoin('t_anggota', 't_user.id_user', '=', 't_anggota.id_user')
+            ->leftJoin('t_anggota', 'm_user.id_user', '=', 't_anggota.id_user')
             ->leftJoin('t_jabatan_kegiatan', 't_anggota.id_jabatan_kegiatan', '=', 't_jabatan_kegiatan.id_jabatan_kegiatan')
-            ->groupBy('t_user.id_user', 't_user.username', 't_user.nama', 
-                    't_user.email', 't_user.NIP', 't_user.tanggal_lahir')
+            ->groupBy('m_user.id_user', 'm_user.username', 'm_user.nama', 
+                    'm_user.email', 'm_user.NIP', 'm_user.tanggal_lahir')
             ->get();
 
             if ($dosen->isEmpty()) {

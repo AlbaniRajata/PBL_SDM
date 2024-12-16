@@ -49,12 +49,12 @@ class UserAdminController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'username' => 'required|unique:t_user',
+                'username' => 'required|unique:m_user',
                 'nama' => 'required',
                 'tanggal_lahir' => 'required|date',
-                'email' => 'required|email|unique:t_user',
+                'email' => 'required|email|unique:m_user',
                 'password' => 'required|min:6',
-                'NIP' => 'required|unique:t_user',
+                'NIP' => 'required|unique:m_user',
                 'level' => 'required|in:admin,user,pimpinan,dosen'
             ]);
 
@@ -93,11 +93,11 @@ class UserAdminController extends Controller
             $user = UserModel::findOrFail($id);
 
             $validator = Validator::make($request->all(), [
-                'username' => 'required|unique:t_user,username,'.$id.',id_user',
+                'username' => 'required|unique:m_user,username,'.$id.',id_user',
                 'nama' => 'required',
                 'tanggal_lahir' => 'required|date',
-                'email' => 'required|email|unique:t_user,email,'.$id.',id_user',
-                'NIP' => 'required|unique:t_user,NIP,'.$id.',id_user',
+                'email' => 'required|email|unique:m_user,email,'.$id.',id_user',
+                'NIP' => 'required|unique:m_user,NIP,'.$id.',id_user',
                 'level' => 'required|in:admin,user,pimpinan,dosen'
             ]);
 
@@ -154,7 +154,7 @@ class UserAdminController extends Controller
 
             $validator = Validator::make($request->all(), [
                 'nama' => 'required',
-                'email' => 'required|email|unique:t_user,email,'.$id.',id_user',
+                'email' => 'required|email|unique:m_user,email,'.$id.',id_user',
                 'old_password' => 'required_with:new_password',
                 'new_password' => 'nullable|min:5',
                 'confirm_password' => 'same:new_password'

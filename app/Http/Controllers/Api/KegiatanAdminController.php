@@ -45,7 +45,7 @@ class KegiatanAdminController extends Controller
                 'tempat_kegiatan' => 'required|string',
                 'jenis_kegiatan' => 'required|string',
                 'anggota' => 'required|array',
-                'anggota.*.id_user' => 'required|exists:t_user,id_user',
+                'anggota.*.id_user' => 'required|exists:m_user,id_user',
                 'anggota.*.id_jabatan_kegiatan' => 'required|exists:t_jabatan_kegiatan,id_jabatan_kegiatan'
             ]);
 
@@ -97,7 +97,7 @@ class KegiatanAdminController extends Controller
                 'tempat_kegiatan' => 'required|string',
                 'jenis_kegiatan' => 'required|string',
                 'anggota' => 'required|array',
-                'anggota.*.id_user' => 'required|exists:t_user,id_user',
+                'anggota.*.id_user' => 'required|exists:m_user,id_user',
                 'anggota.*.id_jabatan_kegiatan' => 'required|exists:t_jabatan_kegiatan,id_jabatan_kegiatan'
             ]);
 
