@@ -158,9 +158,9 @@ class DokumenController extends Controller
 
                $section->addLine(['weight' => 1, 'width' => 500, 'height' => 0, 'color' => '000000']);
    
-               $section->addText("DAFTAR PANITIA", ['alignment' => Jc::CENTER, 'bold' => true, 'size' => 14]);
-               $section->addText(strtoupper($kegiatan->nama_kegiatan), ['alignment' => Jc::CENTER]);
-               $section->addText(date('d F Y', strtotime($kegiatan->tanggal_acara)), ['alignment' => Jc::CENTER]);
+               $section->addText("Daftar Panitia", ['bold' => true, 'size' => 14], ['alignment' => Jc::CENTER]);
+               $section->addtext(strtoupper($kegiatan->nama_kegiatan),[], ['alignment' => Jc::CENTER]);
+               $section->addtext(date('d F Y', strtotime($kegiatan->tanggal_acara)), [], ['alignment' => Jc::CENTER]);
        
                // Tabel Anggota
                $styleTable = [
