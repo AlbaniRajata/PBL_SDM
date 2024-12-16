@@ -1385,9 +1385,9 @@ class KegiatanController extends Controller
         // Ambil data kegiatan beserta agendanya
         $kegiatan = KegiatanModel::with('agenda')->findOrFail($id_kegiatan);
 
-        $agendaAnggota = DB::table('t_agenda_anggota as aa')
+        $agendaAnggota = DB::table('m_agenda_anggota as aa')
         ->join('t_agenda as ag', 'aa.id_agenda', '=', 'ag.id_agenda')
-        ->leftJoin('t_dokumen as dkm', 'dkm.id_dokumen', '=', 'aa.id_dokumen')
+        ->leftJoin('m_dokumen as dkm', 'dkm.id_dokumen', '=', 'aa.id_dokumen')
         ->select('aa.id_agenda', 'aa.id_dokumen', 'dkm.file_path', 'dkm.nama_dokumen', 'aa.nama_agenda')
         ->where('ag.id_kegiatan', $id_kegiatan)
         ->get();
@@ -1832,10 +1832,10 @@ class KegiatanController extends Controller
         if ($request->ajax()) {
             $userId = auth()->user()->id_user;
 
-            $data = AgendaAnggotaModel::select('t_agenda_anggota.id_agenda_anggota', 't_agenda_anggota.nama_agenda', 't_kegiatan.nama_kegiatan')
-                ->join('t_agenda', 't_agenda_anggota.id_agenda', '=', 't_agenda.id_agenda') // Join dengan tabel agenda
+            $data = AgendaAnggotaModel::select('m_agenda_anggota.id_agenda_anggota', 'm_agenda_anggota.nama_agenda', 't_kegiatan.nama_kegiatan')
+                ->join('t_agenda', 'm_agenda_anggota.id_agenda', '=', 't_agenda.id_agenda') // Join dengan tabel agenda
                 ->join('t_kegiatan', 't_agenda.id_kegiatan', '=', 't_kegiatan.id_kegiatan') // Join dengan tabel kegiatan
-                ->join('t_anggota', 't_agenda_anggota.id_anggota', '=', 't_anggota.id_anggota') // Join dengan tabel anggota
+                ->join('t_anggota', 'm_agenda_anggota.id_anggota', '=', 't_anggota.id_anggota') // Join dengan tabel anggota
                 ->where('t_anggota.id_user', $userId) // Filter berdasarkan user yang login
                 ->where('t_anggota.id_jabatan_kegiatan', '!=', 1) // Filter id_jabatan_kegiatan antara 2 hingga 6
                 ->get(); // Ambil hasil query
@@ -1865,7 +1865,7 @@ class KegiatanController extends Controller
         $validator = Validator::make($request->all(), [
             'id_agenda_anggota' => [
                 'required',
-                'exists:t_agenda_anggota,id_agenda_anggota', // Ensure id_agenda_anggota exists in the table
+                'exists:m_agenda_anggota,id_agenda_anggota', // Ensure id_agenda_anggota exists in the table
             ],
             'file' => 'required|mimes:jpeg,jpg,pdf|max:2048', // 2MB max
         ]);

@@ -9,7 +9,7 @@ class DokumenSeeder extends Seeder
 {
     public function run()
     {
-        DB::table('t_dokumen')->insert([
+        DB::table('m_dokumen')->insert([
             [
                 'nama_dokumen' => 'Percobaan 1',
                 'progress' => 20,

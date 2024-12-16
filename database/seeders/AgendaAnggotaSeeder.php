@@ -9,7 +9,7 @@ class AgendaAnggotaSeeder extends Seeder
 {
     public function run()
     {
-        DB::table('t_agenda_anggota')->insert([
+        DB::table('m_agenda_anggota')->insert([
             [
                 'id_agenda' => 1,
                 'id_anggota' => 1,
