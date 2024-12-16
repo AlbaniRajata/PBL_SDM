@@ -96,7 +96,7 @@ class UserController extends Controller
                 'tanggal_lahir' => 'required|date',
                 'email' => 'required|string|email|max:255|unique:m_user',
                 'password' => 'required|string|min:5',
-                'NIP' => 'required|numeric|max:255|unique:m_user',
+                'NIP' => 'required|numeric|unique:m_user',
                 'level' => 'required|string|in:admin,dosen,pimpinan',
             ]);
 
@@ -174,7 +174,7 @@ class UserController extends Controller
                 'nama' => 'required|string|max:255',
                 'tanggal_lahir' => 'required|date',
                 'email' => 'required|string|email|max:255|unique:m_user,email,' . $id . ',id_user',
-                'NIP' => 'required|numeric|max:255|unique:m_user,NIP,' . $id . ',id_user',
+                'NIP' => 'required|numeric|unique:m_user,NIP,' . $id . ',id_user',
                 'level' => 'required|string|in:admin,dosen,pimpinan',
             ]);
 
