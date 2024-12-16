@@ -22,7 +22,7 @@ class UserModel extends Authenticatable implements JWTSubject
 
     use HasFactory;
 
-    protected $table = 't_user';
+    protected $table = 'm_user';
     protected $primaryKey = 'id_user';
 
     protected $fillable = [

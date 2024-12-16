@@ -19,7 +19,7 @@
                 <div id="agenda-anggota-container">
                     @foreach ($anggota as $index => $a)
                         <div class="agenda-anggota-item">
-                        <h5>Agenda untuk {{ $a->user->nama }}</h5> <!-- Nama anggota dari tabel t_user -->
+                        <h5>Agenda untuk {{ $a->user->nama }}</h5> <!-- Nama anggota dari tabel m_user -->
                             <input type="hidden" name="id_anggota[]" value="{{ $a->id_anggota }}"> <!-- ID anggota -->
                             <div class="form-group">
                                 <label>Nama Agenda</label>

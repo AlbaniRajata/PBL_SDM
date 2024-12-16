@@ -12,14 +12,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('t_user', function (Blueprint $table) {
+        Schema::create('m_user', function (Blueprint $table) {
             $table->id('id_user');
             $table->string('username')->index();
             $table->string('nama');
             $table->date('tanggal_lahir')->nullable();
             $table->string('email')->index();
             $table->string('password');
-            $table->number('NIP')->nullable();
+            $table->string('NIP')->nullable();
             $table->enum('level', ['admin', 'pimpinan', 'dosen']);
             $table->string('profile_image')->nullable();
             $table->timestamps();
@@ -31,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('t_user');
+        Schema::dropIfExists('m_user');
     }
 };
