@@ -68,19 +68,18 @@
                     render: function(data, type, row) {
             // Filter dokumen hanya untuk jenis_dokumen = 'surat tugas'
             var dokumenSuratTugas = row.dokumen.filter(function(dok) {
-                return dok.jenis_dokumen === 'surat tugas';
-            });
+                            return dok.jenis_dokumen === 'surat tugas';
+                        });
 
-            // Jika ada dokumen dengan jenis 'surat tugas', buat tombol download
-            if (dokumenSuratTugas.length > 0) {
-                var dokumenHtml = '';
-                dokumenSuratTugas.forEach(function(dok) {
-                    dokumenHtml += '<a href="' + 
-                        "{{ route('kegiatan.download-surat', ':id') }}".replace(':id', dok.id_dokumen) + 
-                        '" class="btn btn-sm btn-primary mr-1"><i class="fas fa-download"></i> Download</a>';
-                });
-                return dokumenHtml;
-            }
+                        // Jika ada dokumen dengan jenis 'surat tugas', buat tombol download
+                        if (dokumenSuratTugas.length > 0) {
+                            var dokumenHtml = '';
+                            var dokumenTerakhir = dokumenSuratTugas[dokumenSuratTugas.length - 1];
+                            dokumenHtml += '<a href="' + 
+                                "{{ route('kegiatan.download-surat', ':id') }}".replace(':id', dokumenTerakhir.id_dokumen) + 
+                                '" class="btn btn-sm btn-primary mr-1"><i class="fas fa-download"></i> Download</a>';
+                            return dokumenHtml;
+                        }
 
             // Jika tidak ada dokumen dengan jenis 'surat tugas'
             return '<button class="btn btn-sm btn-warning"><i class="fas fa-exclamation-triangle"></i> Tidak ada dokumen</button>';
