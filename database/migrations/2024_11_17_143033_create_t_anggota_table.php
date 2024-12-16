@@ -20,7 +20,7 @@ return new class extends Migration
 
             // Add foreign key constraint
             $table->foreign('id_kegiatan', 'fk_kegiatan')->references('id_kegiatan')->on('t_kegiatan');
-            $table->foreign('id_user', 'fk_user')->references('id_user')->on('t_user');
+            $table->foreign('id_user', 'fk_user')->references('id_user')->on('m_user');
             $table->foreign('id_jabatan_kegiatan', 'fk_jabatan')->references('id_jabatan_kegiatan')->on('t_jabatan_kegiatan');
         });
     }

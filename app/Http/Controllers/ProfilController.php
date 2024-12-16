@@ -30,7 +30,7 @@ class ProfilController extends Controller
     {
         // Validasi input
         $request->validate([
-            'username' => 'required|string|min:3|unique:t_user,username,' . $id . ',id_user',
+            'username' => 'required|string|min:3|unique:m_user,username,' . $id . ',id_user',
             'nama' => 'required|string|max:100',
             'old_password' => 'nullable|string',
             'password' => 'nullable|min:5',

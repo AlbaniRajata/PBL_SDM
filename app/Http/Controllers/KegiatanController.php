@@ -972,7 +972,7 @@ class KegiatanController extends Controller
     {
         $userId = Auth::id();
 
-    $user = DB::table('t_user')->where('id_user', $userId)->first();
+    $user = DB::table('m_user')->where('id_user', $userId)->first();
     $userName = $user->username; // Assuming 'name' is the column storing the user's name
     
     $kegiatan = DB::table('t_anggota AS anggota')

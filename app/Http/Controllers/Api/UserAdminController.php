@@ -155,9 +155,8 @@ class UserAdminController extends Controller
             $validator = Validator::make($request->all(), [
                 'nama' => 'required',
                 'email' => 'required|email|unique:t_user,email,'.$id.',id_user',
-                'NIP' => 'required|unique:t_user,NIP,'.$id.',id_user',
                 'old_password' => 'required_with:new_password',
-                'new_password' => 'nullable|min:3',
+                'new_password' => 'nullable|min:5',
                 'confirm_password' => 'same:new_password'
             ]);
 
