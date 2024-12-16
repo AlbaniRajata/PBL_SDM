@@ -91,12 +91,12 @@ class UserController extends Controller
     {
         if ($request->ajax() || $request->wantsJson()) {
             $validator = Validator::make($request->all(), [
-                'username' => 'required|string|max:255|unique:t_user',
+                'username' => 'required|string|max:255|unique:m_user',
                 'nama' => 'required|string|max:255',
                 'tanggal_lahir' => 'required|date',
-                'email' => 'required|string|email|max:255|unique:t_user',
+                'email' => 'required|string|email|max:255|unique:m_user',
                 'password' => 'required|string|min:5',
-                'NIP' => 'required|string|max:255|unique:t_user',
+                'NIP' => 'required|numeric|max:255|unique:m_user',
                 'level' => 'required|string|in:admin,dosen,pimpinan',
             ]);
 
@@ -170,11 +170,11 @@ class UserController extends Controller
 
         if ($request->ajax() || $request->wantsJson()) {
             $validator = Validator::make($request->all(), [
-                'username' => 'required|string|max:255|unique:t_user,username,' . $id . ',id_user',
+                'username' => 'required|string|max:255|unique:m_user,username,' . $id . ',id_user',
                 'nama' => 'required|string|max:255',
                 'tanggal_lahir' => 'required|date',
-                'email' => 'required|string|email|max:255|unique:t_user,email,' . $id . ',id_user',
-                'NIP' => 'required|string|max:255|unique:t_user,NIP,' . $id . ',id_user',
+                'email' => 'required|string|email|max:255|unique:m_user,email,' . $id . ',id_user',
+                'NIP' => 'required|numeric|max:255|unique:m_user,NIP,' . $id . ',id_user',
                 'level' => 'required|string|in:admin,dosen,pimpinan',
             ]);
 

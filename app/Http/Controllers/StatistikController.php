@@ -19,36 +19,36 @@ class StatistikController extends Controller
         ];
         $activeMenu = 'statistik admin';
     
-        $poinDosen = DB::table('t_user')
-            ->leftJoin('t_anggota', 't_user.id_user', '=', 't_anggota.id_user')
+        $poinDosen = DB::table('m_user')
+            ->leftJoin('t_anggota', 'm_user.id_user', '=', 't_anggota.id_user')
             ->leftJoin('t_kegiatan', 't_anggota.id_kegiatan', '=', 't_kegiatan.id_kegiatan')
             ->leftJoin('t_jabatan_kegiatan', 't_anggota.id_jabatan_kegiatan', '=', 't_jabatan_kegiatan.id_jabatan_kegiatan')
             ->select(
-                't_user.nama',
-                't_user.id_user',
+                'm_user.nama',
+                'm_user.id_user',
                 DB::raw('COUNT(DISTINCT t_anggota.id_kegiatan) as total_kegiatan'),
                 DB::raw('COALESCE(SUM(t_jabatan_kegiatan.poin), 0) as total_poin')
             )
-            ->where('t_user.level', 'dosen')
-            ->groupBy('t_user.id_user', 't_user.nama')
+            ->where('m_user.level', 'dosen')
+            ->groupBy('m_user.id_user', 'm_user.nama')
             ->get();
     
         // Fetch detailed activities for each lecturer
-        $dosenKegiatan = DB::table('t_user')
-            ->leftJoin('t_anggota', 't_user.id_user', '=', 't_anggota.id_user')
+        $dosenKegiatan = DB::table('m_user')
+            ->leftJoin('t_anggota', 'm_user.id_user', '=', 't_anggota.id_user')
             ->leftJoin('t_kegiatan', 't_anggota.id_kegiatan', '=', 't_kegiatan.id_kegiatan')
             ->leftJoin('t_jabatan_kegiatan', 't_anggota.id_jabatan_kegiatan', '=', 't_jabatan_kegiatan.id_jabatan_kegiatan')
             ->select(
-                't_user.id_user',
-                't_user.nama',
+                'm_user.id_user',
+                'm_user.nama',
                 't_kegiatan.nama_kegiatan',
                 't_kegiatan.tanggal_acara',
                 't_kegiatan.jenis_kegiatan',
                 't_jabatan_kegiatan.jabatan_nama',
                 't_jabatan_kegiatan.poin'
             )
-            ->where('t_user.level', 'dosen')
-            ->orderBy('t_user.nama')
+            ->where('m_user.level', 'dosen')
+            ->orderBy('m_user.nama')
             ->orderBy('t_kegiatan.tanggal_acara')
             ->get()
             ->groupBy('id_user');
@@ -64,36 +64,36 @@ class StatistikController extends Controller
         ];
         $activeMenu = 'statistik pimpinan';
     
-        $poinDosen = DB::table('t_user')
-            ->leftJoin('t_anggota', 't_user.id_user', '=', 't_anggota.id_user')
+        $poinDosen = DB::table('m_user')
+            ->leftJoin('t_anggota', 'm_user.id_user', '=', 't_anggota.id_user')
             ->leftJoin('t_kegiatan', 't_anggota.id_kegiatan', '=', 't_kegiatan.id_kegiatan')
             ->leftJoin('t_jabatan_kegiatan', 't_anggota.id_jabatan_kegiatan', '=', 't_jabatan_kegiatan.id_jabatan_kegiatan')
             ->select(
-                't_user.nama',
-                't_user.id_user',
+                'm_user.nama',
+                'm_user.id_user',
                 DB::raw('COUNT(DISTINCT t_anggota.id_kegiatan) as total_kegiatan'),
                 DB::raw('COALESCE(SUM(t_jabatan_kegiatan.poin), 0) as total_poin')
             )
-            ->where('t_user.level', 'dosen')
-            ->groupBy('t_user.id_user', 't_user.nama')
+            ->where('m_user.level', 'dosen')
+            ->groupBy('m_user.id_user', 'm_user.nama')
             ->get();
     
         // Fetch detailed activities for each lecturer
-        $dosenKegiatan = DB::table('t_user')
-            ->leftJoin('t_anggota', 't_user.id_user', '=', 't_anggota.id_user')
+        $dosenKegiatan = DB::table('m_user')
+            ->leftJoin('t_anggota', 'm_user.id_user', '=', 't_anggota.id_user')
             ->leftJoin('t_kegiatan', 't_anggota.id_kegiatan', '=', 't_kegiatan.id_kegiatan')
             ->leftJoin('t_jabatan_kegiatan', 't_anggota.id_jabatan_kegiatan', '=', 't_jabatan_kegiatan.id_jabatan_kegiatan')
             ->select(
-                't_user.id_user',
-                't_user.nama',
+                'm_user.id_user',
+                'm_user.nama',
                 't_kegiatan.nama_kegiatan',
                 't_kegiatan.tanggal_acara',
                 't_kegiatan.jenis_kegiatan',
                 't_jabatan_kegiatan.jabatan_nama',
                 't_jabatan_kegiatan.poin'
             )
-            ->where('t_user.level', 'dosen')
-            ->orderBy('t_user.nama')
+            ->where('m_user.level', 'dosen')
+            ->orderBy('m_user.nama')
             ->orderBy('t_kegiatan.tanggal_acara')
             ->get()
             ->groupBy('id_user');
@@ -112,17 +112,17 @@ class StatistikController extends Controller
         $userId = $user->id;
         $userId = Auth::id();
 
-        $poinDosen = DB::table('t_user')
-            ->join('t_anggota', 't_user.id_user', '=', 't_anggota.id_user')
+        $poinDosen = DB::table('m_user')
+            ->join('t_anggota', 'm_user.id_user', '=', 't_anggota.id_user')
             ->join('t_jabatan_kegiatan', 't_anggota.id_jabatan_kegiatan', '=', 't_jabatan_kegiatan.id_jabatan_kegiatan')
             ->join('t_kegiatan', 't_anggota.id_kegiatan', '=', 't_kegiatan.id_kegiatan')
             ->select(
-                't_user.nama',
+                'm_user.nama',
                 't_jabatan_kegiatan.jabatan_nama as jabatan',
                 't_kegiatan.nama_kegiatan as judul_kegiatan',
                 't_jabatan_kegiatan.poin'
             )
-            ->where('t_user.id_user', $userId)
+            ->where('m_user.id_user', $userId)
             ->get();
 
         return view('dosen.statistik.index', compact('breadcrumb', 'activeMenu', 'poinDosen'));
@@ -135,35 +135,35 @@ class StatistikController extends Controller
 
     // Siapkan data berdasarkan level pengguna
     if ($userLevel === 'admin' || $userLevel === 'pimpinan') {
-        $poinDosen = DB::table('t_user')
-            ->leftJoin('t_anggota', 't_user.id_user', '=', 't_anggota.id_user')
+        $poinDosen = DB::table('m_user')
+            ->leftJoin('t_anggota', 'm_user.id_user', '=', 't_anggota.id_user')
             ->leftJoin('t_kegiatan', 't_anggota.id_kegiatan', '=', 't_kegiatan.id_kegiatan')
             ->leftJoin('t_jabatan_kegiatan', 't_anggota.id_jabatan_kegiatan', '=', 't_jabatan_kegiatan.id_jabatan_kegiatan')
             ->select(
-                't_user.nama',
-                't_user.id_user',
+                'm_user.nama',
+                'm_user.id_user',
                 DB::raw('COUNT(DISTINCT t_anggota.id_kegiatan) as total_kegiatan'),
                 DB::raw('COALESCE(SUM(t_jabatan_kegiatan.poin), 0) as total_poin')
             )
-            ->where('t_user.level', 'dosen')
-            ->groupBy('t_user.id_user', 't_user.nama')
+            ->where('m_user.level', 'dosen')
+            ->groupBy('m_user.id_user', 'm_user.nama')
             ->get();
 
-        $dosenKegiatan = DB::table('t_user')
-            ->leftJoin('t_anggota', 't_user.id_user', '=', 't_anggota.id_user')
+        $dosenKegiatan = DB::table('m_user')
+            ->leftJoin('t_anggota', 'm_user.id_user', '=', 't_anggota.id_user')
             ->leftJoin('t_kegiatan', 't_anggota.id_kegiatan', '=', 't_kegiatan.id_kegiatan')
             ->leftJoin('t_jabatan_kegiatan', 't_anggota.id_jabatan_kegiatan', '=', 't_jabatan_kegiatan.id_jabatan_kegiatan')
             ->select(
-                't_user.id_user',
-                't_user.nama',
+                'm_user.id_user',
+                'm_user.nama',
                 't_kegiatan.nama_kegiatan',
                 't_kegiatan.tanggal_acara',
                 't_kegiatan.jenis_kegiatan',
                 't_jabatan_kegiatan.jabatan_nama',
                 't_jabatan_kegiatan.poin'
             )
-            ->where('t_user.level', 'dosen')
-            ->orderBy('t_user.nama')
+            ->where('m_user.level', 'dosen')
+            ->orderBy('m_user.nama')
             ->orderBy('t_kegiatan.tanggal_acara')
             ->get()
             ->groupBy('id_user');
@@ -179,35 +179,35 @@ class StatistikController extends Controller
         ]);
         } elseif ($userLevel === 'pimpinan') {
             // Similar logic to admin
-            $poinDosen = DB::table('t_user')
-            ->leftJoin('t_anggota', 't_user.id_user', '=', 't_anggota.id_user')
+            $poinDosen = DB::table('m_user')
+            ->leftJoin('t_anggota', 'm_user.id_user', '=', 't_anggota.id_user')
             ->leftJoin('t_kegiatan', 't_anggota.id_kegiatan', '=', 't_kegiatan.id_kegiatan')
             ->leftJoin('t_jabatan_kegiatan', 't_anggota.id_jabatan_kegiatan', '=', 't_jabatan_kegiatan.id_jabatan_kegiatan')
             ->select(
-                't_user.nama',
-                't_user.id_user',
+                'm_user.nama',
+                'm_user.id_user',
                 DB::raw('COUNT(DISTINCT t_anggota.id_kegiatan) as total_kegiatan'),
                 DB::raw('COALESCE(SUM(t_jabatan_kegiatan.poin), 0) as total_poin')
             )
-            ->where('t_user.level', 'dosen')
-            ->groupBy('t_user.id_user', 't_user.nama')
+            ->where('m_user.level', 'dosen')
+            ->groupBy('m_user.id_user', 'm_user.nama')
             ->get();
 
-        $dosenKegiatan = DB::table('t_user')
-            ->leftJoin('t_anggota', 't_user.id_user', '=', 't_anggota.id_user')
+        $dosenKegiatan = DB::table('m_user')
+            ->leftJoin('t_anggota', 'm_user.id_user', '=', 't_anggota.id_user')
             ->leftJoin('t_kegiatan', 't_anggota.id_kegiatan', '=', 't_kegiatan.id_kegiatan')
             ->leftJoin('t_jabatan_kegiatan', 't_anggota.id_jabatan_kegiatan', '=', 't_jabatan_kegiatan.id_jabatan_kegiatan')
             ->select(
-                't_user.id_user',
-                't_user.nama',
+                'm_user.id_user',
+                'm_user.nama',
                 't_kegiatan.nama_kegiatan',
                 't_kegiatan.tanggal_acara',
                 't_kegiatan.jenis_kegiatan',
                 't_jabatan_kegiatan.jabatan_nama',
                 't_jabatan_kegiatan.poin'
             )
-            ->where('t_user.level', 'dosen')
-            ->orderBy('t_user.nama')
+            ->where('m_user.level', 'dosen')
+            ->orderBy('m_user.nama')
             ->orderBy('t_kegiatan.tanggal_acara')
             ->get()
             ->groupBy('id_user');
@@ -225,36 +225,36 @@ class StatistikController extends Controller
         } elseif ($userLevel === 'dosen') {
             $userId = Auth::id();
     
-            $poinDosen = DB::table('t_user')
-                ->leftJoin('t_anggota', 't_user.id_user', '=', 't_anggota.id_user')
+            $poinDosen = DB::table('m_user')
+                ->leftJoin('t_anggota', 'm_user.id_user', '=', 't_anggota.id_user')
                 ->leftJoin('t_kegiatan', 't_anggota.id_kegiatan', '=', 't_kegiatan.id_kegiatan')
                 ->leftJoin('t_jabatan_kegiatan', 't_anggota.id_jabatan_kegiatan', '=', 't_jabatan_kegiatan.id_jabatan_kegiatan')
                 ->select(
-                    't_user.nama',
-                    't_user.id_user',
+                    'm_user.nama',
+                    'm_user.id_user',
                     DB::raw('COUNT(DISTINCT t_anggota.id_kegiatan) as total_kegiatan'),
                     DB::raw('COALESCE(SUM(t_jabatan_kegiatan.poin), 0) as total_poin')
                 )
-                ->where('t_user.level', 'dosen')
-                ->where('t_user.id_user', $userId)
-                ->groupBy('t_user.id_user', 't_user.nama')
+                ->where('m_user.level', 'dosen')
+                ->where('m_user.id_user', $userId)
+                ->groupBy('m_user.id_user', 'm_user.nama')
                 ->get();
     
-            $dosenKegiatan = DB::table('t_user')
-                ->leftJoin('t_anggota', 't_user.id_user', '=', 't_anggota.id_user')
+            $dosenKegiatan = DB::table('m_user')
+                ->leftJoin('t_anggota', 'm_user.id_user', '=', 't_anggota.id_user')
                 ->leftJoin('t_kegiatan', 't_anggota.id_kegiatan', '=', 't_kegiatan.id_kegiatan')
                 ->leftJoin('t_jabatan_kegiatan', 't_anggota.id_jabatan_kegiatan', '=', 't_jabatan_kegiatan.id_jabatan_kegiatan')
                 ->select(
-                    't_user.id_user',
-                    't_user.nama',
+                    'm_user.id_user',
+                    'm_user.nama',
                     't_kegiatan.nama_kegiatan',
                     't_kegiatan.tanggal_acara',
                     't_kegiatan.jenis_kegiatan',
                     't_jabatan_kegiatan.jabatan_nama',
                     't_jabatan_kegiatan.poin'
                 )
-                ->where('t_user.level', 'dosen')
-                ->where('t_user.id_user', $userId)
+                ->where('m_user.level', 'dosen')
+                ->where('m_user.id_user', $userId)
                 ->orderBy('t_kegiatan.tanggal_acara')
                 ->get()
                 ->groupBy('id_user');
@@ -282,71 +282,71 @@ class StatistikController extends Controller
     
         // Siapkan data berdasarkan level pengguna
         if ($userLevel === 'admin' || $userLevel === 'pimpinan') {
-            $poinDosen = DB::table('t_user')
-                ->leftJoin('t_anggota', 't_user.id_user', '=', 't_anggota.id_user')
+            $poinDosen = DB::table('m_user')
+                ->leftJoin('t_anggota', 'm_user.id_user', '=', 't_anggota.id_user')
                 ->leftJoin('t_kegiatan', 't_anggota.id_kegiatan', '=', 't_kegiatan.id_kegiatan')
                 ->leftJoin('t_jabatan_kegiatan', 't_anggota.id_jabatan_kegiatan', '=', 't_jabatan_kegiatan.id_jabatan_kegiatan')
                 ->select(
-                    't_user.nama',
-                    't_user.id_user',
+                    'm_user.nama',
+                    'm_user.id_user',
                     DB::raw('COUNT(DISTINCT t_anggota.id_kegiatan) as total_kegiatan'),
                     DB::raw('COALESCE(SUM(t_jabatan_kegiatan.poin), 0) as total_poin')
                 )
-                ->where('t_user.level', 'dosen')
-                ->groupBy('t_user.id_user', 't_user.nama')
+                ->where('m_user.level', 'dosen')
+                ->groupBy('m_user.id_user', 'm_user.nama')
                 ->get();
     
-            $dosenKegiatan = DB::table('t_user')
-                ->leftJoin('t_anggota', 't_user.id_user', '=', 't_anggota.id_user')
+            $dosenKegiatan = DB::table('m_user')
+                ->leftJoin('t_anggota', 'm_user.id_user', '=', 't_anggota.id_user')
                 ->leftJoin('t_kegiatan', 't_anggota.id_kegiatan', '=', 't_kegiatan.id_kegiatan')
                 ->leftJoin('t_jabatan_kegiatan', 't_anggota.id_jabatan_kegiatan', '=', 't_jabatan_kegiatan.id_jabatan_kegiatan')
                 ->select(
-                    't_user.id_user',
-                    't_user.nama',
+                    'm_user.id_user',
+                    'm_user.nama',
                     't_kegiatan.nama_kegiatan',
                     't_kegiatan.tanggal_acara',
                     't_kegiatan.jenis_kegiatan',
                     't_jabatan_kegiatan.jabatan_nama',
                     't_jabatan_kegiatan.poin'
                 )
-                ->where('t_user.level', 'dosen')
-                ->orderBy('t_user.nama')
+                ->where('m_user.level', 'dosen')
+                ->orderBy('m_user.nama')
                 ->orderBy('t_kegiatan.tanggal_acara')
                 ->get()
                 ->groupBy('id_user');
         } elseif ($userLevel === 'dosen') {
             $userId = Auth::id();
     
-            $poinDosen = DB::table('t_user')
-                ->leftJoin('t_anggota', 't_user.id_user', '=', 't_anggota.id_user')
+            $poinDosen = DB::table('m_user')
+                ->leftJoin('t_anggota', 'm_user.id_user', '=', 't_anggota.id_user')
                 ->leftJoin('t_kegiatan', 't_anggota.id_kegiatan', '=', 't_kegiatan.id_kegiatan')
                 ->leftJoin('t_jabatan_kegiatan', 't_anggota.id_jabatan_kegiatan', '=', 't_jabatan_kegiatan.id_jabatan_kegiatan')
                 ->select(
-                    't_user.nama',
-                    't_user.id_user',
+                    'm_user.nama',
+                    'm_user.id_user',
                     DB::raw('COUNT(DISTINCT t_anggota.id_kegiatan) as total_kegiatan'),
                     DB::raw('COALESCE(SUM(t_jabatan_kegiatan.poin), 0) as total_poin')
                 )
-                ->where('t_user.level', 'dosen')
-                ->where('t_user.id_user', $userId)
-                ->groupBy('t_user.id_user', 't_user.nama')
+                ->where('m_user.level', 'dosen')
+                ->where('m_user.id_user', $userId)
+                ->groupBy('m_user.id_user', 'm_user.nama')
                 ->get();
     
-            $dosenKegiatan = DB::table('t_user')
-                ->leftJoin('t_anggota', 't_user.id_user', '=', 't_anggota.id_user')
+            $dosenKegiatan = DB::table('m_user')
+                ->leftJoin('t_anggota', 'm_user.id_user', '=', 't_anggota.id_user')
                 ->leftJoin('t_kegiatan', 't_anggota.id_kegiatan', '=', 't_kegiatan.id_kegiatan')
                 ->leftJoin('t_jabatan_kegiatan', 't_anggota.id_jabatan_kegiatan', '=', 't_jabatan_kegiatan.id_jabatan_kegiatan')
                 ->select(
-                    't_user.id_user',
-                    't_user.nama',
+                    'm_user.id_user',
+                    'm_user.nama',
                     't_kegiatan.nama_kegiatan',
                     't_kegiatan.tanggal_acara',
                     't_kegiatan.jenis_kegiatan',
                     't_jabatan_kegiatan.jabatan_nama',
                     't_jabatan_kegiatan.poin'
                 )
-                ->where('t_user.level', 'dosen')
-                ->where('t_user.id_user', $userId)
+                ->where('m_user.level', 'dosen')
+                ->where('m_user.id_user', $userId)
                 ->orderBy('t_kegiatan.tanggal_acara')
                 ->get()
                 ->groupBy('id_user');

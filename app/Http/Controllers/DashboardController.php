@@ -17,7 +17,7 @@ class DashboardController extends Controller
             'list' => ['Home', 'Dashboard'],
         ];
 
-        $jumlahDosen = DB::table('t_user')->where('level', 'dosen')->count();
+        $jumlahDosen = DB::table('m_user')->where('level', 'dosen')->count();
         $jumlahKegiatanJTI = DB::table('t_kegiatan')->where('jenis_kegiatan', 'Kegiatan JTI')->count();
         $jumlahKegiatanNonJTI = DB::table('t_kegiatan')->where('jenis_kegiatan', 'Kegiatan Non-JTI')->count();
 

@@ -162,8 +162,7 @@ class KegiatanController extends Controller
         ->whereHas('anggota', function ($query) use ($user) {
             $query->where('id_user', $user)
                   ->where('id_jabatan_kegiatan', '!=', 1);
-        })
-        ->get();
+        });
 
         $activeMenu = 'kegiatan anggota';
         return view('dosenAnggota.kegiatan.index', ['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu, 'kegiatan' => $kegiatan]);
@@ -321,12 +320,17 @@ class KegiatanController extends Controller
     {
         $kegiatan = KegiatanModel::find($id);
         $angggota = anggotaModel::select('id_kegiatan', 'id_anggota', 'id_user', 'id_jabatan_kegiatan')->where('id_kegiatan', $id)->with('user', 'jabatan')->get();
+            // Ambil dokumen terbaru untuk id_kegiatan
+    $dokumenTerbaru = DokumenModel::where('id_kegiatan', $id)
+    ->where('jenis_dokumen', 'surat tugas')
+    ->latest('created_at') // Urutkan berdasarkan waktu terbaru
+    ->first(); // Ambil 1 dokumen terbaru
 
         if (!$kegiatan) {
             return response()->json(['message' => 'Data not found'], 404);
         }
 
-        return view('admin.kegiatan.show_ajax', ['kegiatan' => $kegiatan, 'anggota' => $angggota]);
+        return view('admin.kegiatan.show_ajax', ['kegiatan' => $kegiatan, 'anggota' => $angggota, 'dokumenTerbaru'=>$dokumenTerbaru]);
     }
 
     public function show_ajaxPimpinan($id)
@@ -355,14 +359,20 @@ class KegiatanController extends Controller
 
     public function show_ajaxDosenPIC($id)
     {
-        $kegiatan = KegiatanModel::find($id);
+        $kegiatan = KegiatanModel::with(['dokumen' => function ($query) {
+            $query->orderBy('created_at', 'desc'); // Order documents by creation date, most recent first
+        }])->find($id);
         $angggota = anggotaModel::select('id_kegiatan', 'id_anggota', 'id_user', 'id_jabatan_kegiatan')->where('id_kegiatan', $id)->with('user', 'jabatan')->get();
+        $dokumenTerbaru = DokumenModel::where('id_kegiatan', $id)
+        ->where('jenis_dokumen', 'surat tugas')
+        ->latest('created_at') // Urutkan berdasarkan waktu terbaru
+        ->first(); // Ambil 1 dokumen terbaru
 
         if (!$kegiatan) {
             return response()->json(['message' => 'Data not found'], 404);
         }
 
-        return view('dosenPIC.kegiatan.show_ajax', ['kegiatan' => $kegiatan, 'anggota' => $angggota]);
+        return view('dosenPIC.kegiatan.show_ajax', ['kegiatan' => $kegiatan, 'anggota' => $angggota, 'dokumenTerbaru'=>$dokumenTerbaru]);
     }
 
     public function create_ajaxAdmin()
@@ -972,7 +982,7 @@ class KegiatanController extends Controller
     {
         $userId = Auth::id();
 
-    $user = DB::table('t_user')->where('id_user', $userId)->first();
+    $user = DB::table('m_user')->where('id_user', $userId)->first();
     $userName = $user->username; // Assuming 'name' is the column storing the user's name
     
     $kegiatan = DB::table('t_anggota AS anggota')
@@ -1385,9 +1395,9 @@ class KegiatanController extends Controller
         // Ambil data kegiatan beserta agendanya
         $kegiatan = KegiatanModel::with('agenda')->findOrFail($id_kegiatan);
 
-        $agendaAnggota = DB::table('t_agenda_anggota as aa')
+        $agendaAnggota = DB::table('m_agenda_anggota as aa')
         ->join('t_agenda as ag', 'aa.id_agenda', '=', 'ag.id_agenda')
-        ->leftJoin('t_dokumen as dkm', 'dkm.id_dokumen', '=', 'aa.id_dokumen')
+        ->leftJoin('m_dokumen as dkm', 'dkm.id_dokumen', '=', 'aa.id_dokumen')
         ->select('aa.id_agenda', 'aa.id_dokumen', 'dkm.file_path', 'dkm.nama_dokumen', 'aa.nama_agenda')
         ->where('ag.id_kegiatan', $id_kegiatan)
         ->get();
@@ -1832,10 +1842,10 @@ class KegiatanController extends Controller
         if ($request->ajax()) {
             $userId = auth()->user()->id_user;
 
-            $data = AgendaAnggotaModel::select('t_agenda_anggota.id_agenda_anggota', 't_agenda_anggota.nama_agenda', 't_kegiatan.nama_kegiatan')
-                ->join('t_agenda', 't_agenda_anggota.id_agenda', '=', 't_agenda.id_agenda') // Join dengan tabel agenda
+            $data = AgendaAnggotaModel::select('m_agenda_anggota.id_agenda_anggota', 'm_agenda_anggota.nama_agenda', 't_kegiatan.nama_kegiatan')
+                ->join('t_agenda', 'm_agenda_anggota.id_agenda', '=', 't_agenda.id_agenda') // Join dengan tabel agenda
                 ->join('t_kegiatan', 't_agenda.id_kegiatan', '=', 't_kegiatan.id_kegiatan') // Join dengan tabel kegiatan
-                ->join('t_anggota', 't_agenda_anggota.id_anggota', '=', 't_anggota.id_anggota') // Join dengan tabel anggota
+                ->join('t_anggota', 'm_agenda_anggota.id_anggota', '=', 't_anggota.id_anggota') // Join dengan tabel anggota
                 ->where('t_anggota.id_user', $userId) // Filter berdasarkan user yang login
                 ->where('t_anggota.id_jabatan_kegiatan', '!=', 1) // Filter id_jabatan_kegiatan antara 2 hingga 6
                 ->get(); // Ambil hasil query
@@ -1865,7 +1875,7 @@ class KegiatanController extends Controller
         $validator = Validator::make($request->all(), [
             'id_agenda_anggota' => [
                 'required',
-                'exists:t_agenda_anggota,id_agenda_anggota', // Ensure id_agenda_anggota exists in the table
+                'exists:m_agenda_anggota,id_agenda_anggota', // Ensure id_agenda_anggota exists in the table
             ],
             'file' => 'required|mimes:jpeg,jpg,pdf|max:2048', // 2MB max
         ]);

@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('t_dokumen', function (Blueprint $table) {
+        Schema::create('m_dokumen', function (Blueprint $table) {
             $table->id('id_dokumen');
             $table->unsignedBigInteger('id_kegiatan')->nullable();
             $table->string('nama_dokumen');
@@ -27,7 +27,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('t_dokumen', function (Blueprint $table) {
+        Schema::table('m_dokumen', function (Blueprint $table) {
             //
         });
     }

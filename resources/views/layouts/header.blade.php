@@ -12,8 +12,8 @@
         </li>
         <li class="nav-item d-none d-sm-inline-block">
             <!-- Using PHP strtoupper function -->
-            <span class="nav-link border border-primary text-primary rounded px-3 py-2">
-            Anda masuk sebagai {{ auth()->user()->level }} ({{ auth()->user()->username }})
+            <span class="nav-link border border-primary text-primary text-uppercase rounded px-3 py-2">
+            {{ auth()->user()->level }} / {{ auth()->user()->username }}
             </span>
             <!-- Using CSS text-transform property -->
             <!-- <span class="nav-link border border-primary text-primary rounded px-3 py-2 text-uppercase">

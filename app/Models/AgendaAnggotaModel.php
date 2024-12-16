@@ -4,12 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\DokumenModel as Dokumen;
 
 class AgendaAnggotaModel extends Model
 {
     use HasFactory;
 
-    protected $table = 't_agenda_anggota';
+    protected $table = 'm_agenda_anggota';
     protected $primaryKey = 'id_agenda_anggota';
 
     protected $fillable = [
