@@ -139,6 +139,7 @@
                     data: $.param(filteredData),
                     success: function(response) {
                         if (response.status) {
+                            $('#myModal').modal('hide');
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Berhasil',
