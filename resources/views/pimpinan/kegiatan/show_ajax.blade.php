@@ -59,12 +59,12 @@
                         <th class="text-right col-3">Jenis Kegiatan : </th>
                         <td class="col-9">{{ $kegiatan->jenis_kegiatan }}</td>
                     </tr>
-                    {{-- <tr>
+                    <tr>
                         <th class="text-right col-3"> Draft Surat Tugas : </th>
                         <td>
                             <button type="button" class="btn btn-sm btn-primary"onclick="window.location.href='{{ route('pimpinan.kegiatan.export_word', $kegiatan->id_kegiatan) }}'">Dowload Draft Surat tugas</button>
                         </td>
-                    </tr> --}}
+                    </tr>
                 </table>
                 <div class="alert alert-info mt-3">
                     <h5><i class="icon fas fa-info"></i> Data Anggota</h5>

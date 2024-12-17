@@ -105,7 +105,7 @@
 
         {{-- PIMPINAN --}}
         @if(auth()->user()->level == "pimpinan")
-        <li class="nav-header">Manage Pengguna</li>
+        <li class="nav-header">Daftar Pengguna</li>
           <li class="nav-item">
             <a href="{{ url('pimpinan/user')}}" class="nav-link {{($activeMenu == 'user pimpinan')? 'active' : ''}}">
               <i class="nav-icon far fas fa-users"></i>
