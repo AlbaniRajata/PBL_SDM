@@ -6,7 +6,7 @@
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title">Tambah Agenda Anggota</h5>
+                <h5 class="modal-title">{{ $agenda_sudah_ada ? 'Edit' : 'Tambah' }} Agenda Anggota</h5>
                 <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -19,24 +19,26 @@
                 <div id="agenda-anggota-container">
                     @foreach ($anggota as $index => $a)
                         <div class="agenda-anggota-item">
-                        <h5>Agenda untuk {{ $a->user->nama }}</h5> <!-- Nama anggota dari tabel m_user -->
-                            <input type="hidden" name="id_anggota[]" value="{{ $a->id_anggota }}"> <!-- ID anggota -->
+                            <h5>Agenda untuk {{ $a->user->nama }}</h5>
+                            <input type="hidden" name="id_anggota[]" value="{{ $a->id_anggota }}">
                             <div class="form-group">
                                 <label>Nama Agenda</label>
-                                <input type="text" name="agenda[{{ $index }}]" class="form-control" placeholder="Masukkan nama agenda" required>
+                                <input type="text" 
+                                       name="agenda[{{ $index }}]" 
+                                       class="form-control" 
+                                       placeholder="Masukkan nama agenda" 
+                                       value="{{ $a->agenda_detail }}"
+                                       required>
                             </div>
                         </div>
                         <hr>
                     @endforeach
                 </div>
                 <div class="text-right">
-                    <button type="button" class="btn btn-warning">Edit</button>
+                    <button type="submit" class="btn btn-success">
+                        {{ $agenda_sudah_ada ? 'Update' : 'Simpan' }}
+                    </button>
                     <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
-                    @if ($agenda_sudah_ada)
-                        <button type="submit" class="btn btn-secondary" disabled>Agenda Sudah Dibuat</button>
-                    @else
-                        <button type="submit" class="btn btn-success">Simpan</button>
-                    @endif
                 </div>
             </div>
         </div>
