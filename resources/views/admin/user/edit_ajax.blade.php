@@ -31,6 +31,11 @@
                     <small id="error-email" class="error-text form-text text-danger"></small>
                 </div>
                 <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" class="form-control" id="password" name="password">
+                    <small id="error-password" class="error-text form-text text-danger"></small>
+                </div>
+                <div class="form-group">
                     <label for="NIP">NIP</label>
                     <input type="number" class="form-control" id="NIP" name="NIP" value="{{ $user->NIP }}" required>
                     <small id="error-NIP" class="error-text form-text text-danger"></small>
@@ -75,6 +80,9 @@
                     required: true,
                     email: true,
                     maxlength: 255
+                },
+                password: {
+                    minlength: 5,
                 },
                 NIP: {
                     required: true,
