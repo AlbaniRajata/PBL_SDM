@@ -1,4 +1,3 @@
-<!-- Form untuk penginputan agenda -->
 <form action="{{ route('agenda.store') }}" method="POST" id="form-tambah-agenda">
     @csrf
 
@@ -15,71 +14,130 @@
                 <!-- Nama Kegiatan -->
                 <h4 class="text-center font-weight-bold mb-4">{{ $nama_kegiatan }}</h4>
 
-                <!-- Container Input Agenda untuk Anggota -->
                 <div id="agenda-anggota-container">
                     @foreach ($anggota as $index => $a)
-                        <div class="agenda-anggota-item">
+                        <div class="agenda-anggota-item" data-index="{{ $index }}">
                             <h5>Agenda untuk {{ $a->user->nama }}</h5>
                             <input type="hidden" name="id_anggota[]" value="{{ $a->id_anggota }}">
-                            <div class="form-group">
-                                <label>Nama Agenda</label>
-                                <input type="text" 
-                                       name="agenda[{{ $index }}]" 
-                                       class="form-control" 
-                                       placeholder="Masukkan nama agenda" 
-                                       value="{{ $a->agenda_detail }}"
-                                       required>
+
+                            <!-- Wrapper untuk beberapa agenda -->
+                            <div class="agenda-list">
+                                @if ($a->agenda_sudah_dibuat)
+                                    @foreach ($a->agenda_detail as $agenda)
+                                        <div class="form-group agenda-item">
+                                            <input type="text" 
+                                                name="agenda[{{ $index }}][]" 
+                                                class="form-control" 
+                                                value="{{ $agenda }}" 
+                                                placeholder="Masukkan nama agenda" 
+                                                disabled>
+                                        </div>
+                                    @endforeach
+                                @else
+                                    <div class="form-group agenda-item">
+                                        <input type="text" 
+                                            name="agenda[{{ $index }}][]" 
+                                            class="form-control" 
+                                            placeholder="Masukkan nama agenda" 
+                                            required>
+                                    </div>
+                                @endif
                             </div>
+
+                            <!-- Tombol untuk menambah agenda -->
+                            <button type="button" class="btn btn-info btn-secondary btn-add-agenda" data-index="{{ $index }}" {{ $agenda_sudah_ada ? 'disabled' : '' }}>
+                            <i class="fa fa-plus"></i>
+                            </button>
+                            <hr>
                         </div>
-                        <hr>
                     @endforeach
                 </div>
                 <div class="text-right">
-                    <button type="submit" class="btn btn-success">
-                        {{ $agenda_sudah_ada ? 'Update' : 'Simpan' }}
+                    <!-- Tombol Edit -->
+                    <button type="button" class="btn btn-primary btn-edit-agenda" {{ !$agenda_sudah_ada ? 'disabled' : '' }}>
+                        Edit
                     </button>
-                    <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
+                    <!-- Tombol Simpan -->
+                    <button type="submit" class="btn btn-success btn-save-agenda" {{ $agenda_sudah_ada ? 'disabled' : '' }}>
+                        Simpan
+                    </button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
                 </div>
+
             </div>
         </div>
     </div>
 </form>
 
 <script>
-    $(document).ready(function() {
+    $(document).ready(function () {
+        // Klik tombol Edit untuk mengaktifkan mode edit
+        $('.btn-edit-agenda').on('click', function () {
+            $('.agenda-item input').prop('disabled', false);
+            $('.btn-add-agenda').prop('disabled', false);
+            $('.btn-save-agenda').prop('disabled', false);
+            $(this).prop('disabled', true); // Disable tombol edit setelah diklik
+        });
+
+        // Tambah agenda untuk anggota tertentu
+        $(document).on('click', '.btn-add-agenda', function () {
+            let index = $(this).data('index');
+            let agendaContainer = $(this).siblings('.agenda-list');
+
+            // Template input agenda baru
+            let newAgenda = `
+                <div class="form-group agenda-item">
+                    <input type="text" 
+                           name="agenda[${index}][]" 
+                           class="form-control" 
+                           placeholder="Masukkan nama agenda" 
+                           required>
+                    <button type="button" class="btn btn-sm btn-danger btn-remove-agenda"><i class="fas fa-trash"></i></button>
+                </div>
+            `;
+
+            agendaContainer.append(newAgenda);
+        });
+
+        // Hapus agenda
+        $(document).on('click', '.btn-remove-agenda', function () {
+            $(this).closest('.agenda-item').remove();
+        });
+
+        // Validasi form
         $("#form-tambah-agenda").validate({
             rules: {
                 'agenda[][nama]': { required: true, minlength: 3, maxlength: 255 },
             },
-            submitHandler: function(form) {
+            submitHandler: function (form) {
                 let formData = $(form).serializeArray();
                 $.ajax({
                     url: form.action,
                     type: form.method,
                     data: formData,
-                    success: function(response) {
+                    success: function (response) {
                         if (response.status) {
                             $('#myModal').modal('hide');
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Berhasil',
                                 text: response.message
-                            }).then(function() {
-                                location.reload(); // Reload data jika perlu
+                            }).then(function () {
+                                location.reload();
                             });
                         } else {
                             $('.error-text').text('');
-                            $.each(response.msgField, function(prefix, val) {
+                            $.each(response.msgField, function (prefix, val) {
                                 $('#error-' + prefix).text(val[0]);
                             });
                             Swal.fire({
                                 icon: 'error',
-                                title: 'Terjadi Kesalahan : Agenda sudah diset',
+                                title: 'Terjadi Kesalahan',
                                 text: response.message
                             });
                         }
                     },
-                    error: function(err) {
+                    error: function (err) {
                         Swal.fire({
                             icon: 'error',
                             title: 'Terjadi Kesalahan',
@@ -90,14 +148,14 @@
                 return false;
             },
             errorElement: 'span',
-            errorPlacement: function(error, element) {
+            errorPlacement: function (error, element) {
                 error.addClass('invalid-feedback');
                 element.closest('.form-group').append(error);
             },
-            highlight: function(element, errorClass, validClass) {
+            highlight: function (element, errorClass, validClass) {
                 $(element).addClass('is-invalid');
             },
-            unhighlight: function(element, errorClass, validClass) {
+            unhighlight: function (element, errorClass, validClass) {
                 $(element).removeClass('is-invalid');
             }
         });
