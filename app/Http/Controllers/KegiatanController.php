@@ -325,12 +325,27 @@ class KegiatanController extends Controller
     ->where('jenis_dokumen', 'surat tugas')
     ->latest('created_at') // Urutkan berdasarkan waktu terbaru
     ->first(); // Ambil 1 dokumen terbaru
+    $agendaAnggota = DB::table('m_agenda_anggota as aa')
+    ->join('t_agenda as ag', 'aa.id_agenda', '=', 'ag.id_agenda')
+    ->join('t_anggota as ta', 'aa.id_anggota', '=', 'ta.id_anggota') // Join ke t_anggota
+    ->join('m_user as mu', 'ta.id_user', '=', 'mu.id_user') // Join ke m_user untuk nama anggota
+    ->leftJoin('m_dokumen as dkm', 'dkm.id_dokumen', '=', 'aa.id_dokumen')
+    ->select(
+        'aa.id_agenda',
+        'aa.id_dokumen',
+        'dkm.file_path',
+        'dkm.nama_dokumen',
+        'aa.nama_agenda',
+        'mu.nama as nama_anggota' // Ambil nama anggota dari m_user
+    )
+    ->where('ag.id_kegiatan', $id)
+    ->get();
 
         if (!$kegiatan) {
             return response()->json(['message' => 'Data not found'], 404);
         }
 
-        return view('admin.kegiatan.show_ajax', ['kegiatan' => $kegiatan, 'anggota' => $angggota, 'dokumenTerbaru'=>$dokumenTerbaru]);
+        return view('admin.kegiatan.show_ajax', ['kegiatan' => $kegiatan, 'anggota' => $angggota, 'dokumenTerbaru'=>$dokumenTerbaru, 'agendaAnggota'=>$agendaAnggota]);
     }
 
     public function show_ajaxPimpinan($id)
@@ -1390,40 +1405,48 @@ class KegiatanController extends Controller
     }
 
     public function detailAgendaAnggota($id_kegiatan)
-    {
-        // Ambil data kegiatan beserta agendanya
-        $kegiatan = KegiatanModel::with('agenda')->findOrFail($id_kegiatan);
+{
+    // Ambil data kegiatan beserta agendanya
+    $kegiatan = KegiatanModel::with('agenda')->findOrFail($id_kegiatan);
 
-        $agendaAnggota = DB::table('m_agenda_anggota as aa')
+    // Query untuk mengambil agenda anggota dengan nama anggota (relasi berantai)
+    $agendaAnggota = DB::table('m_agenda_anggota as aa')
         ->join('t_agenda as ag', 'aa.id_agenda', '=', 'ag.id_agenda')
+        ->join('t_anggota as ta', 'aa.id_anggota', '=', 'ta.id_anggota') // Join ke t_anggota
+        ->join('m_user as mu', 'ta.id_user', '=', 'mu.id_user') // Join ke m_user untuk nama anggota
         ->leftJoin('m_dokumen as dkm', 'dkm.id_dokumen', '=', 'aa.id_dokumen')
-        ->select('aa.id_agenda', 'aa.id_dokumen', 'dkm.file_path', 'dkm.nama_dokumen', 'aa.nama_agenda')
+        ->select(
+            'aa.id_agenda',
+            'aa.id_dokumen',
+            'dkm.file_path',
+            'dkm.nama_dokumen',
+            'aa.nama_agenda',
+            'mu.nama as nama_anggota' // Ambil nama anggota dari m_user
+        )
         ->where('ag.id_kegiatan', $id_kegiatan)
         ->get();
-           
-        // Breadcrumb dan metadata
-        $breadcrumb = (object) [
-            'title' => 'Detail Anggota',
-            'list' => ['Home', 'Agenda Anggota', 'Detail'],
-        ];
-    
-        $page = (object) [
-            'title' => 'Detail Agenda Anggota',
-        ];
-    
-        $activeMenu = 'agenda anggota';
-    
-        // Kirim data ke view
-        return view('dosenPIC.agendaAnggota.show_ajax', [
-            'kegiatan' => $kegiatan,
-            'agendaAnggota' => $agendaAnggota,
-            'breadcrumb' => $breadcrumb,
-            'page' => $page,
-            'activeMenu' => $activeMenu,
-        ])->render();
-    }
-    
-    
+
+    // Breadcrumb dan metadata
+    $breadcrumb = (object) [
+        'title' => 'Detail Anggota',
+        'list' => ['Home', 'Agenda Anggota', 'Detail'],
+    ];
+
+    $page = (object) [
+        'title' => 'Detail Agenda Anggota',
+    ];
+
+    $activeMenu = 'agenda anggota';
+
+    // Kirim data ke view
+    return view('dosenPIC.agendaAnggota.show_ajax', [
+        'kegiatan' => $kegiatan,
+        'agendaAnggota' => $agendaAnggota,
+        'breadcrumb' => $breadcrumb,
+        'page' => $page,
+        'activeMenu' => $activeMenu,
+    ])->render();
+}
 
     public function KegiatanJTI(): mixed
     {

@@ -69,6 +69,7 @@
                     <table class="table table-sm table-bordered table-stripped">
                         <thead>
                             <tr>
+                                <th class="text-center">Nama Anggota</th>
                                 <th class="text-center">Nama Agenda</th>
                                 <th class="text-center">Nama Dokumen</th>
                                 <th class="text-center">Aksi</th>
@@ -77,6 +78,7 @@
                         <tbody>
                             @forelse ($agendaAnggota as $agenda)
                                 <tr>
+                                    <td class="text-center">{{ $agenda->nama_anggota }}</td>
                                     <td class="text-center">{{ $agenda->nama_agenda }}</td>
                                     <td class="text-center">{{ $agenda->nama_dokumen ?? 'Tidak ada dokumen' }}</td>
                                     <td class="text-center">
