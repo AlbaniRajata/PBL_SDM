@@ -1,165 +1,223 @@
 @extends('layouts.template')
-
 @section('content')
-<div class="card shadow-lg rounded-3">
+<div class="card card-outline card-primary">
     <div class="card-header">
-        <h3 class="card-title text-dark">Statistik Dosen</h3>
+        <h3 class="card-title">Statistik Dosen</h3>
         <div class="card-tools">
             <a href="{{ url('/admin/statistik/export_excel') }}" class="btn btn-sm btn-outline-success btn-hover">
-                <i class="fa-solid fa-file-excel"></i> Ekspor Excel
+                <i class="fa-solid fa-file-excel"></i> Export Excel
             </a>
             <a href="{{ url('/admin/statistik/export_pdf') }}" class="btn btn-sm btn-outline-warning btn-hover">
-                <i class="fa-solid fa-file-pdf"></i> Ekspor PDF
+                <i class="fa-solid fa-file-pdf"></i> Export PDF
             </a>
         </div>
     </div>
+    <div class="card-body">
+        @if (session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+        @endif
+        @if (session('error'))
+            <div class="alert alert-danger">
+                {{ session('error') }}
+            </div>
+        @endif
+        
+        <div class="row mb-3">
+            <div class="col-md-12">
+                <div class="form-group row">
+                    <label class="col-1 control-label col-form-label">Filter:</label>
+                    <div class="col-3">
+                        <select class="form-control" id="min-max-point" name="point">
+                            <option value="">- Filter Poin -</option>
+                            <option value="0-10">0 - 10</option>
+                            <option value="11-30">11 - 30</option>
+                            <option value="31-50">31 - 50</option>
+                            <option value=">51">>51</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <table class="table table-bordered table-striped table-hover table-sm" id="statistik-dosen-table">
+            <thead>
+                <tr>
+                    <th class="text-center">No</th>
+                    <th class="text-center">Nama Dosen</th>
+                    <th class="text-center">Total Kegiatan</th>
+                    <th class="text-center">Total Poin</th>
+                    <th class="text-center">Aksi</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
 
-    <div class="card-body p-4">
-        <!-- Table with minimalistic and elegant design -->
-        <div class="table-responsive">
-            <table class="table table-bordered table-hover table-striped custom-table">
-                <thead class="thead-custom">
-                    <tr>
-                        <th class="text-center">No</th>
-                        <th class="text-center">Nama Dosen</th>
-                        <th class="text-center">Detail Kegiatan</th>
-                        <th class="text-center">Total Kegiatan</th>
-                        <th class="text-center">Total Poin</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($poinDosen as $index => $dosen)
-                        <tr class="table-hover">
-                            <td class="text-center">{{ $index + 1 }}</td>
-                            <td class="text-center">{{ $dosen->nama }}</td>
-                            <td>
-                                @if (isset($dosenKegiatan[$dosen->id_user]))
-                                    <div class="table-responsive">
-                                        <table class="table table-sm">
-                                            <thead>
-                                                <tr>
-                                                    <th class="text-center">Nama Kegiatan</th>
-                                                    <th class="text-center">Tanggal</th>
-                                                    <th class="text-center">Jenis Kegiatan</th>
-                                                    <th class="text-center">Jabatan</th>
-                                                    <th class="text-center">Poin</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @foreach ($dosenKegiatan[$dosen->id_user] as $kegiatan)
-                                                    <tr>
-                                                        <td class="text-center">{{ $kegiatan->nama_kegiatan }}</td>
-                                                        <td class="text-center">{{ $kegiatan->tanggal_acara }}</td>
-                                                        <td class="text-center">{{ $kegiatan->jenis_kegiatan }}</td>
-                                                        <td class="text-center">{{ $kegiatan->jabatan_nama }}</td>
-                                                        <td class="text-center">{{ $kegiatan->poin }}</td>
-                                                    </tr>
-                                                @endforeach
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                @else
-                                    <p class="text-center text-muted">Tidak ada kegiatan</p>
-                                @endif
-                            </td>
-                            <td class="text-center">{{ $dosen->total_kegiatan }}</td>
-                            <td class="text-center">{{ $dosen->total_poin }}</td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
+<div id="detailModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Detail Kegiatan Dosen</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="detailModalContent">
+                <!-- Detail content will be loaded here -->
+            </div>
         </div>
     </div>
 </div>
 @endsection
 
-@push('css')
-<style>
-    /* Global Styling */
-    body {
-        font-family: 'Inter', sans-serif;
-        background-color: #f8f9fa;
-    }
+@push('js')
+<script>
+    $(document).ready(function() {
+        // Ensure CSRF token is set for all AJAX requests
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
 
-    /* Card Styling */
-    .card {
-        border-radius: 10px;
-        background-color: #fff;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        // Initialize DataTable with comprehensive error handling
+        var statistikTable = $('#statistik-dosen-table').DataTable({
+            searching: true,
+            processing: true,
+            serverSide: true,
+            responsive: true,
+            ajax: {
+                url: "{{ route('admin.statistik.list') }}",
+                type: "POST",
+                data: function(d) {
+                    d.point_filter = $('#min-max-point').val();
+                },
+                error: function(xhr, error, thrown) {
+                    console.error('DataTables Ajax error:', {
+                        xhr: xhr, 
+                        error: error, 
+                        thrown: thrown
+                    });
+                    
+                    // More detailed error handling
+                    var errorMsg = 'Unknown error';
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMsg = xhr.responseJSON.message;
+                    } else if (xhr.responseText) {
+                        errorMsg = xhr.responseText;
+                    }
+                    
+                    alert('Error loading data: ' + errorMsg);
+                    
+                    // Optional: Reload the page or reset the table
+                    statistikTable.ajax.reload();
+                }
+            },
+            columns: [
+    { 
+        data: 'DT_RowIndex', 
+        name: 'DT_RowIndex', 
+        orderable: false, 
+        searchable: false,
+        className: "text-center" // Tambahkan ini
+    },
+    { 
+        data: 'nama', 
+        name: 'nama', 
+        searchable: true,
+        className: "text-center" // Tambahkan ini
+    },
+    { 
+        data: 'total_kegiatan', 
+        name: 'total_kegiatan', 
+        searchable: false,
+        className: "text-center" // Tambahkan ini
+    },
+    { 
+        data: 'total_poin', 
+        name: 'total_poin', 
+        searchable: false,
+        className: "text-center" // Tambahkan ini
+    },
+    { 
+        data: 'aksi', 
+        name: 'aksi', 
+        orderable: false, 
+        searchable: false,
+        className: "text-center" // Tambahkan ini
     }
+],
 
-    .card-header {
-        background-color: transparent;
-        border-bottom: 2px solid #eee;
-        padding: 15px 20px;
-        color: #333;
-    }
 
-    .card-header .card-title {
-        font-weight: 600;
-        font-size: 1.2rem;
-        color: #333;
-    }
+            language: {
+                processing: "Loading data...",
+                zeroRecords: "No matching records found",
+                emptyTable: "No data available in table"
+            }
+        });
 
-    /* Table Styling */
-    .custom-table {
-        border-radius: 8px;
-        overflow: hidden;
-        background-color: #fff;
-    }
+        // Filtering functionality
+        $('#min-max-point').on('change', function() {
+            statistikTable.draw();
+        });
+    });
 
-    .thead-custom {
-        background-color: #f4f6f9;
-        color: #333;
-        font-weight: 600;
-    }
+    // Detail modal function
+    function showDetails(dosenId) {
+    // Show loading indicator
+    $('#detailModalContent').html(`
+        <div class="text-center p-3">
+            <div class="spinner-border text-primary" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+            <p class="mt-2">Memuat detail...</p>
+        </div>
+    `);
+    
+    $.ajax({
+        url: "{{ route('admin.statistik.details') }}",
+        method: 'POST',
+        data: { dosen_id: dosenId },
+        dataType: 'json',
+        timeout: 10000, // 10 second timeout
+        success: function(response) {
+            if (response.html) {
+                $('#detailModalContent').html(response.html);
+                $('#detailModal').modal('show');
+            } else if (response.error) {
+                handleError(response.message);
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error('Error fetching details:', {
+                status: status,
+                error: error,
+                responseText: xhr.responseText
+            });
 
-    .table th, .table td {
-        padding: 12px 16px;
-        font-size: 14px;
-        vertical-align: middle;
-    }
+            let errorMessage = 'Gagal memuat detail kegiatan';
+            if (xhr.responseJSON && xhr.responseJSON.message) {
+                errorMessage += ': ' + xhr.responseJSON.message;
+            } else if (status === 'timeout') {
+                errorMessage = 'Waktu permintaan habis. Silakan coba lagi.';
+            }
 
-    /* Hover effect for rows */
-    .table-hover tbody tr:hover {
-        background-color: #f7f7f7;
-        transform: scale(1.02);
-        transition: all 0.2s ease;
-    }
-
-    /* Styling for export buttons */
-    .btn-outline-success, .btn-outline-warning {
-        border-radius: 20px;
-        font-size: 14px;
-        font-weight: 600;
-        padding: 6px 12px;
-        transition: transform 0.3s, background-color 0.3s;
-    }
-
-    .btn-outline-success:hover, .btn-outline-warning:hover {
-        background-color: #f0f0f0;
-        transform: scale(1.05);
-    }
-
-    /* Styling for empty state */
-    .text-muted {
-        font-style: italic;
-    }
-
-    /* Responsive Design */
-    @media (max-width: 768px) {
-        .table th, .table td {
-            font-size: 12px;
-            padding: 8px;
+            handleError(errorMessage);
         }
+    });
+}
 
-        .card-header .card-title {
-            font-size: 1rem;
-        }
-
-        .btn-outline-success, .btn-outline-warning {
-            font-size: 12px;
-        }
-    }
-</style>
+function handleError(message) {
+    $('#detailModalContent').html(`
+        <div class="alert alert-danger text-center" role="alert">
+            <i class="fas fa-exclamation-triangle mb-2"></i>
+            <p>${message}</p>
+            <button onclick="$('#detailModal').modal('hide')" class="btn btn-secondary mt-2">Tutup</button>
+        </div>
+    `);
+    $('#detailModal').modal('show');
+}
+</script>
 @endpush

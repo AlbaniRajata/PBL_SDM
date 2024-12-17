@@ -30,6 +30,7 @@
                     @endforeach
                 </div>
                 <div class="text-right">
+                    <button type="button" class="btn btn-warning">Edit</button>
                     <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
                     @if ($agenda_sudah_ada)
                         <button type="submit" class="btn btn-secondary" disabled>Agenda Sudah Dibuat</button>
