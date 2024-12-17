@@ -174,6 +174,7 @@ class UserController extends Controller
                 'nama' => 'required|string|max:255',
                 'tanggal_lahir' => 'required|date',
                 'email' => 'required|string|email|max:255|unique:m_user,email,' . $id . ',id_user',
+                'password' => 'nullable|string|min:5',
                 'NIP' => 'required|numeric|unique:m_user,NIP,' . $id . ',id_user',
                 'level' => 'required|string|in:admin,dosen,pimpinan',
             ]);
@@ -191,6 +192,7 @@ class UserController extends Controller
                 'nama' => $request->nama,
                 'tanggal_lahir' => $request->tanggal_lahir,
                 'email' => $request->email,
+                'password' => $request->password ? Hash::make($request->password) : $user->password,
                 'NIP' => $request->NIP,
                 'level' => $request->level,
             ]);
