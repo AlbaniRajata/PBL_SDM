@@ -101,8 +101,9 @@ Route::middleware('auth')->group(function () {
             });
 
             Route::prefix('statistik')->group(function () {
-                Route::get('/', [StatistikController::class, 'admin']);
+                Route::get('/', [StatistikController::class, 'admin'])->name('admin.statistik');
                 Route::post('/list', [StatistikController::class, 'list'])->name('admin.statistik.list');
+                Route::post('/details', [StatistikController::class, 'details'])->name('admin.statistik.details');
                 Route::get('/export_pdf', [StatistikController::class, 'exportPdf'])->name('admin.statistik.export_pdf');
                 Route::get('/export_excel', [StatistikController::class, 'exportExcel'])->name('admin.statistik.export_excel');
             });
@@ -116,7 +117,6 @@ Route::middleware('auth')->group(function () {
                 Route::get('/download/{id}', [FileHistoryController::class, 'download'])->name('file.download');
                 Route::delete('/{id}', [FileHistoryController::class, 'destroy'])->name('file.destroy');
             });
-
         });
 
         Route::group(['prefix' => 'pimpinan', 'middleware' => ['authorize:pimpinan']], function () {
@@ -140,6 +140,7 @@ Route::middleware('auth')->group(function () {
             Route::prefix('statistik')->group(function () {
                 Route::get('/', [StatistikController::class, 'pimpinan']);
                 Route::post('/list', [StatistikController::class, 'list'])->name('pimpinan.statistik.list');
+                Route::post('/details', [StatistikController::class, 'details'])->name('pimpinan.statistik.details');
                 Route::get('/export_pdf', [StatistikController::class, 'exportPdf'])->name('pimpinan.statistik.export_pdf');
                 Route::get('/export_excel', [StatistikController::class, 'exportExcel'])->name('pimpinan.statistik.export_excel');
             });

@@ -1,4 +1,3 @@
-//edit ajax user
 <form action="{{ route('admin.user.update_ajax', $user->id_user) }}" method="POST" id="form-edit">
     @csrf
     @method('PUT')

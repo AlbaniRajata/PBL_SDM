@@ -8,6 +8,8 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Illuminate\Support\Facades\Auth;
+use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Facades\Log;
 
 class StatistikController extends Controller
 {
@@ -18,43 +20,111 @@ class StatistikController extends Controller
             'list' => ['Home', 'Statistik'],
         ];
         $activeMenu = 'statistik admin';
-    
-        $poinDosen = DB::table('m_user')
-            ->leftJoin('t_anggota', 'm_user.id_user', '=', 't_anggota.id_user')
-            ->leftJoin('t_kegiatan', 't_anggota.id_kegiatan', '=', 't_kegiatan.id_kegiatan')
-            ->leftJoin('t_jabatan_kegiatan', 't_anggota.id_jabatan_kegiatan', '=', 't_jabatan_kegiatan.id_jabatan_kegiatan')
-            ->select(
-                'm_user.nama',
-                'm_user.id_user',
-                DB::raw('COUNT(DISTINCT t_anggota.id_kegiatan) as total_kegiatan'),
-                DB::raw('COALESCE(SUM(t_jabatan_kegiatan.poin), 0) as total_poin')
-            )
-            ->where('m_user.level', 'dosen')
-            ->groupBy('m_user.id_user', 'm_user.nama')
-            ->get();
-    
-        // Fetch detailed activities for each lecturer
-        $dosenKegiatan = DB::table('m_user')
-            ->leftJoin('t_anggota', 'm_user.id_user', '=', 't_anggota.id_user')
-            ->leftJoin('t_kegiatan', 't_anggota.id_kegiatan', '=', 't_kegiatan.id_kegiatan')
-            ->leftJoin('t_jabatan_kegiatan', 't_anggota.id_jabatan_kegiatan', '=', 't_jabatan_kegiatan.id_jabatan_kegiatan')
-            ->select(
-                'm_user.id_user',
-                'm_user.nama',
-                't_kegiatan.nama_kegiatan',
-                't_kegiatan.tanggal_acara',
-                't_kegiatan.jenis_kegiatan',
-                't_jabatan_kegiatan.jabatan_nama',
-                't_jabatan_kegiatan.poin'
-            )
-            ->where('m_user.level', 'dosen')
-            ->orderBy('m_user.nama')
-            ->orderBy('t_kegiatan.tanggal_acara')
-            ->get()
-            ->groupBy('id_user');
-    
-        return view('admin.statistik.index', compact('breadcrumb', 'activeMenu', 'poinDosen', 'dosenKegiatan'));
+
+        return view('admin.statistik.index', compact('breadcrumb', 'activeMenu'));
     }
+
+    public function list(Request $request)
+    {
+        try {
+            $query = DB::table('m_user')
+                ->leftJoin('t_anggota', 'm_user.id_user', '=', 't_anggota.id_user')
+                ->leftJoin('t_kegiatan', 't_anggota.id_kegiatan', '=', 't_kegiatan.id_kegiatan')
+                ->leftJoin('t_jabatan_kegiatan', 't_anggota.id_jabatan_kegiatan', '=', 't_jabatan_kegiatan.id_jabatan_kegiatan')
+                ->select(
+                    'm_user.id_user',
+                    'm_user.nama',
+                    DB::raw('COUNT(DISTINCT t_anggota.id_kegiatan) as total_kegiatan'),
+                    DB::raw('COALESCE(SUM(t_jabatan_kegiatan.poin), 0) as total_poin')
+                )
+                ->where('m_user.level', 'dosen')
+                ->groupBy('m_user.id_user', 'm_user.nama');
+
+            // Point filter
+            if ($request->has('point_filter') && $request->point_filter) {
+                $pointFilter = $request->point_filter;
+                $query->when($pointFilter === '0-10', function ($q) {
+                    return $q->havingRaw('COALESCE(SUM(t_jabatan_kegiatan.poin), 0) BETWEEN 0 AND 10');
+                })->when($pointFilter === '11-30', function ($q) {
+                    return $q->havingRaw('COALESCE(SUM(t_jabatan_kegiatan.poin), 0) BETWEEN 11 AND 30');
+                })->when($pointFilter === '31-50', function ($q) {
+                    return $q->havingRaw('COALESCE(SUM(t_jabatan_kegiatan.poin), 0) BETWEEN 31 AND 50');
+                })->when($pointFilter === '>51', function ($q) {
+                    return $q->havingRaw('COALESCE(SUM(t_jabatan_kegiatan.poin), 0) > 51');
+                });
+            }
+
+            return DataTables::of($query)
+            ->addColumn('DT_RowIndex', function ($row) {
+                static $index = 0; // Buat index manual
+                return ++$index;
+            })
+                ->addColumn('aksi', function($row) {
+                    return '
+                        <button onclick="showDetails('.$row->id_user.')" class="btn btn-sm btn-info">
+                            <i class="fa-solid fa-eye"></i> Detail
+                        </button>
+                    ';
+                })
+                ->rawColumns(['aksi'])
+                ->make(true);
+        } catch (\Exception $e) {
+            // Log the error for debugging
+            Log::error('DataTables list error: ' . $e->getMessage());
+            
+            // Return a JSON response with error details
+            return response()->json([
+                'error' => true, 
+                'message' => 'Error retrieving data: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function details(Request $request)
+    {
+        try {
+            // Validate input
+            $request->validate([
+                'dosen_id' => 'required|exists:m_user,id_user'
+            ]);
+    
+            $dosenId = $request->input('dosen_id');
+    
+            // Fetch detailed activity information
+            $kegiatan = DB::table('t_anggota')
+                ->join('t_kegiatan', 't_anggota.id_kegiatan', '=', 't_kegiatan.id_kegiatan')
+                ->join('t_jabatan_kegiatan', 't_anggota.id_jabatan_kegiatan', '=', 't_jabatan_kegiatan.id_jabatan_kegiatan')
+                ->join('m_user', 't_anggota.id_user', '=', 'm_user.id_user')
+                ->select(
+                    't_kegiatan.nama_kegiatan',
+                    't_kegiatan.tanggal_acara',
+                    't_kegiatan.jenis_kegiatan',
+                    // Subquery menggunakan kolom yang benar
+                    DB::raw('(SELECT jabatan_nama 
+                              FROM t_jabatan_kegiatan 
+                              WHERE id_jabatan_kegiatan = t_anggota.id_jabatan_kegiatan) as jabatan_nama'),
+                    't_jabatan_kegiatan.poin'
+                )
+                ->where('t_anggota.id_user', $dosenId)
+                ->get();
+    
+            // Return HTML content
+            $html = view('admin.statistik.details', compact('kegiatan'))->render();
+            return response()->json(['html' => $html]);
+        } catch (\Exception $e) {
+            // Log full error details
+            Log::error('Details fetch error: ', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+    
+            return response()->json([
+                'error' => true, 
+                'message' => 'Error fetching details: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+    
 
     public function pimpinan()
     {
