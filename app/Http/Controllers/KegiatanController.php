@@ -1333,13 +1333,14 @@ class KegiatanController extends Controller
             ->where('id_jabatan_kegiatan', '!=', 1)
             ->get();
     
-        // Cek apakah sudah ada agenda untuk setiap anggota
+        // Tambahkan informasi agenda yang sudah ada
         $anggotaDenganAgenda = $anggota->map(function ($a) use ($agenda) {
             $agendaAnggota = AgendaAnggotaModel::where('id_anggota', $a->id_anggota)
                 ->where('id_agenda', $agenda->id_agenda)
                 ->first();
             
             $a->setAttribute('agenda_sudah_dibuat', isset($agendaAnggota) ? true : false);
+            $a->setAttribute('agenda_detail', $agendaAnggota ? $agendaAnggota->nama_agenda : null);
             return $a;
         });
         
@@ -1355,39 +1356,37 @@ class KegiatanController extends Controller
 
     public function storeAgendaAnggota(Request $request)
     {
-        // Validasi data yang diterima
-        $validated = $request->validate([
-            'id_anggota.*' => 'required|exists:t_anggota,id_anggota',
-            'agenda.*' => 'required|string|max:255',
-            'id_agenda' => 'required|exists:t_agenda,id_agenda',
-        ]);
-
-        // Cek apakah sudah ada agenda untuk salah satu anggota
-        $existingAgenda = AgendaAnggotaModel::whereIn('id_anggota', $validated['id_anggota'])
-            ->where('id_agenda', $validated['id_agenda'])
-            ->exists();
-
-        if ($existingAgenda) {
+        DB::beginTransaction();
+        try {
+            $id_agenda = $request->input('id_agenda');
+            $id_anggota = $request->input('id_anggota');
+            $agenda_input = $request->input('agenda');
+    
+            // Hapus agenda anggota yang sudah ada sebelumnya
+            AgendaAnggotaModel::where('id_agenda', $id_agenda)->delete();
+    
+            // Simpan agenda baru untuk setiap anggota
+            foreach ($id_anggota as $index => $id) {
+                $agendaAnggota = new AgendaAnggotaModel();
+                $agendaAnggota->id_agenda = $id_agenda;
+                $agendaAnggota->id_anggota = $id;
+                $agendaAnggota->nama_agenda = $agenda_input[$index] ?? '';
+                $agendaAnggota->save();
+            }
+    
+            DB::commit();
+    
+            return response()->json([
+                'status' => true,
+                'message' => 'Agenda berhasil disimpan/diupdate'
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
             return response()->json([
                 'status' => false,
-                'message' => 'Agenda untuk beberapa anggota sudah pernah ditambahkan sebelumnya.',
-                'msgField' => []
+                'message' => 'Gagal menyimpan agenda: ' . $e->getMessage()
             ]);
         }
-
-        // Proses penyimpanan agenda untuk setiap anggota
-        foreach ($validated['agenda'] as $index => $agendaNama) {
-            AgendaAnggotaModel::create([
-                'id_anggota' => $validated['id_anggota'][$index],
-                'nama_agenda' => $agendaNama,
-                'id_agenda' => $validated['id_agenda'],
-            ]);
-        }
-
-        return response()->json([
-            'status' => true,
-            'message' => 'Agenda anggota berhasil disimpan!',
-        ]);
     }
 
     public function detailAgendaAnggota($id_kegiatan)
@@ -1423,6 +1422,8 @@ class KegiatanController extends Controller
             'activeMenu' => $activeMenu,
         ])->render();
     }
+    
+    
 
     public function KegiatanJTI(): mixed
     {
