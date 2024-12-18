@@ -46,63 +46,60 @@
                     <th style="width: 10%;" class="text-center">Jabatan</th>
                 </tr>
             </thead>
-            <tbody>
-                <!-- Data kegiatan akan diisi di sini -->
-            </tbody>
         </table>
     </div>
 </div>
-<script>
-                    @if(session('swal'))
-                    Swal.fire({
-                        title: "{{ session('swal')['title'] }}",
-                        text: "{{ session('swal')['text'] }}",
-                        icon: "{{ session('swal')['icon'] }}"
-                    });
-                @endif
-            $.ajaxSetup({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                }
-            });
-            function modalAction(url = '') {
-                $('#myModal').load(url, function() {
-                    $('#myModal').modal('show');
-                });
-            }
-$(document).ready(function() {
-    $('#kegiatan-table').DataTable({
-        processing: true,
-        serverSide: true,
-        ajax: {
-            url: '{{ route("dosen.kegiatan.data") }}',
-            type: 'GET',
-            data: function(d) {
-                d.jenis_kegiatan = $('#jenis_kegiatan').val();
-            }
-        },
-        columns: [
-            { data: 'DT_RowIndex', name: 'DT_RowIndex', className: "text-center", orderable: false, searchable: false },
-            { data: 'nama_kegiatan', name: 'nama_kegiatan', className: "text-center" },
-            { data: 'deskripsi_kegiatan', name: 'deskripsi_kegiatan', className: "text-center" },
-            { data: 'tanggal_acara', name: 'tanggal_acara', className: "text-center" },
-            { data: 'tempat_kegiatan', name: 'tempat_kegiatan', className: "text-center" },
-            { data: 'jenis_kegiatan', name: 'jenis_kegiatan', className: "text-center" },
-            { 
-                data: 'jabatan_nama', 
-                name: 'jabatan_nama', 
-                className: "text-center",
-                render: function(data, type, row) {
-                    return data || '-';
-                }
-            }
-        ]
-    });
+<div id="myModal" class="modal fade animate shake" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false" data-width="75%" aria-hidden="true"></div>
 
-    // Pemicu filter
-    $('#jenis_kegiatan').on('change', function() {
-        $('#kegiatan-table').DataTable().draw();
+@push('css')
+@endpush
+
+@push('js')
+<script>
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
     });
-});
+    function modalAction(url = '') {
+        $('#myModal').load(url, function() {
+            $('#myModal').modal('show');
+        });
+    }
+    $(document).ready(function() {
+        $('#kegiatan-table').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: {
+                url: '{{ route("dosen.kegiatan.data") }}',
+                type: 'GET',
+                data: function(d) {
+                    d.jenis_kegiatan = $('#jenis_kegiatan').val();
+                }
+            },
+            columns: [
+                { data: 'DT_RowIndex', name: 'DT_RowIndex', className: "text-center", orderable: false, searchable: false },
+                { data: 'nama_kegiatan', name: 'nama_kegiatan', className: "text-center" },
+                { data: 'deskripsi_kegiatan', name: 'deskripsi_kegiatan', className: "text-center" },
+                { data: 'tanggal_acara', name: 'tanggal_acara', className: "text-center" },
+                { data: 'tempat_kegiatan', name: 'tempat_kegiatan', className: "text-center" },
+                { data: 'jenis_kegiatan', name: 'jenis_kegiatan', className: "text-center" },
+                { 
+                    data: 'jabatan_nama', 
+                    name: 'jabatan_nama', 
+                    className: "text-center",
+                    render: function(data, type, row) {
+                        return data || '-';
+                    }
+                }
+            ]
+        });
+
+        // Pemicu filter
+        $('#jenis_kegiatan').on('change', function() {
+            $('#kegiatan-table').DataTable().draw();
+        });
+    });
 </script>
+@endpush
 @endsection

@@ -31,7 +31,7 @@
             <div class="col-md-3">
                 <label for="periode">Periode Kegiatan:</label>
                 <select class="form-control" id="periode" name="periode">
-                    <option value="">Pilih Periode Kegiatan</option>
+                    <option value="">Pilih Tahun Kegiatan</option>
                     @foreach($years as $year)
                         <option value="{{ $year }}">Periode {{ $year }} / {{ $year + 1 }}</option>
                     @endforeach
@@ -60,13 +60,14 @@
         
         @push('js')
         <script>
-                @if(session('swal'))
-                    Swal.fire({
-                        title: "{{ session('swal')['title'] }}",
-                        text: "{{ session('swal')['text'] }}",
-                        icon: "{{ session('swal')['icon'] }}"
-                    });
-                @endif
+            @if(session('swal'))
+                Swal.fire({
+                    title: "{{ session('swal')['title'] }}",
+                    text: "{{ session('swal')['text'] }}",
+                    icon: "{{ session('swal')['icon'] }}"
+                });
+            @endif
+
             $.ajaxSetup({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
