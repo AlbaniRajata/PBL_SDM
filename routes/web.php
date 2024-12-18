@@ -106,6 +106,7 @@ Route::middleware('auth')->group(function () {
                 Route::post('/details', [StatistikController::class, 'details'])->name('admin.statistik.details');
                 Route::get('/export_pdf', [StatistikController::class, 'exportPdf'])->name('admin.statistik.export_pdf');
                 Route::get('/export_excel', [StatistikController::class, 'exportExcel'])->name('admin.statistik.export_excel');
+                Route::get('/kegiatan', [KegiatanController::class, 'getPeriodeKegiatan'])->name('admin.kegiatan.index');
             });
 
             Route::prefix('jenispengguna')->group(function () {
@@ -158,10 +159,10 @@ Route::middleware('auth')->group(function () {
                 Route::get('/{id}/delete_ajax', [KegiatanController::class, 'confirmAjaxDosen'])->name('dosen.kegiatan.confirm_ajax');
                 Route::delete('/{id}/delete_ajax', [KegiatanController::class, 'deleteAjaxDosen'])->name('dosen.kegiatan.delete_ajax');
                 Route::get('/{id}/export_word', [DokumenController::class, 'exportWord'])->name('dosen.kegiatan.export_word');
-                Route::post('/{id}/upload_surat_tugas', [KegiatanController::class, 'uploadSuratTugas'])->name('dosen.kegiatan.upload_surat_tugas');
                 Route::get('/data', [KegiatanController::class, 'data'])->name('dosen.kegiatan.data');
                 Route::get('/export_pdf', [KegiatanController::class, 'exportPdf_dosen'])->name('dosen.kegiatan.export_pdf');
                 Route::get('/export_excel', [KegiatanController::class, 'exportExcel_dosen'])->name('dosen.kegiatan.export_excel');
+                Route::post('/upload', [KegiatanController::class, 'uploadSurat'])->name('kegiatan.upload');
 
                 //jti
                 Route::get('/jti', [KegiatanController::class, 'KegiatanJTI']);

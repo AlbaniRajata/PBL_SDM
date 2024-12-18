@@ -364,12 +364,15 @@ class KegiatanController extends Controller
     {
         $kegiatan = KegiatanModel::find($id);
         $angggota = anggotaModel::select('id_kegiatan', 'id_anggota', 'id_user', 'id_jabatan_kegiatan')->where('id_kegiatan', $id)->with('user', 'jabatan')->get();
-
+        $dokumenTerbaru = DokumenModel::where('id_kegiatan', $id)
+        ->where('jenis_dokumen', 'surat tugas')
+        ->latest('created_at') // Urutkan berdasarkan waktu terbaru
+        ->first(); // Ambil 1 dokumen terbaru
         if (!$kegiatan) {
             return response()->json(['message' => 'Data not found'], 404);
         }
 
-        return view('dosen.kegiatan.show_ajax', ['kegiatan' => $kegiatan, 'anggota' => $angggota]);
+        return view('dosen.kegiatan.show_ajax', ['kegiatan' => $kegiatan, 'anggota' => $angggota, 'dokumenTerbaru'=>$dokumenTerbaru]);
     }
 
     public function show_ajaxDosenPIC($id)

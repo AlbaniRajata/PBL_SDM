@@ -10,23 +10,36 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Log;
+use App\Models\KegiatanModel;
 
 class StatistikController extends Controller
 {
     public function admin()
     {
+        $years = KegiatanModel::selectRaw('YEAR(tanggal_acara) as year')
+        ->distinct()
+        ->orderBy('year', 'asc')
+        ->pluck('year'); // Hanya mengambil nilai tahun saja
+
         $breadcrumb = (object) [
             'title' => 'Poin Dosen Jurusan Teknologi Informasi',
             'list' => ['Home', 'Statistik'],
         ];
         $activeMenu = 'statistik admin';
 
-        return view('admin.statistik.index', compact('breadcrumb', 'activeMenu'));
+        return view('admin.statistik.index', compact('breadcrumb', 'activeMenu', 'years'));
     }
 
     public function list(Request $request)
     {
         try {
+
+                    // Filter berdasarkan tahun dari kolom tanggal_acara
+        if ($request->filled('periode')) {
+            $tahun = $request->periode; // Tahun diambil dari request
+            $kegiatan->whereYear('tanggal_acara', '=', $tahun);
+        }
+
             $query = DB::table('m_user')
                 ->leftJoin('t_anggota', 'm_user.id_user', '=', 't_anggota.id_user')
                 ->leftJoin('t_kegiatan', 't_anggota.id_kegiatan', '=', 't_kegiatan.id_kegiatan')
