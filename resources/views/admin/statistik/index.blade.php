@@ -25,21 +25,16 @@
         @endif
         
         <div class="row mb-3">
-    <div class="col-md-12 ">
-        <label class="control-label col-form-label me-3">Filter:</label>
-        <select class="form-control me-5" id="min-max-point" name="point">
+        <div class="col-md-12">
+        <div class="form-group row">
+            <label class="col-1 control-label col-form-label">Filter:</label>
+            <div class="col-3">
+                <select class="form-control" id="min-max-point" name="point">
             <option value="">- Filter Poin -</option>
             <option value="0-10">0 - 10</option>
             <option value="11-30">11 - 30</option>
             <option value="31-50">31 - 50</option>
             <option value=">51">>51</option>
-        </select>
-        <label for="periode" class="me-3">Periode Kegiatan:</label>
-        <select class="form-control" id="periode" name="periode">
-            <option value="">Pilih Periode Kegiatan</option>
-            @foreach($years as $year)
-                <option value="{{ $year }}">Periode {{ $year }} / {{ $year + 1 }}</option>
-            @endforeach
         </select>
     </div>
 </div>
@@ -98,7 +93,6 @@
                 type: "POST",
                 data: function(d) {
                     d.point_filter = $('#min-max-point').val();
-                    d.periode = $('#periode').val(); // Tambahkan '#' sebelum 'periode'
                 },
                 error: function(xhr, error, thrown) {
                     console.error('DataTables Ajax error:', {
