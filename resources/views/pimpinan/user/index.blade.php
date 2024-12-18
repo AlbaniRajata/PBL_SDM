@@ -34,7 +34,7 @@
         <table class="table table-bordered table-striped table-hover table-sm" id="table_user">
             <thead>
                 <tr>
-                    <th style="width: 5%;" class="text-center">ID Pengguna</th>
+                    <th style="width: 5%;" class="text-center">No</th>
                     <th style="width: 20%;" class="text-center">Nama</th>
                     <th style="width: 20%;" class="text-center">Email</th>
                     <th style="width: 15%;" class="text-center">NIP</th>
@@ -79,7 +79,7 @@
                 }
             },
             columns: [
-                { data: 'id_user', name: 'id_user', className: "text-center", orderable: true, searchable: true },
+                { data: 'DT_RowIndex', name: 'DT_RowIndex', className: "text-center", orderable: false, searchable: false },
                 { data: 'nama', name: 'nama', className: "text-center", orderable: true, searchable: true },
                 { data: 'email', name: 'email', className: "text-center", orderable: true, searchable: true },
                 { data: 'NIP', name: 'NIP', className: "text-center", orderable: true, searchable: true },
