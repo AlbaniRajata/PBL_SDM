@@ -32,14 +32,6 @@
                 </div>
                 <table class="table table-sm table-bordered table-striped">
                     <tr>
-                        <th class="text-right col-3">ID :</th>
-                        <td class="col-9">{{ $user->id_user }}</td>
-                    </tr>
-                    <tr>
-                        <th class="text-right col-3">Username :</th>
-                        <td class="col-9">{{ $user->username }}</td>
-                    </tr>
-                    <tr>
                         <th class="text-right col-3">Nama Lengkap:</th>
                         <td class="col-9">{{ $user->nama }}</td>
                     </tr>
