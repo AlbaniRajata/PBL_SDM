@@ -32,10 +32,6 @@
                 </div>
                 <table class="table table-sm table-bordered table-striped">
                     <tr>
-                        <th class="text-right col-3">ID :</th>
-                        <td class="col-9">{{ $user->id_user }}</td>
-                    </tr>
-                    <tr>
                         <th class="text-right col-3">Username :</th>
                         <td class="col-9">{{ $user->username }}</td>
                     </tr>
@@ -100,7 +96,6 @@
                 }
             },
             columns: [
-                { data: 'id_user', name: 'id_user', className: "text-center", orderable: true, searchable: true },
                 { data: 'username', name: 'username', className: "text-center", orderable: true, searchable: true },
                 { data: 'nama', name: 'nama', className: "text-center", orderable: true, searchable: true },
                 { data: 'tanggal_lahir', name: 'tanggal_lahir', className: "text-center", orderable: true, searchable: true },
