@@ -1,33 +1,37 @@
-<table class="table table-bordered table-button-closed" style="color=white">
-    <thead>
-        <tr>
-            <th class="text-center">Nama Kegiatan</th>
-            <th class="text-center">Tanggal</th>
-            <th class="text-center">Jenis Kegiatan</th>
-            <th class="text-center">Jabatan</th>
-            <th class="text-center">Poin</th>
-        </tr>
-    </thead>
-
-    <tbody>
-        @forelse($kegiatan as $item)
-            <tr>
-                <td class="text-center">{{ $item->nama_kegiatan }}</td>
-                <td class="text-center">{{ $item->tanggal_acara }}</td>
-                <td class="text-center">{{ $item->jenis_kegiatan }}</td>
-                <td class="text-center">{{ $item->jabatan_nama }}</td>
-                <td class="text-center">{{ $item->poin }}</td>
-            </tr>
-        @empty
-            <tr>
-                <td colspan="5" class="text-center text-muted">Tidak ada kegiatan</td>
-            </tr>
-        @endforelse
-    </tbody>
-</table>
-
-<style>
-    .btn-close {
-        color: white !important; /* Mengubah warna X menjadi putih */
-    }
-</style>
+@if($details->count() > 0)
+    <div class="table-responsive">
+        @if($year)
+            <div class="alert alert-info">
+                Menampilkan kegiatan tahun {{ $year }}
+            </div>
+        @endif
+        <table class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th>Nama Kegiatan</th>
+                    <th>Tanggal Acara</th>
+                    <th>Jabatan</th>
+                    <th>Poin</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($details as $detail)
+                    <tr>
+                        <td>{{ $detail->nama_kegiatan }}</td>
+                        <td>{{ \Carbon\Carbon::parse($detail->tanggal_acara)->format('d M Y') }}</td>
+                        <td>{{ $detail->jabatan_nama }}</td>
+                        <td>{{ $detail->poin }}</td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+@else
+    <div class="alert alert-info text-center">
+        @if($year)
+            Tidak ada kegiatan ditemukan untuk tahun {{ $year }}.
+        @else
+            Tidak ada kegiatan yang ditemukan.
+        @endif
+    </div>
+@endif

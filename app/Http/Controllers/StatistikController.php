@@ -10,22 +10,28 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Log;
+use App\Models\KegiatanModel;
 
 class StatistikController extends Controller
 {
     public function admin()
     {
-
         $breadcrumb = (object) [
             'title' => 'Poin Dosen Jurusan Teknologi Informasi',
             'list' => ['Home', 'Statistik'],
         ];
         $activeMenu = 'statistik admin';
-
-        return view('admin.statistik.index', compact('breadcrumb', 'activeMenu'));
+    
+        // Fetch years from the Kegiatan model
+        $years = KegiatanModel::selectRaw('YEAR(tanggal_acara) as year')
+            ->distinct()
+            ->orderBy('year', 'asc')
+            ->pluck('year');
+    
+        return view('admin.statistik.index', compact('breadcrumb', 'activeMenu', 'years'));
     }
-
-    public function list(Request $request)
+    
+    public function adminList(Request $request)
     {
         try {
             $query = DB::table('m_user')
@@ -40,7 +46,7 @@ class StatistikController extends Controller
                 )
                 ->where('m_user.level', 'dosen')
                 ->groupBy('m_user.id_user', 'm_user.nama');
-
+    
             // Point filter
             if ($request->has('point_filter') && $request->point_filter) {
                 $pointFilter = $request->point_filter;
@@ -54,12 +60,13 @@ class StatistikController extends Controller
                     return $q->havingRaw('COALESCE(SUM(t_jabatan_kegiatan.poin), 0) > 51');
                 });
             }
-
+    
+            // Year filter
+            if ($request->has('year_filter') && $request->year_filter) {
+                $query->whereRaw('YEAR(t_kegiatan.tanggal_acara) = ?', [$request->year_filter]);
+            }
+    
             return DataTables::of($query)
-            ->addColumn('DT_RowIndex', function ($row) {
-                static $index = 0; // Buat index manual
-                return ++$index;
-            })
                 ->addColumn('aksi', function($row) {
                     return '
                         <button onclick="showDetails('.$row->id_user.')" class="btn btn-sm btn-info">
@@ -70,57 +77,54 @@ class StatistikController extends Controller
                 ->rawColumns(['aksi'])
                 ->make(true);
         } catch (\Exception $e) {
-            // Log the error for debugging
             Log::error('DataTables list error: ' . $e->getMessage());
             
-            // Return a JSON response with error details
             return response()->json([
                 'error' => true, 
                 'message' => 'Error retrieving data: ' . $e->getMessage()
             ], 500);
         }
     }
-
-    public function details(Request $request)
+    
+    // Existing details method (adjust as needed)
+    public function adminDetails(Request $request)
     {
         try {
-            // Validate input
-            $request->validate([
-                'dosen_id' => 'required|exists:m_user,id_user'
-            ]);
-    
             $dosenId = $request->input('dosen_id');
-    
-            // Fetch detailed activity information
-            $kegiatan = DB::table('t_anggota')
+            $year = $request->input('year', null); // Optional year filter
+            
+            // Base query for fetching details
+            $query = DB::table('t_anggota')
                 ->join('t_kegiatan', 't_anggota.id_kegiatan', '=', 't_kegiatan.id_kegiatan')
                 ->join('t_jabatan_kegiatan', 't_anggota.id_jabatan_kegiatan', '=', 't_jabatan_kegiatan.id_jabatan_kegiatan')
                 ->join('m_user', 't_anggota.id_user', '=', 'm_user.id_user')
                 ->select(
-                    't_kegiatan.nama_kegiatan',
-                    't_kegiatan.tanggal_acara',
-                    't_kegiatan.jenis_kegiatan',
-                    // Subquery menggunakan kolom yang benar
-                    DB::raw('(SELECT jabatan_nama 
-                              FROM t_jabatan_kegiatan 
-                              WHERE id_jabatan_kegiatan = t_anggota.id_jabatan_kegiatan) as jabatan_nama'),
-                    't_jabatan_kegiatan.poin'
+                    't_kegiatan.nama_kegiatan', 
+                    't_kegiatan.tanggal_acara', 
+                    't_jabatan_kegiatan.poin',
+                    't_jabatan_kegiatan.jabatan_nama'
                 )
-                ->where('t_anggota.id_user', $dosenId)
-                ->get();
+                ->where('m_user.id_user', $dosenId);
     
-            // Return HTML content
-            $html = view('admin.statistik.details', compact('kegiatan'))->render();
-            return response()->json(['html' => $html]);
-        } catch (\Exception $e) {
-            // Log full error details
-            Log::error('Details fetch error: ', [
-                'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
+            // Apply year filter if provided
+            if ($year) {
+                $query->whereRaw('YEAR(t_kegiatan.tanggal_acara) = ?', [$year]);
+            }
+    
+            // Execute the query
+            $details = $query->get();
+    
+            // Generate HTML for modal
+            $html = view('admin.statistik.details', compact('details', 'year'))->render();
     
             return response()->json([
-                'error' => true, 
+                'html' => $html
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Details fetch error: ' . $e->getMessage());
+            
+            return response()->json([
+                'error' => true,
                 'message' => 'Error fetching details: ' . $e->getMessage()
             ], 500);
         }
@@ -130,46 +134,116 @@ class StatistikController extends Controller
     public function pimpinan()
     {
         $breadcrumb = (object) [
-            'title' => 'Statistik Dosen Jurusan Teknologi Informasi',
+            'title' => 'Poin Dosen Jurusan Teknologi Informasi',
             'list' => ['Home', 'Statistik'],
         ];
         $activeMenu = 'statistik pimpinan';
     
-        $poinDosen = DB::table('m_user')
-            ->leftJoin('t_anggota', 'm_user.id_user', '=', 't_anggota.id_user')
-            ->leftJoin('t_kegiatan', 't_anggota.id_kegiatan', '=', 't_kegiatan.id_kegiatan')
-            ->leftJoin('t_jabatan_kegiatan', 't_anggota.id_jabatan_kegiatan', '=', 't_jabatan_kegiatan.id_jabatan_kegiatan')
-            ->select(
-                'm_user.nama',
-                'm_user.id_user',
-                DB::raw('COUNT(DISTINCT t_anggota.id_kegiatan) as total_kegiatan'),
-                DB::raw('COALESCE(SUM(t_jabatan_kegiatan.poin), 0) as total_poin')
-            )
-            ->where('m_user.level', 'dosen')
-            ->groupBy('m_user.id_user', 'm_user.nama')
-            ->get();
+        // Fetch years from the Kegiatan model
+        $years = KegiatanModel::selectRaw('YEAR(tanggal_acara) as year')
+            ->distinct()
+            ->orderBy('year', 'asc')
+            ->pluck('year');
     
-        // Fetch detailed activities for each lecturer
-        $dosenKegiatan = DB::table('m_user')
-            ->leftJoin('t_anggota', 'm_user.id_user', '=', 't_anggota.id_user')
-            ->leftJoin('t_kegiatan', 't_anggota.id_kegiatan', '=', 't_kegiatan.id_kegiatan')
-            ->leftJoin('t_jabatan_kegiatan', 't_anggota.id_jabatan_kegiatan', '=', 't_jabatan_kegiatan.id_jabatan_kegiatan')
-            ->select(
-                'm_user.id_user',
-                'm_user.nama',
-                't_kegiatan.nama_kegiatan',
-                't_kegiatan.tanggal_acara',
-                't_kegiatan.jenis_kegiatan',
-                't_jabatan_kegiatan.jabatan_nama',
-                't_jabatan_kegiatan.poin'
-            )
-            ->where('m_user.level', 'dosen')
-            ->orderBy('m_user.nama')
-            ->orderBy('t_kegiatan.tanggal_acara')
-            ->get()
-            ->groupBy('id_user');
+        return view('pimpinan.statistik.index', compact('breadcrumb', 'activeMenu', 'years'));
+    }
+
+    public function pimList(Request $request)
+    {
+        try {
+            $query = DB::table('m_user')
+                ->leftJoin('t_anggota', 'm_user.id_user', '=', 't_anggota.id_user')
+                ->leftJoin('t_kegiatan', 't_anggota.id_kegiatan', '=', 't_kegiatan.id_kegiatan')
+                ->leftJoin('t_jabatan_kegiatan', 't_anggota.id_jabatan_kegiatan', '=', 't_jabatan_kegiatan.id_jabatan_kegiatan')
+                ->select(
+                    'm_user.id_user',
+                    'm_user.nama',
+                    DB::raw('COUNT(DISTINCT t_anggota.id_kegiatan) as total_kegiatan'),
+                    DB::raw('COALESCE(SUM(t_jabatan_kegiatan.poin), 0) as total_poin')
+                )
+                ->where('m_user.level', 'dosen')
+                ->groupBy('m_user.id_user', 'm_user.nama');
     
-        return view('pimpinan.statistik.index', compact('breadcrumb', 'activeMenu', 'poinDosen', 'dosenKegiatan'));
+            // Point filter
+            if ($request->has('point_filter') && $request->point_filter) {
+                $pointFilter = $request->point_filter;
+                $query->when($pointFilter === '0-10', function ($q) {
+                    return $q->havingRaw('COALESCE(SUM(t_jabatan_kegiatan.poin), 0) BETWEEN 0 AND 10');
+                })->when($pointFilter === '11-30', function ($q) {
+                    return $q->havingRaw('COALESCE(SUM(t_jabatan_kegiatan.poin), 0) BETWEEN 11 AND 30');
+                })->when($pointFilter === '31-50', function ($q) {
+                    return $q->havingRaw('COALESCE(SUM(t_jabatan_kegiatan.poin), 0) BETWEEN 31 AND 50');
+                })->when($pointFilter === '>51', function ($q) {
+                    return $q->havingRaw('COALESCE(SUM(t_jabatan_kegiatan.poin), 0) > 51');
+                });
+            }
+    
+            // Year filter
+            if ($request->has('year_filter') && $request->year_filter) {
+                $query->whereRaw('YEAR(t_kegiatan.tanggal_acara) = ?', [$request->year_filter]);
+            }
+    
+            return DataTables::of($query)
+                ->addColumn('aksi', function($row) {
+                    return '
+                        <button onclick="showDetails('.$row->id_user.')" class="btn btn-sm btn-info">
+                            <i class="fa-solid fa-eye"></i> Detail
+                        </button>
+                    ';
+                })
+                ->rawColumns(['aksi'])
+                ->make(true);
+        } catch (\Exception $e) {
+            Log::error('DataTables list error: ' . $e->getMessage());
+            
+            return response()->json([
+                'error' => true, 
+                'message' => 'Error retrieving data: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function pimDetails(Request $request)
+    {
+        try {
+            $dosenId = $request->input('dosen_id');
+            $year = $request->input('year', null); // Optional year filter
+            
+            // Base query for fetching details
+            $query = DB::table('t_anggota')
+                ->join('t_kegiatan', 't_anggota.id_kegiatan', '=', 't_kegiatan.id_kegiatan')
+                ->join('t_jabatan_kegiatan', 't_anggota.id_jabatan_kegiatan', '=', 't_jabatan_kegiatan.id_jabatan_kegiatan')
+                ->join('m_user', 't_anggota.id_user', '=', 'm_user.id_user')
+                ->select(
+                    't_kegiatan.nama_kegiatan', 
+                    't_kegiatan.tanggal_acara', 
+                    't_jabatan_kegiatan.poin',
+                    't_jabatan_kegiatan.jabatan_nama'
+                )
+                ->where('m_user.id_user', $dosenId);
+    
+            // Apply year filter if provided
+            if ($year) {
+                $query->whereRaw('YEAR(t_kegiatan.tanggal_acara) = ?', [$year]);
+            }
+    
+            // Execute the query
+            $details = $query->get();
+    
+            // Generate HTML for modal
+            $html = view('admin.statistik.details', compact('details', 'year'))->render();
+    
+            return response()->json([
+                'html' => $html
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Details fetch error: ' . $e->getMessage());
+            
+            return response()->json([
+                'error' => true,
+                'message' => 'Error fetching details: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     public function dosen()

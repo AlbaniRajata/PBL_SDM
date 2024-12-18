@@ -1548,8 +1548,10 @@ class KegiatanController extends Controller
             return response()->json(['message' => 'Data not found'], 404);
         }
 
+        $swalData = session('swal', null);
 
-        return view('dosen.kegiatan.nonjti.show_ajax', ['kegiatan' => $kegiatan, 'anggota' => $angggota]);
+
+        return view('dosen.kegiatan.nonjti.show_ajax', ['kegiatan' => $kegiatan, 'anggota' => $angggota, 'swalData' => $swalData]);
     }
 
     public function confirm_ajaxAdmin($id)
