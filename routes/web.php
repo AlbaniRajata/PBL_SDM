@@ -86,7 +86,7 @@ Route::middleware('auth')->group(function () {
                 Route::get('/kegiatan', [KegiatanController::class, 'getPeriodeKegiatan'])->name('admin.kegiatan.index');
                 Route::get('/import', [KegiatanController::class, 'import'])->name('admin.kegiatan.import');
                 Route::post('/import_ajax', [KegiatanController::class, 'import_ajax'])->name('admin.kegiatan.import_ajax');
-                Route::post('/upload', [KegiatanController::class, 'uploadSurat'])->name('kegiatan.upload');
+                Route::post('/upload', [KegiatanController::class, 'uploadSurat'])->name('admin.kegiatan.upload');
             });
 
             Route::prefix('jabatan')->group(function () {
@@ -162,7 +162,7 @@ Route::middleware('auth')->group(function () {
                 Route::get('/data', [KegiatanController::class, 'data'])->name('dosen.kegiatan.data');
                 Route::get('/export_pdf', [KegiatanController::class, 'exportPdf_dosen'])->name('dosen.kegiatan.export_pdf');
                 Route::get('/export_excel', [KegiatanController::class, 'exportExcel_dosen'])->name('dosen.kegiatan.export_excel');
-                Route::post('/upload', [KegiatanController::class, 'uploadSurat'])->name('kegiatan.upload');
+                Route::post('/upload', [KegiatanController::class, 'uploadSurat'])->name('dosen.kegiatan.upload');
 
                 //jti
                 Route::get('/jti', [KegiatanController::class, 'KegiatanJTI']);

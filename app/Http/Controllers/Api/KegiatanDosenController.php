@@ -636,7 +636,9 @@ class KegiatanDosenController extends Controller
             }
 
             // Cari dokumen
-            $dokumen = DokumenModel::with('kegiatan.anggota')->findOrFail($id_dokumen);
+            $dokumen = DokumenModel::with('kegiatan.anggota')
+            ->where('jenis_dokumen', 'surat tugas')
+            ->findOrFail($id_dokumen);
 
             // Cek apakah user adalah anggota dari kegiatan ini
             $isAnggota = $dokumen->kegiatan->anggota->where('id_user', $userId)->isNotEmpty();

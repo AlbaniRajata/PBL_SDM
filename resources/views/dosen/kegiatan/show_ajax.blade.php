@@ -83,7 +83,7 @@
                     </tbody>
                 </table>
                 <!-- Formulir Upload File -->
-                <form action="{{ route('kegiatan.upload') }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ route('dosen.kegiatan.upload') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="form-group">
                         <label for="file">Upload Surat Tugas:</label>
@@ -134,10 +134,30 @@
     });
 
     function modalAction(url = '') {
-        $('#myModal').load(url, function() {
+    $.ajax({
+        url: url,
+        success: function(response) {
+            $('#myModal').html(response);
             $('#myModal').modal('show');
-        });
-    }
+            
+            // Tambahkan sweet alert jika perlu
+            @if(session('success'))
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil!',
+                    text: '{{ session('success') }}'
+                });
+            @endif
+        },
+        error: function() {
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal!',
+                text: 'Terjadi kesalahan saat memuat modal'
+            });
+        }
+    });
+}
 
     $(document).ready(function() {
         var dataKegiatan = $('#table_kegiatan').DataTable({

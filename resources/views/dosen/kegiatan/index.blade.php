@@ -53,6 +53,23 @@
     </div>
 </div>
 <script>
+                    @if(session('swal'))
+                    Swal.fire({
+                        title: "{{ session('swal')['title'] }}",
+                        text: "{{ session('swal')['text'] }}",
+                        icon: "{{ session('swal')['icon'] }}"
+                    });
+                @endif
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+            function modalAction(url = '') {
+                $('#myModal').load(url, function() {
+                    $('#myModal').modal('show');
+                });
+            }
 $(document).ready(function() {
     $('#kegiatan-table').DataTable({
         processing: true,

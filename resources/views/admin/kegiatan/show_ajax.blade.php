@@ -127,7 +127,7 @@
                         </tbody>
                 </table>
                 <!-- Formulir Upload File -->
-                <form action="{{ route('kegiatan.upload') }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ route('admin.kegiatan.upload') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="form-group">
                         <label for="file">Upload Surat Tugas:</label>
