@@ -199,7 +199,7 @@ class UserController extends Controller
 
             return response()->json([
                 'status' => true,
-                'message' => 'User updated successfully'
+                'message' => 'Pengguna berhasil di tambahkan'
             ]);
         }
         return redirect('/admin/user');
@@ -222,15 +222,30 @@ class UserController extends Controller
     // Function to delete user via AJAX (admin)
     public function delete_ajaxAdmin(Request $request, $id)
     {
-        if ($request->ajax() || $request->wantsJson()) {
-            $user = UserModel::find($id);
-            if (!$user) {
-                return response()->json(['error' => 'Data not found'], 404);
+        try {
+            $user = UserModel::findOrFail($id);
+            
+            // Cegah penghapusan akun admin
+            if ($user->level === 'admin') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Tidak dapat menghapus akun admin'
+                ], 403);
             }
-
+    
             $user->delete();
+    
+            return response()->json([
+                'success' => true,
+                'message' => 'Berhasil menghapus pengguna'
+            ]);
+    
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menghapus pengguna: ' . $e->getMessage()
+            ], 500);
         }
-        return response()->json(['success' => 'User deleted successfully']);
     }
     // function export (admin)
     public function exportPdf()
