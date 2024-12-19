@@ -23,6 +23,10 @@
                         <td>{{ $detail->poin }}</td>
                     </tr>
                 @endforeach
+                <tr class="table-info font-weight-bold">
+                    <td colspan="3" class="text-right">Total Poin:</td>
+                    <td>{{ $details->sum('poin') }}</td>
+                </tr>
             </tbody>
         </table>
     </div>
